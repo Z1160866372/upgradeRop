@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: rop
+  profiles:
+    active: prod
+  # 选择redis为session存储
+  session:
+    store-type: redis
+  # 配置redis
+  redis:
+    host: 121.40.205.162
+    password: h1e2j3i4a5o6s7h8o9u0!@#$%^&*
+    port: 6379
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+    #初始化dispatcherServlet，默认-1未开启，0及以上为开启
+    servlet:
+      load-on-startup: 1
+server:
+  port: 8088
+  servlet:
+    context-path: /new_roptest
+    session:
+      timeout: 30m
+  tomcat:
+    uri-encoding: utf-8
+mybatis-plus:
+  # 启动时是否检查MyBatis XML文件是否存在
+  check-config-location: true
+  # MyBatis原生配置
+  configuration:
+    # 字段名称下划线转驼峰命名
+    map-underscore-to-camel-case: true
+    # 打印SQL日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # 全局默认主键类型
+      id-type: id_worker
+      logic-delete-field: isDelete
+      # 逻辑已删除值(默认为 1)
+      logic-delete-value: true # 逻辑已删除值(默认为 1)
+      # 逻辑未删除值(默认为 0)
+      logic-not-delete-value: false # 逻辑未删除值(默认为 0)
+  # mapper xml映射路径
+  mapper-locations: classpath*:mybatis/mapper/*.xml
