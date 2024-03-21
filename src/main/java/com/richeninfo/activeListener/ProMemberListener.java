@@ -1,4 +1,4 @@
-package com.richeninfo.rabbitListener;
+package com.richeninfo.activeListener;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
