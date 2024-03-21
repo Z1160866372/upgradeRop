@@ -4,6 +4,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.lang.annotation.ElementType.METHOD;
 
@@ -16,5 +17,6 @@ import static java.lang.annotation.ElementType.METHOD;
 @Target(METHOD) //表示它只能放在方法上
 public @interface AccessLimit {
     int seconds();//规定几秒
+
     int maxCount();//最大请求数
 }

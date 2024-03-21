@@ -9,10 +9,11 @@ import com.alibaba.fastjson.annotation.JSONField;
 public class Result {
     private Response response;
 
-    @JSONField(name="Response")
+    @JSONField(name = "Response")
     public Response getResponse() {
         return response;
     }
+
     public void setResponse(Response response) {
         this.response = response;
     }

@@ -1,22 +1,27 @@
-package com.richeninfo.entity.mapper.mapper.master;
+package com.richeninfo.util;
 
 /**
  * @Author : zhouxiaohu
  * @create 2022/9/19 13:57
  */
 public interface ICAPSigner {
-    /**普通字符串解签
+    /**
+     * 普通字符串解签
+     *
      * @param originalText
      * @param signedText
      * @return
      */
     public boolean verifySimple(String originalText, String signedText) throws Exception;
 
-    /**普通字符串签名
+    /**
+     * 普通字符串签名
+     *
      * @param simpleStr
      * @return
      */
     public String signatureSimple(String simpleStr) throws Exception;
+
     /**
      * 签名.
      * 如果cap为empty，将会抛出runtimeexception.

@@ -1,61 +1,49 @@
 spring:
   master:
     datasource:
-        driver-class-name: com.mysql.jdbc.Driver
-        url:  jdbc:mysql://121.40.205.162:3306/weixin?characterEncoding=utf8&allowMultiQueries=true&useSSL=false
-        username: root
-        password: richeninfo
-        type: com.alibaba.druid.pool.DruidDataSource
-        #配置Druid的其他参数，以下配置必须增加一个配置文件才能有效
-        # 初始化大小，最小，最大
-        initialSize: 5
-        minIdle: 5
-        maxActive: 20
-        # 获取连接等待超时的时间
-        maxWait: 60000
-        # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-        timeBetweenEvictionRunsMillis: 60000
-        # 配置一个连接在池中最小生存的时间，单位是毫秒
-        minEvictableIdleTimeMillis: 300000
-        validationQuery: SELECT 1
-        testWhileIdle: true
-        testOnBorrow: false
-        testOnReturn: false
-        poolPreparedStatements: true
-        # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙 slf4j,log4j
-        #  filters: stat, wall,slf4j
-        # 打开PSCache，并且指定每个连接上PSCache的大小
-        maxPoolPreparedStatementPerConnectionSize: 20
-        # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
-        connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
-        # 合并多个DruidDataSource的监控数据
-        useGlobalDataSourceStat: true
-  cluster:
-    datasource:
-      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-      url: jdbc:sqlserver://47.111.174.33:1433;DatabaseName=junhong
-      username: sa
-      password: Richeninfo123.
-  #rabbitmq配置
-  rabbitmq:
-#    host: 127.0.0.1
-#    port: 5672
-#    username: guest
-#    password: guest
-    host: 121.40.205.162
-    port: 5672
-    username: jiaoshou
-    password: jiao123shou
-  cloud:
-      stream:
-        binders:
-          defaultRabbit:
-            type: rabbit
-        bindings:
-          output:
-            destination: studyExchange
-            content-type: application/json
-            binder: defaultRabbit
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://121.40.205.162:3306/weixin?characterEncoding=utf8&allowMultiQueries=true&useSSL=false
+      username: root
+      password: richen123.
+      type: com.alibaba.druid.pool.DruidDataSource
+      #配置Druid的其他参数，以下配置必须增加一个配置文件才能有效
+      # 初始化大小，最小，最大
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      # 获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙 slf4j,log4j
+      #  filters: stat, wall,slf4j
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      maxPoolPreparedStatementPerConnectionSize: 20
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+      # 合并多个DruidDataSource的监控数据
+      useGlobalDataSourceStat: true
+  #activemq配置
+  activemq:
+    broker-url: 10.102.75.24:8161  #activeMQ的ip和端口号
+    user: admin   #activeMq账号
+    password: Jy*Ftp&$8 #activeMq密码
+    non-blocking-redelivery: false # 是否在回滚回滚消息之前停止消息传递。这意味着当启用此命令时，消息顺序不会被保留。
+    send-timeout: 0 # 等待消息发送响应的时间。设置为0等待永远。
+    in-memory: true
+    queue-name: examQueue  # queue队列的名称
+    topic-name: examTopic  # topic队列的名称
+    pool:
+      enabled: true # 启用连接池
+      max-connections: 100 # 最大连接数
+      idle-timeout: 30000 # 空闲的连接过期时间，默认为30秒
 #文件上传地址
 basePath: https://richeninfo.com
 filePath: /opt

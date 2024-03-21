@@ -5,20 +5,22 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- *  @author: xiaohu.zhou
+ * @author: xiaohu.zhou
  * @Created: 2022/8/30 14:30
  */
 public class Base64 {
 
     private static final char[] legalChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
-    private static final byte[] encodingTable = { 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81,
+    private static final byte[] encodingTable = {65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81,
             82, 83, 84, 85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
-            112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 43, 47 };
+            112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 43, 47};
 
     private static final byte[] decodingTable = new byte[128];
+
     public static void main(String[] args) {
-        System.out.println(88*30*2.5);
+        System.out.println(88 * 30 * 2.5);
     }
+
     static {
         for (int i = 65; i <= 90; ++i) {
             decodingTable[i] = (byte) (i - 65);
@@ -35,9 +37,11 @@ public class Base64 {
         decodingTable[43] = 62;
         decodingTable[47] = 63;
     }
+
     public static String encode(String data) {
         return encode(data.getBytes());
     }
+
     public static String encode(byte[] data) {
         int start = 0;
         int len = data.length;
@@ -96,13 +100,13 @@ public class Base64 {
             }
         }
     }
+
     public static byte[] encoded(byte[] data) {
         int modulus = data.length % 3;
         byte[] bytes;
         if (modulus == 0) {
             bytes = new byte[4 * data.length / 3];
-        }
-        else {
+        } else {
             bytes = new byte[4 * (data.length / 3 + 1)];
         }
 
@@ -153,6 +157,7 @@ public class Base64 {
 
         return bytes;
     }
+
     public static byte[] decode(String s) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
@@ -199,15 +204,14 @@ public class Base64 {
             i += 4;
         }
     }
+
     public static byte[] decode(byte[] data) {
         byte[] bytes;
         if (data[(data.length - 2)] == 61) {
             bytes = new byte[(data.length / 4 - 1) * 3 + 1];
-        }
-        else if (data[(data.length - 1)] == 61) {
+        } else if (data[(data.length - 1)] == 61) {
             bytes = new byte[(data.length / 4 - 1) * 3 + 2];
-        }
-        else {
+        } else {
             bytes = new byte[data.length / 4 * 3];
         }
 
@@ -234,16 +238,14 @@ public class Base64 {
             b2 = decodingTable[data[(data.length - 3)]];
 
             bytes[(bytes.length - 1)] = (byte) (b1 << 2 | b2 >> 4);
-        }
-        else if (data[(data.length - 1)] == 61) {
+        } else if (data[(data.length - 1)] == 61) {
             b1 = decodingTable[data[(data.length - 4)]];
             b2 = decodingTable[data[(data.length - 3)]];
             b3 = decodingTable[data[(data.length - 2)]];
 
             bytes[(bytes.length - 2)] = (byte) (b1 << 2 | b2 >> 4);
             bytes[(bytes.length - 1)] = (byte) (b2 << 4 | b3 >> 2);
-        }
-        else {
+        } else {
             b1 = decodingTable[data[(data.length - 4)]];
             b2 = decodingTable[data[(data.length - 3)]];
             b3 = decodingTable[data[(data.length - 2)]];

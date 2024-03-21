@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EncodeUtil {
     private static Base64 Bases64;
+
     public static byte[] decodeBases64(String strIn) {
         return Bases64.decode(strIn);
     }

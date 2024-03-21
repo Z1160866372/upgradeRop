@@ -10,7 +10,7 @@ public class Post {
     private PubInfo PubInfo;
     private Request Request;
 
-    @JSONField(name="PubInfo")
+    @JSONField(name = "PubInfo")
     public PubInfo getPubInfo() {
         return PubInfo;
     }
@@ -18,10 +18,12 @@ public class Post {
     public void setPubInfo(PubInfo pubInfo) {
         PubInfo = pubInfo;
     }
-    @JSONField(name="Request")
+
+    @JSONField(name = "Request")
     public Request getRequest() {
         return Request;
     }
+
     public void setRequest(Request request) {
         Request = request;
     }

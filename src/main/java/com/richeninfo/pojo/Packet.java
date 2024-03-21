@@ -14,7 +14,7 @@ public class Packet implements Serializable {
     private Post post;
     private JSONObject Object;
 
-    @JSONField(name="apiCode")
+    @JSONField(name = "apiCode")
     public String getApiCode() {
         return apiCode;
     }
@@ -23,7 +23,7 @@ public class Packet implements Serializable {
         this.apiCode = apiCode;
     }
 
-    @JSONField(name="post")
+    @JSONField(name = "post")
     public Post getPost() {
         return post;
     }
@@ -31,10 +31,12 @@ public class Packet implements Serializable {
     public void setPost(Post post) {
         this.post = post;
     }
-    @JSONField(name="Object")
+
+    @JSONField(name = "Object")
     public Object getObject() {
         return Object;
     }
+
     public void setObject(JSONObject object) {
         Object = object;
     }

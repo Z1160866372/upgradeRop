@@ -17,7 +17,7 @@ import java.security.Security;
 public class EncryptionForString {
     public static final String ENCODING_Bases64 = "Bases64";
     public static final String ENCODING_RAW = "RAW";
-    public static final byte[] iv = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    public static final byte[] iv = {1, 2, 3, 4, 5, 6, 7, 8};
 
     static {
         Security.addProvider(new SunJCE());
@@ -47,8 +47,7 @@ public class EncryptionForString {
         KeyGenerator kGen = KeyGenerator.getInstance(strKeyArithmetic);
         if (strArithmetic.equalsIgnoreCase("desede")) {
             kGen.init(168, sr);
-        }
-        else {
+        } else {
             kGen.init(sr);
         }
         Key key = kGen.generateKey();

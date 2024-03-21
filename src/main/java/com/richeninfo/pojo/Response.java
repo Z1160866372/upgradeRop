@@ -11,7 +11,7 @@ public class Response {
     private ErrorInfo errorInfo;
     private JSONObject retInfo;
 
-    @JSONField(name="ErrorInfo")
+    @JSONField(name = "ErrorInfo")
     public ErrorInfo getErrorInfo() {
         return errorInfo;
     }
@@ -20,7 +20,7 @@ public class Response {
         this.errorInfo = errorInfo;
     }
 
-    @JSONField(name="RetInfo")
+    @JSONField(name = "RetInfo")
     public JSONObject getRetInfo() {
         return retInfo;
     }

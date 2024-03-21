@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public class PacketMq{
+public class PacketMq {
     @ApiModelProperty("编号")
     private int id;
     @ApiModelProperty("获取奖励")

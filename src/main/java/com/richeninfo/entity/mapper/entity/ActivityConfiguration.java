@@ -17,7 +17,7 @@ public class ActivityConfiguration {
     private int id;
 
     @ApiModelProperty(value = "活动编号")
-    private String  actId;
+    private String actId;
 
     @ApiModelProperty(value = "奖励名称")
     private String name;

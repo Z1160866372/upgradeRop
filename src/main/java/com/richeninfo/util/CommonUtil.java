@@ -36,19 +36,23 @@ import java.util.*;
 @Component
 public class CommonUtil {
     public static String DATAU_THIRDPART_PWD_KEY = "datauKey2015";
-    public static  DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static Date current_time = new Date();
+
     /**
      * 获取uuid
+     *
      * @return
      */
-    public String getUUID(){
+    public String getUUID() {
         String uuid = UUID.randomUUID().toString()
                 .replaceAll("-", "");
         return uuid;
     }
+
     /**
      * 生成动态密码
+     *
      * @return
      */
     public String generateSmsCode() {
@@ -60,8 +64,10 @@ public class CommonUtil {
         }
         return code.toString();
     }
+
     /**
      * 校验微信访问链接
+     *
      * @param userId_v
      * @param nonce_v
      */
@@ -79,12 +85,13 @@ public class CommonUtil {
 //            throw new Exception(message);
 //        }
     }
+
     /**
      * 随机生成字符串
      *
      * @return
      */
-    public  String getRandomCode(int passLength, int type) {
+    public String getRandomCode(int passLength, int type) {
         StringBuffer buffer = null;
         StringBuffer sb = new StringBuffer();
         Random r = new Random();
@@ -131,14 +138,11 @@ public class CommonUtil {
     /**
      * 加密
      *
-     * @param content
-     *            需要加密的内容
-     * @param password
-     *            加密密码
+     * @param content  需要加密的内容
+     * @param password 加密密码
      * @return
      */
-    public static String encryptByAES(String content, String password)
-    {
+    public static String encryptByAES(String content, String password) {
         try {
             KeyGenerator kgen = KeyGenerator.getInstance("AES");
             SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
@@ -174,12 +178,11 @@ public class CommonUtil {
 
     /**
      * 解密
-     * @param password
-     *            解密密钥
+     *
+     * @param password 解密密钥
      * @return
      */
-    public static String decryptFromAES(byte[] bytes, String password)
-    {
+    public static String decryptFromAES(byte[] bytes, String password) {
         try {
             KeyGenerator kgen = KeyGenerator.getInstance("AES");
             SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
@@ -214,8 +217,7 @@ public class CommonUtil {
      *
      * @return
      */
-    public static String genRandomStrKey()
-    {
+    public static String genRandomStrKey() {
         String password = UUID.randomUUID().toString();
         try {
             byte[] res = password.getBytes();
@@ -244,8 +246,7 @@ public class CommonUtil {
      * @param buf
      * @return
      */
-    public static String parseByte2HexStr(byte buf[])
-    {
+    public static String parseByte2HexStr(byte buf[]) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < buf.length; i++) {
             String hex = Integer.toHexString(buf[i] & 0xFF);
@@ -263,8 +264,7 @@ public class CommonUtil {
      * @param hexStr
      * @return
      */
-    public static byte[] parseHexStr2Byte(String hexStr)
-    {
+    public static byte[] parseHexStr2Byte(String hexStr) {
         if (hexStr.length() < 1)
             return null;
         byte[] result = new byte[hexStr.length() / 2];
@@ -299,23 +299,26 @@ public class CommonUtil {
             return null;
         }
     }
-    public boolean getDate(Date date){
-        boolean date_result=false;
+
+    public boolean getDate(Date date) {
+        boolean date_result = false;
         Calendar start_calendar = Calendar.getInstance();
         start_calendar.setTime(new Date());
         Calendar end_calendar = Calendar.getInstance();
         end_calendar.setTime(date);
-        if(start_calendar.before(end_calendar)){
-            date_result=true;
+        if (start_calendar.before(end_calendar)) {
+            date_result = true;
         }
         return date_result;
     }
+
     private static String datePattern = "yyyy-MM-dd";
 
     /**
-     *  时间转时间字符串
-     * @param date  日期
-     * @param pattern  格式
+     * 时间转时间字符串
+     *
+     * @param date    日期
+     * @param pattern 格式
      * @return String
      */
     public static String format(Date date, String pattern) {
@@ -325,8 +328,9 @@ public class CommonUtil {
     }
 
     /**
-     *  时间转时间字符串为yyyy-MM-dd HH:mm:ss 格式
-     * @param date  日期
+     * 时间转时间字符串为yyyy-MM-dd HH:mm:ss 格式
+     *
+     * @param date 日期
      * @return String
      */
     public static String formatDateTime(Date date) {
@@ -337,8 +341,9 @@ public class CommonUtil {
 
 
     /**
-     *  时间字符串转化为yyyy-MM-dd HH:mm:ss 格式
-     * @param str  日期
+     * 时间字符串转化为yyyy-MM-dd HH:mm:ss 格式
+     *
+     * @param str 日期
      * @return Date
      */
     public static Date parseDateTime(String str) {
@@ -353,9 +358,10 @@ public class CommonUtil {
     }
 
     /**
-     *  字符串转时间
-     * @param str  字符串
-     * @param dateTimePattern  格式
+     * 字符串转时间
+     *
+     * @param str             字符串
+     * @param dateTimePattern 格式
      * @return Date
      */
     public static Date parseDateTime(String str, String dateTimePattern) {
@@ -373,8 +379,8 @@ public class CommonUtil {
     /**
      * 获取当年的第一天
      */
-    public static Date getCurrentFirstOfYear(){
-        Calendar currCal=Calendar.getInstance();
+    public static Date getCurrentFirstOfYear() {
+        Calendar currCal = Calendar.getInstance();
         int currentYear = currCal.get(Calendar.YEAR);
         return getFirstOfYear(currentYear);
     }
@@ -382,18 +388,19 @@ public class CommonUtil {
     /**
      * 获取当年的最后一天
      */
-    public static Date getCurrentLastOfYear(){
-        Calendar currCal=Calendar.getInstance();
+    public static Date getCurrentLastOfYear() {
+        Calendar currCal = Calendar.getInstance();
         int currentYear = currCal.get(Calendar.YEAR);
         return getLastOfYear(currentYear);
     }
 
     /**
      * 获取某年第一天日期
+     *
      * @param year 年份
      * @return Date
      */
-    public static Date getFirstOfYear(int year){
+    public static Date getFirstOfYear(int year) {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.set(Calendar.YEAR, year);
@@ -401,13 +408,13 @@ public class CommonUtil {
     }
 
 
-
     /**
      * 获取某年最后一天日期
+     *
      * @param year 年份
      * @return Date
      */
-    public static Date getLastOfYear(int year){
+    public static Date getLastOfYear(int year) {
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
         calendar.set(Calendar.YEAR, year);
@@ -417,12 +424,12 @@ public class CommonUtil {
 
     /**
      * 24位密钥生成
+     *
      * @param length
      * @return
      */
-    public static String getRandomChar(int length)
-    {
-        char[] chr = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    public static String getRandomChar(int length) {
+        char[] chr = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
                 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 	 /* char[] chr = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -438,32 +445,36 @@ public class CommonUtil {
 
     /**
      * 获取今天增加天数后的结束时间23：59：59
+     *
      * @return
      */
-    public static Date addDayEnd(int day,Date startTime){
-        Date date=todayStart(startTime);
-        return DateUtils.addMilliseconds(DateUtils.addDays(date,day),-1000);
+    public static Date addDayEnd(int day, Date startTime) {
+        Date date = todayStart(startTime);
+        return DateUtils.addMilliseconds(DateUtils.addDays(date, day), -1000);
     }
+
     /**
      * 获取今天开始时间00：00：00
+     *
      * @return
      */
-    public static Date todayStart(Date date){
+    public static Date todayStart(Date date) {
         Calendar start = Calendar.getInstance();
         start.setTime(date);
-        start.set( Calendar.HOUR_OF_DAY,0);
-        start.set( Calendar.MINUTE, 0);
-        start.set( Calendar.SECOND,0);
-        start.set( Calendar.MILLISECOND,0);
+        start.set(Calendar.HOUR_OF_DAY, 0);
+        start.set(Calendar.MINUTE, 0);
+        start.set(Calendar.SECOND, 0);
+        start.set(Calendar.MILLISECOND, 0);
         return start.getTime();
     }
 
     /**
      * 概率
+     *
      * @param giftList
      * @return
      */
-    public static ActivityConfiguration randomGift(List<ActivityConfiguration> giftList){
+    public static ActivityConfiguration randomGift(List<ActivityConfiguration> giftList) {
         double randomNum = RandomUtils.nextDouble();
         log.info("随机数=" + randomNum);
         double startRate = 0;
@@ -474,12 +485,13 @@ public class CommonUtil {
             log.info("startRate=" + startRate);
             endRate += Double.valueOf(giftList.get(i).getProb());
             log.info("endRate=" + endRate);
-            if(randomNum >= startRate && randomNum < endRate){
+            if (randomNum >= startRate && randomNum < endRate) {
                 return giftList.get(i);
             }
         }
         return null;
     }
+
     public static String[] insert(String[] strings, String string) {
         if (strings == null) {
             strings = new String[0];
@@ -497,25 +509,26 @@ public class CommonUtil {
 
     /**
      * 时间校验
+     *
      * @param start
      * @param end
      * @return
      * @throws ParseException
      */
-    public static  String timeVerify(String start,String end) throws ParseException {
-        String msg="";
+    public static String timeVerify(String start, String end) throws ParseException {
+        String msg = "";
         Date nowTime = df.parse(df.format(current_time));
         //log.info("当前时间"+nowTime.getTime());
         Date startTime = df.parse(start);
         //log.info("开始时间"+startTime.getTime());
         Date endTime = df.parse(end);
         // log.info("结束时间"+endTime.getTime());
-        if(nowTime.getTime()<startTime.getTime()){//活动还未开始
+        if (nowTime.getTime() < startTime.getTime()) {//活动还未开始
             msg = "NotStarted";
-        }else{
-            if(nowTime.getTime()<=endTime.getTime()){//活动进行中
+        } else {
+            if (nowTime.getTime() <= endTime.getTime()) {//活动进行中
                 msg = "underway";
-            }else{//活动已结束
+            } else {//活动已结束
                 msg = "over";
             }
         }

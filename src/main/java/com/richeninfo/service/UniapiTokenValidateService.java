@@ -15,6 +15,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -32,84 +33,84 @@ import java.util.TreeMap;
 public class UniapiTokenValidateService {
     /*   static String tokenValidateUrl = "http://120.197.235.102/api/uniTokenValidate/";*/
     static String tokenValidateUrl = "https://token.cmpassport.com:8300/uniapi/uniTokenValidate";
-    public JSONObject getPhoneByToken(String token){
+
+    public JSONObject getPhoneByToken(String token) {
         JSONObject jsonObject = new JSONObject();
-        String createSign = UniapiTokenValidateService.createSign("5", Constant.APP_ID, "1", Constant.APP_KEY, new Date().getTime() +"", DateUtil.convertDateToString(new Date(),Constant.YYYYMMDDHH24MMSSSSS), token, "1.0","");
+        String createSign = UniapiTokenValidateService.createSign("5", Constant.APP_ID, "1", Constant.APP_KEY, new Date().getTime() + "", DateUtil.convertDateToString(new Date(), Constant.YYYYMMDDHH24MMSSSSS), token, "1.0", "");
         String response = null;
         try {
             response = postMethod(createSign);
-            log.info("response==========>{}"+response);
+            log.info("response==========>{}" + response);
             jsonObject.put(Constant.MSG, Constant.SUCCESS);
-            jsonObject.put("success",false);
+            jsonObject.put("success", false);
             JSONObject resultJson = JSONObject.parseObject(response);
-            if(resultJson.containsKey("header") && resultJson.getJSONObject("header").getString("resultcode").equals("103000")){
+            if (resultJson.containsKey("header") && resultJson.getJSONObject("header").getString("resultcode").equals("103000")) {
                 try {
                     String mobile = AES.deCodeAES(resultJson.getJSONObject("body").getString("msisdn"), Constant.APP_KEY);
                     // jsonObject.put(UserPubConstant.DATA, mobile);
-                    jsonObject.put("mobile",mobile);
-                    jsonObject.put("success",true);
-                    log.info("mobile=====>{}"+mobile);
+                    jsonObject.put("mobile", mobile);
+                    jsonObject.put("success", true);
+                    log.info("mobile=====>{}" + mobile);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }else{
+            } else {
                 jsonObject.put(Constant.CODE, resultJson.getJSONObject("header").getString("resultcode"));
             }
         } catch (Exception e) {
             // e.printStackTrace();
             jsonObject.put(Constant.MSG, Constant.FAILURE);
-        }finally {
+        } finally {
             return jsonObject;
         }
     }
 
 
-    public JSONObject UniapiTokenValidateMethod(String appid, String appKey, String idType , String token, String userInformation, HttpSession session){
+    public JSONObject UniapiTokenValidateMethod(String appid, String appKey, String idType, String token, String userInformation, HttpSession session) {
         JSONObject jsonObject = new JSONObject();
-        if(userInformation.length() == 0 && idType == "1"){
+        if (userInformation.length() == 0 && idType == "1") {
             jsonObject.put(Constant.MSG, Constant.ERROR);
             return jsonObject;
         }
         //生成新的请求报文
-        String createSign = UniapiTokenValidateService.createSign("5", appid, idType, appKey, new Date().getTime() +"", DateUtil.convertDateToString(new Date(),Constant.YYYYMMDDHH24MMSSSSS), token, "1.0",userInformation);
+        String createSign = UniapiTokenValidateService.createSign("5", appid, idType, appKey, new Date().getTime() + "", DateUtil.convertDateToString(new Date(), Constant.YYYYMMDDHH24MMSSSSS), token, "1.0", userInformation);
         String response = null;
         try {
             response = postMethod(createSign);
             jsonObject.put(Constant.MSG, Constant.SUCCESS);
             JSONObject resultJson = JSONObject.parseObject(response);
-            if(resultJson.containsKey("header") && resultJson.getJSONObject("header").getString("resultcode").equals("103000")){
+            if (resultJson.containsKey("header") && resultJson.getJSONObject("header").getString("resultcode").equals("103000")) {
                 try {
-                    log.info("msisdn========="+resultJson.getJSONObject("body").getString("msisdn"));
+                    log.info("msisdn=========" + resultJson.getJSONObject("body").getString("msisdn"));
                     String mobile = AES.deCodeAES(resultJson.getJSONObject("body").getString("msisdn"), Constant.APP_KEY);
                     log.info(resultJson.getJSONObject("body").getString("msisdnmask"));
 
-                    log.info("mobile========="+mobile);
+                    log.info("mobile=========" + mobile);
                     jsonObject.put(Constant.KEY_MOBILE, resultJson.getJSONObject("body").getString("msisdnmask"));
                     session.setAttribute("userId", mobile);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }else{
+            } else {
                 jsonObject.put(Constant.CODE, resultJson.getJSONObject("header").getString("resultcode"));
             }
         } catch (Exception e) {
             // e.printStackTrace();
             jsonObject.put(Constant.MSG, Constant.FAILURE);
-        }finally {
+        } finally {
             return jsonObject;
         }
     }
 
     /**
-     *
      * 将传入的参数自动变成报文
      *
-     * @Title: 请求排序key不为null
      * @param apptype,id,idtype,key,msgid,systemtime,token,version
      * @return requestJson
+     * @Title: 请求排序key不为null
      * @author:wei
      */
-    private static JSONObject requestSort(String apptype,String id,String idtype,String key,String msgid,String systemtime,String token,String version,String userInformation) {
+    private static JSONObject requestSort(String apptype, String id, String idtype, String key, String msgid, String systemtime, String token, String version, String userInformation) {
         JSONObject requestJson = new JSONObject();
         JSONObject header = new JSONObject();
         JSONObject body = new JSONObject();
@@ -118,7 +119,7 @@ public class UniapiTokenValidateService {
         header.put("systemtime", systemtime);
         header.put("version", version);
         header.put("id", id);
-        header.put("apptype",apptype);
+        header.put("apptype", apptype);
         header.put("idtype", idtype);
         header.put("msgid", msgid);
 
@@ -130,15 +131,14 @@ public class UniapiTokenValidateService {
     }
 
     /**
-     *
      * 将传入的参数自动变成报文
      *
-     * @Title: 请求排序key为null
      * @param apptype,id,idtype,msgid,systemtime,token,version
      * @return JSONObject
+     * @Title: 请求排序key为null
      * @author:wei
      */
-    private static JSONObject requestSort(String apptype,String id,String idtype,String msgid,String systemtime,String token,String version) {
+    private static JSONObject requestSort(String apptype, String id, String idtype, String msgid, String systemtime, String token, String version) {
         JSONObject requestJson = new JSONObject();
         JSONObject header = new JSONObject();
         JSONObject body = new JSONObject();
@@ -147,7 +147,7 @@ public class UniapiTokenValidateService {
         header.put("systemtime", systemtime);
         header.put("version", version);
         header.put("id", id);
-        header.put("apptype",apptype);
+        header.put("apptype", apptype);
         header.put("idtype", idtype);
         requestJson.put("header", header);
         requestJson.put("body", body);
@@ -155,15 +155,14 @@ public class UniapiTokenValidateService {
     }
 
     /**
-     *
      * 发送post请求；
      *
-     * @Title: 发送post请求
      * @return String
+     * @Title: 发送post请求
      * @author:wei
      */
-    private  String postMethod(String resultJson) {
-        String resp1="";
+    private String postMethod(String resultJson) {
+        String resp1 = "";
         try {
             HttpClient client = new HttpClient();
             PostMethod postMethod1 = new PostMethod(tokenValidateUrl);
@@ -171,55 +170,53 @@ public class UniapiTokenValidateService {
             postMethod1.setRequestEntity(entity);
             client.executeMethod(postMethod1);
             resp1 = postMethod1.getResponseBodyAsString();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return resp1;
     }
+
     /**
-     *
      * 将传入的参数自动变成报文
      *
-     * @Title: 创建签名
      * @param apptype,id,idtype,key,msgid,systemtime,token,version
      * @return String
+     * @Title: 创建签名
      * @author:wei
      */
-    public static String createSign(String apptype,String id,String idtype,String key,String msgid,String systemtime,String token,String version,String  userInformation){
-        JSONObject requestSort = requestSort( apptype, id, idtype, key, msgid, systemtime, token, version,userInformation);
+    public static String createSign(String apptype, String id, String idtype, String key, String msgid, String systemtime, String token, String version, String userInformation) {
+        JSONObject requestSort = requestSort(apptype, id, idtype, key, msgid, systemtime, token, version, userInformation);
         String reauestJson = createSign(requestSort.toJSONString());
         System.out.println(reauestJson);
         return reauestJson;
     }
 
     /**
-     *
      * 将传入的参数自动变成报文
      *
-     * @Title: 创建签名 key 为null
      * @param apptype,id,idtype,msgid,systemtime,token,version
      * @return
+     * @Title: 创建签名 key 为null
      * @author:wei
      */
-    public static String createSign(String apptype,String id,String idtype,String msgid,String systemtime,String token,String version){
+    public static String createSign(String apptype, String id, String idtype, String msgid, String systemtime, String token, String version) {
 
-        JSONObject requestSort = requestSort( apptype, id, idtype,  msgid, systemtime, token, version);
+        JSONObject requestSort = requestSort(apptype, id, idtype, msgid, systemtime, token, version);
         String reauestJson = createSign(requestSort.toJSONString());
         return reauestJson;
     }
 
     /**
-     *
      * 将传入的参数自动变成报文
      *
-     * @Title: 创建签名
      * @param JsonString
      * @return
+     * @Title: 创建签名
      * @author:
      */
-    public static String createSign(String JsonString){
+    public static String createSign(String JsonString) {
         JSONObject json = JSONObject.parseObject(JsonString);
-        String sign ="";
+        String sign = "";
 
         if (json == null) {
             throw new IllegalArgumentException("请求数据不能为空");
@@ -232,33 +229,33 @@ public class UniapiTokenValidateService {
         if (respbody == null) {
             throw new IllegalArgumentException("请body不能为空");
         }
-        String apptype =(String)respheader.get("apptype");
-        String id =(String)respheader.get("id");
-        String idtype =(String)respheader.get("idtype");
-        String key =(String)respheader.get("key");
-        String msgid =(String)respheader.get("msgid");
-        String systemtime =(String)respheader.get("systemtime");
-        String version =(String)respheader.get("version");
-        String token =(String)respbody.get("token");
-        if(StringUtils.isBlank(apptype)){
+        String apptype = (String) respheader.get("apptype");
+        String id = (String) respheader.get("id");
+        String idtype = (String) respheader.get("idtype");
+        String key = (String) respheader.get("key");
+        String msgid = (String) respheader.get("msgid");
+        String systemtime = (String) respheader.get("systemtime");
+        String version = (String) respheader.get("version");
+        String token = (String) respbody.get("token");
+        if (StringUtils.isBlank(apptype)) {
             throw new IllegalArgumentException("apptype不能为空");
         }
-        if(StringUtils.isBlank(id)){
+        if (StringUtils.isBlank(id)) {
             throw new IllegalArgumentException("id不能为空");
         }
-        if(StringUtils.isBlank(idtype)){
+        if (StringUtils.isBlank(idtype)) {
             throw new IllegalArgumentException("idtype不能为空");
         }
-        if(StringUtils.isBlank(msgid)){
+        if (StringUtils.isBlank(msgid)) {
             throw new IllegalArgumentException("msgid不能为空");
         }
-        if(StringUtils.isBlank(systemtime)){
+        if (StringUtils.isBlank(systemtime)) {
             throw new IllegalArgumentException("systemtime不能为空");
         }
-        if(StringUtils.isBlank(version)){
+        if (StringUtils.isBlank(version)) {
             throw new IllegalArgumentException("version不能为空");
         }
-        if(StringUtils.isBlank(token)){
+        if (StringUtils.isBlank(token)) {
             throw new IllegalArgumentException("token不能为空");
         }
         Map<String, Object> map = new TreeMap<String, Object>();
@@ -269,10 +266,10 @@ public class UniapiTokenValidateService {
         map.put("token", token);
         map.put("systemtime", systemtime);
         map.put("apptype", apptype);
-        if(StringUtils.isBlank(key)){
+        if (StringUtils.isBlank(key)) {
             String enStr = mapToString(map);
             sign = md5(enStr);
-        }else{
+        } else {
             map.put("key", key);
             String enStr = mapToString(map);
             sign = md5(enStr);
@@ -283,12 +280,11 @@ public class UniapiTokenValidateService {
     }
 
     /**
-     *
      * 将Map转换为String
      *
-     * @Title: map2String
      * @param map
      * @return
+     * @Title: map2String
      * @author: yanhuajian 2013-7-21下午7:25:08
      */
     private static String mapToString(Map<String, Object> map) {

@@ -23,7 +23,8 @@ public class Des3SSL {
     // 加解密统一使用的编码方式
     private final static String encoding = "utf-8";
     private static Random r = new Random();
-    public static String encode(String plainText)  {
+
+    public static String encode(String plainText) {
         try {
             Key deskey = null;
             DESedeKeySpec spec = new DESedeKeySpec(secretKeySSL.getBytes());
@@ -40,6 +41,7 @@ public class Des3SSL {
         }
         return null;
     }
+
     public static String decode(String encryptText) throws Exception {
         Key deskey = null;
         DESedeKeySpec spec = new DESedeKeySpec(secretKeySSL.getBytes());
@@ -56,17 +58,17 @@ public class Des3SSL {
      * 获取用户
      * overdue 过期的时间单位秒 5分钟是 300秒
      */
-    public static String getUser(String userSec,int overdue){
-        if(userSec != null){
+    public static String getUser(String userSec, int overdue) {
+        if (userSec != null) {
             try {
                 String[] sources = decode(userSec).split("-");
                 String user = sources[0];
                 long time = Long.parseLong(sources[1]);
 
                 //超时
-                long overdueLong = overdue*1000;
+                long overdueLong = overdue * 1000;
                 long c = System.currentTimeMillis();
-                if(c - time > overdueLong){
+                if (c - time > overdueLong) {
                     return null;
                 }
                 return user;
@@ -74,41 +76,38 @@ public class Des3SSL {
                 ex.printStackTrace();
             }
         }
-        return 	null;
+        return null;
     }
-    public static String encodeDC(String mobileNo, String secretKeySSL)
-    {
-        try
-        {
+
+    public static String encodeDC(String mobileNo, String secretKeySSL) {
+        try {
             mobileNo = encodeMobileNo(mobileNo);
 
             if (mobileNo != null)
                 return encode(mobileNo, secretKeySSL);
 
             return null;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        catch (Exception e) {
-            e.printStackTrace(); }
         return null;
     }
 
-    public static String[] decodeDC(String secMobileNo, String secretKeySSL)
-    {
-        try
-        {
+    public static String[] decodeDC(String secMobileNo, String secretKeySSL) {
+        try {
             if (StringUtils.isEmpty(secMobileNo))
                 return null;
 
             secMobileNo = decode(secMobileNo, secretKeySSL);
             return decodeMobileNo(secMobileNo);
         } catch (Exception e) {
-            e.printStackTrace(); }
+            e.printStackTrace();
+        }
         return null;
     }
 
     public static String encode(String plainText, String secretKeySSL)
-            throws Exception
-    {
+            throws Exception {
         Key deskey = null;
         DESedeKeySpec spec = new DESedeKeySpec(secretKeySSL.getBytes());
         SecretKeyFactory keyfactory = SecretKeyFactory.getInstance("desede");
@@ -135,8 +134,7 @@ public class Des3SSL {
         return new String(decryptData, "utf-8");
     }
 
-    public static String[] decodeMobileNo(String sec)
-    {
+    public static String[] decodeMobileNo(String sec) {
         String p1 = sec.substring(26, 28);
         String p2 = sec.substring(28, 31);
         String p3 = sec.substring(31, 34);
@@ -153,12 +151,11 @@ public class Des3SSL {
         String mp1 = sec.substring(p1s, p1s + p1l);
         String mp2 = sec.substring(p2s, p2s + p2l);
         String mp3 = sec.substring(p3s, p3s + p3l);
-        String a[]={mp1 + mp2 + mp3,timestamp};
+        String a[] = {mp1 + mp2 + mp3, timestamp};
         return a;
     }
 
-    public static String encodeMobileNo(String mobileNo)
-    {
+    public static String encodeMobileNo(String mobileNo) {
         if ((StringUtils.isEmpty(mobileNo)) || (mobileNo.length() != 11)) {
             return null;
         }

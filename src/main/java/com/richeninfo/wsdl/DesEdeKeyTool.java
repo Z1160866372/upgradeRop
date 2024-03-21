@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.security.Key;
 import java.security.SecureRandom;
 import java.security.Security;
+
 import org.bouncycastle.util.encoders.Hex;
 
 /**
@@ -61,8 +62,7 @@ public class DesEdeKeyTool {
     public static void main(String[] args) {
         try {
             System.out.println(new String(Hex.encode(generateKeyBytes(("key123456").getBytes()))));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

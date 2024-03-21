@@ -9,17 +9,19 @@ import java.security.MessageDigest;
  * @create 2022/9/19 14:40
  */
 public class DigestForString {
-    /**ENCODING_Bases64.*/
+    /**
+     * ENCODING_Bases64.
+     */
     public static final String ENCODING_Bases64 = "Bases64";
 
     /**
+     * @throws
      * @parameters @param strInput strInput
      * @parameters @param strArithmetic strArithmetic
      * @parameters @param encoding encoding
      * @parameters @return
      * @parameters @throws Exception 参数说明
      * @returns @return  返回说明
-     * @throws
      */
     public static String message(String strInput, String strArithmetic, String encoding) throws Exception {
         if ((strArithmetic == null) || ("".equals(strArithmetic)) || (strInput == null)) {
@@ -48,23 +50,23 @@ public class DigestForString {
     }
 
     /**
+     * @throws
      * @parameters @param strInput  strInput
      * @parameters @param encoding encoding
      * @parameters @return
      * @parameters @throws Exception 参数说明
      * @returns @return 返回说明  String
-     * @throws
      */
     public static String message(String strInput, String encoding) throws Exception {
         return message(strInput, "SHA-1", encoding);
     }
 
     /**
+     * @throws
      * @parameters @param newMD newMD
      * @parameters @param oldMD oldMD
      * @parameters @return 参数说明
      * @returns
-     * @throws
      */
     public static boolean verify(byte[] newMD, byte[] oldMD) {
         boolean bResult = true;
@@ -72,8 +74,7 @@ public class DigestForString {
         int len = newMD.length;
         if (len != oldMD.length) {
             bResult = false;
-        }
-        else {
+        } else {
             for (int i = 0; i < len; ++i) {
                 if (oldMD[i] == newMD[i]) {
                     continue;
@@ -87,12 +88,12 @@ public class DigestForString {
     }
 
     /**
+     * @throws
      * @parameters @param strNewDigest strNewDigest
      * @parameters @param strOldDigest strOldDigest
      * @parameters @return
      * @parameters @throws Exception 参数说明
      * @returns @return  返回说明
-     * @throws
      */
     public static boolean verify(String strNewDigest, String strOldDigest) throws Exception {
         return verify(strNewDigest.getBytes("UTF-8"), strOldDigest.getBytes("UTF-8"));

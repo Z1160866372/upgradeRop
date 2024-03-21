@@ -11,7 +11,7 @@ public class ErrorInfo {
     private String hint;
     private String code;
 
-    @JSONField(name="Message")
+    @JSONField(name = "Message")
     public String getMessage() {
         return message;
     }
@@ -20,7 +20,7 @@ public class ErrorInfo {
         this.message = message;
     }
 
-    @JSONField(name="Hint")
+    @JSONField(name = "Hint")
     public String getHint() {
         return hint;
     }
@@ -29,7 +29,7 @@ public class ErrorInfo {
         this.hint = hint;
     }
 
-    @JSONField(name="Code")
+    @JSONField(name = "Code")
     public String getCode() {
         return code;
     }

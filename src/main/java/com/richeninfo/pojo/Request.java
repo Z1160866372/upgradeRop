@@ -11,7 +11,7 @@ public class Request {
     private String BusiCode;
     private JSONObject BusiParams;
 
-    @JSONField(name="BusiCode")
+    @JSONField(name = "BusiCode")
     public String getBusiCode() {
         return BusiCode;
     }
@@ -21,7 +21,7 @@ public class Request {
     }
 
 
-    @JSONField(name="BusiParams")
+    @JSONField(name = "BusiParams")
     public JSONObject getBusiParams() {
         return BusiParams;
     }

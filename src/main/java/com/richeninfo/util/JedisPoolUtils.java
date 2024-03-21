@@ -23,7 +23,6 @@ public class JedisPoolUtils {
 
     /**
      * 建立连接池 真实环境，一般把配置参数缺抽取出来。
-     *
      */
     private static void createJedisPool() {
 
@@ -45,7 +44,6 @@ public class JedisPoolUtils {
 //		pool = new JedisPool(config, "172.16.176.78", 6379, 10000, AUTH);
         pool = new JedisPool(config, "127.0.0.1", 6379, 10000, AUTH);
 //		pool = new JedisPool(config, "121.40.205.162", 6379, 10000, AUTH);
-
 
 
     }
@@ -79,7 +77,7 @@ public class JedisPoolUtils {
     }
 
     public static Object unSerializable(byte[] binaryByte) {
-        if(binaryByte == null){
+        if (binaryByte == null) {
             return null;
         }
         ObjectInputStream objectInputStream = null;

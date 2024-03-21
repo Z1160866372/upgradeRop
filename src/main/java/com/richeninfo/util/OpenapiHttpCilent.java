@@ -35,7 +35,7 @@ public class OpenapiHttpCilent {
     @Value("${nengKai.openapiUrl}")
     private String openapiUrl;
     @Value("${nengKai.apk_new}")
-    private  String apk_new;
+    private String apk_new;
     private CloseableHttpClient client = HttpClients.createDefault();
     private SecurityI securiytManager;
 
@@ -51,10 +51,10 @@ public class OpenapiHttpCilent {
     }*/
 
     /**
-     * @param apiCode 能力编码
+     * @param apiCode       能力编码
      * @param transactionId 业务编码
-     * @param requestBody 请求
-     * @param accessToken 访问令牌
+     * @param requestBody   请求
+     * @param accessToken   访问令牌
      * @return
      * @throws Exception
      */
@@ -80,7 +80,7 @@ public class OpenapiHttpCilent {
             httpPost.addHeader("sdkVersion", "sdk.version.2.2");
             httpPost.setEntity(new StringEntity(requestBody, ContentType.create("text/plain", "UTF-8")));
             response = client.execute(httpPost);
-            InputStreamReader isr = new InputStreamReader(response.getEntity().getContent(),"UTF-8");
+            InputStreamReader isr = new InputStreamReader(response.getEntity().getContent(), "UTF-8");
             BufferedReader br = new BufferedReader(isr);
             StringBuffer sb = new StringBuffer();
             while ((tmp = br.readLine()) != null) {
@@ -110,9 +110,9 @@ public class OpenapiHttpCilent {
     }
 
     /**
-     * @param apiCode 能力编码
+     * @param apiCode       能力编码
      * @param transactionId 业务编码
-     * @param requestBody 请求
+     * @param requestBody   请求
      * @return
      * @throws Exception
      */
@@ -121,9 +121,9 @@ public class OpenapiHttpCilent {
     }
 
     private void init() {
-        log.info("appCode:"+appCode);
-        log.info("securityUrl::"+securityUrl);
-        log.info("openapiUrl::"+openapiUrl);
+        log.info("appCode:" + appCode);
+        log.info("securityUrl::" + securityUrl);
+        log.info("openapiUrl::" + openapiUrl);
         /*Map<String, String> properties = new ConfSerializeUtil().readConfig("openapi.property");
 
         this.securityUrl = properties.get("security_server_url");

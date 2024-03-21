@@ -1,4 +1,5 @@
 package com.richeninfo.interceptor;
+
 import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.util.RedisUtil;
 import org.apache.commons.logging.Log;
@@ -34,7 +35,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 
         //获取方法中的注解,看是否有该注解,用于防止接口被恶意调用多次
         AccessLimit accessLimit = ((HandlerMethod) handler).getMethodAnnotation(AccessLimit.class);
-       // log.info("========================accessLimit==============================>" + accessLimit);
+        // log.info("========================accessLimit==============================>" + accessLimit);
         if (accessLimit == null) {
             return true;
         }
@@ -42,16 +43,15 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         int maxCount = accessLimit.maxCount();
         String ip = request.getRemoteAddr();
         String key = request.getServletPath() + ":" + ip;
-        String count = redisUtil.get(key);
+        String count = (String)redisUtil.get(key);
         if (null == count) {
-            redisUtil.setex(key, "1", seconds);
-            String count1 = redisUtil.get(key);
+            redisUtil.set(key, "1", seconds);
+            String count1 = (String)redisUtil.get(key);
             return true;
         }
-
         if (Integer.parseInt(count) < maxCount) {
             count = String.valueOf(Integer.parseInt(count) + 1);
-            redisUtil.setex(key, count, seconds);
+            redisUtil.set(key, count, seconds);
             return true;
         }
         if (Integer.parseInt(count) >= maxCount) {
@@ -60,8 +60,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json; charset=utf-8");
             response.setStatus(401);
-            JSONObject object =new JSONObject();
-            object.put("msg","操作频繁，请稍后重试");
+            JSONObject object = new JSONObject();
+            object.put("msg", "操作频繁，请稍后重试");
             response.getWriter().write(object.toString());
             return false;
         }

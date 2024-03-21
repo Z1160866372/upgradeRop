@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @ApiModel(value = "金融联调接口参数")
 public class ComEntry {
     @ApiModelProperty("渠道")
-    private String  channel;
+    private String channel;
     @ApiModelProperty("时间戳")
     private String timestamp;
     @ApiModelProperty("签名")

@@ -17,8 +17,7 @@ public class MD5 {
         this.inStr = inStr;
         try {
             md5 = MessageDigest.getInstance("MD5");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.toString());
             e.printStackTrace();
         }
@@ -57,17 +56,19 @@ public class MD5 {
 
     /**
      * MD5加密.
+     *
+     * @throws
      * @author zhangqs
-     * @since 2013-3-27
      * @parameters @param inStr
      * @parameters @return 参数说明
-     * @returns  返回说明
-     * @throws
+     * @returns 返回说明
+     * @since 2013-3-27
      */
     public static String getMd5String(String inStr) {
         MD5 md5 = new MD5(inStr + key);
         return md5.compute().toUpperCase();
     }
+
     /**
      * MD5 32位小写加密
      */

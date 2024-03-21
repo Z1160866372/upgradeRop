@@ -12,7 +12,7 @@ import java.security.Key;
 public class Security {
     public static String ECSKEY = "8997FB5B40319E9EFBD6F119C152E52CABAB37926419A4AB";
 
-    public static final byte[] iv = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    public static final byte[] iv = {1, 2, 3, 4, 5, 6, 7, 8};
     private static Base64 Bases64;
 
     public static String generalStringFor3DES(String keyValue, String For3DES, String ForDigest, byte[] keyIV,
@@ -26,15 +26,13 @@ public class Security {
             if ((ForDigest != null) && (ForDigest.length() > 0)) {
                 tempcheck = DigestForString.message(ForDigest, "Bases64");
                 _For3DES = For3DES + linkString + tempcheck;
-            }
-            else {
-                _For3DES = For3DES; 
+            } else {
+                _For3DES = For3DES;
             }
             byte[] encryptStr = Bases64.encoded(EncryptionForString.encrypt(keyIV, _For3DES, key, "RAW"));
 
             rtn = new String(encryptStr);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
@@ -63,8 +61,7 @@ public class Security {
     public static String getEncryptString(String in) {
         try {
             return generalStringFor3DES(ECSKEY, (in == null) ? "" : in, null, iv, "$");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
         return null;
     }
@@ -72,8 +69,7 @@ public class Security {
     public static String getEncryptString(String in, String key) {
         try {
             return generalStringFor3DES(key, (in == null) ? "" : in, null, iv, "$");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -85,8 +81,7 @@ public class Security {
                 return generalStringFor3DES(ECSKEY, (in == null) ? "" : in, in, iv, "$");
             }
             return generalStringFor3DES(ECSKEY, (in == null) ? "" : in, null, iv, "$");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
         return null;
     }
@@ -94,17 +89,15 @@ public class Security {
     public static String getDecryptString(String in) {
         try {
             return Decrypt3DES2String(ECSKEY, in, iv);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
         return null;
     }
 
-    public static String getDecryptString(String in,String key) {
+    public static String getDecryptString(String in, String key) {
         try {
             return Decrypt3DES2String(key, in, iv);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -115,8 +108,7 @@ public class Security {
             String enc = getEncryptString("123456$789", false);
             System.out.println(enc);
             System.out.println(getDecryptString(enc));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

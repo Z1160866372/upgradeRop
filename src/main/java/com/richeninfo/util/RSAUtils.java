@@ -28,8 +28,7 @@ public class RSAUtils {
     private static final int MAX_DECRYPT_BLOCK = 128;
 
     private static Map<String, String> initKey()
-            throws Exception
-    {
+            throws Exception {
         KeyPairGenerator keygen =
                 KeyPairGenerator.getInstance("RSA");
         SecureRandom secrand = new SecureRandom();
@@ -47,20 +46,17 @@ public class RSAUtils {
     }
 
     public static String getPublicKey(Map<String, String> keyMap)
-            throws Exception
-    {
+            throws Exception {
         return (keyMap.get("publicKey"));
     }
 
     public static String getPrivateKey(Map<String, String> keyMap)
-            throws Exception
-    {
+            throws Exception {
         return (keyMap.get("privateKey"));
     }
 
     public static String sign(byte[] data, String pri_key)
-            throws Exception
-    {
+            throws Exception {
         byte[] pri_key_bytes = org.apache.commons.codec.binary.Base64.decodeBase64(pri_key);
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(pri_key_bytes);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -77,8 +73,7 @@ public class RSAUtils {
     }
 
     public boolean verify(byte[] data, byte[] sign, String pub_key)
-            throws Exception
-    {
+            throws Exception {
         byte[] pub_key_bytes = org.apache.commons.codec.binary.Base64.decodeBase64(pub_key);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 
@@ -96,8 +91,7 @@ public class RSAUtils {
     }
 
     private static byte[] encryptByPubKey(byte[] data, byte[] pub_key)
-            throws Exception
-    {
+            throws Exception {
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(pub_key);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         PublicKey publicKey = keyFactory.generatePublic(x509KeySpec);
@@ -108,8 +102,7 @@ public class RSAUtils {
     }
 
     public static String encryptByPubKey(String data)
-            throws Exception
-    {
+            throws Exception {
         byte[] pub_key_bytes = org.apache.commons.codec.binary.Base64.decodeBase64(pub_key);
         byte[] enSign = encryptByPubKey(data.getBytes(), pub_key_bytes);
         return org.apache.commons.codec.binary.Base64.encodeBase64String(enSign);
@@ -146,8 +139,7 @@ public class RSAUtils {
     }
 
     private static byte[] encryptByPriKey(byte[] data, byte[] pri_key)
-            throws Exception
-    {
+            throws Exception {
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(pri_key);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         PrivateKey privateKey = keyFactory.generatePrivate(pkcs8KeySpec);
@@ -158,16 +150,14 @@ public class RSAUtils {
     }
 
     public static String encryptByPriKey(String data, String pri_key)
-            throws Exception
-    {
+            throws Exception {
         byte[] pri_key_bytes = org.apache.commons.codec.binary.Base64.decodeBase64(pri_key);
         byte[] enSign = encryptByPriKey(data.getBytes(), pri_key_bytes);
         return org.apache.commons.codec.binary.Base64.encodeBase64String(enSign);
     }
 
     private static byte[] decryptByPubKey(byte[] data, byte[] pub_key)
-            throws Exception
-    {
+            throws Exception {
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(pub_key);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         PublicKey publicKey = keyFactory.generatePublic(x509KeySpec);
@@ -178,16 +168,14 @@ public class RSAUtils {
     }
 
     public static String decryptByPubKey(String data, String pub_key)
-            throws Exception
-    {
+            throws Exception {
         byte[] pub_key_bytes = org.apache.commons.codec.binary.Base64.decodeBase64(pub_key);
         byte[] design = decryptByPubKey(org.apache.commons.codec.binary.Base64.decodeBase64(data), pub_key_bytes);
         return new String(design);
     }
 
     private static byte[] decryptByPriKey(byte[] data, byte[] pri_key)
-            throws Exception
-    {
+            throws Exception {
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(pri_key);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         PrivateKey privateKey = keyFactory.generatePrivate(pkcs8KeySpec);
@@ -198,8 +186,7 @@ public class RSAUtils {
     }
 
     public static String decryptByPriKey(String data)
-            throws Exception
-    {
+            throws Exception {
         byte[] pri_key_bytes = org.apache.commons.codec.binary.Base64.decodeBase64(pri_key);
         byte[] design = decryptByPriKey(org.apache.commons.codec.binary.Base64.decodeBase64(data), pri_key_bytes);
         return new String(design);
@@ -235,7 +222,6 @@ public class RSAUtils {
     }
 
     public static void main(String[] args)
-            throws Exception
-    {
+            throws Exception {
     }
 }

@@ -13,10 +13,11 @@ import java.util.List;
 public class CreateCSVFile {
     /**
      * CSV文件生成方法
-     * @param head 文件头
-     * @param dataList 数据列表
+     *
+     * @param head       文件头
+     * @param dataList   数据列表
      * @param outPutPath 文件输出路径
-     * @param filename 文件名
+     * @param filename   文件名
      * @return
      */
     public static File createCSVFile(List<Object> head, List<List<Object>> dataList, String outPutPath, String filename) {
@@ -56,6 +57,7 @@ public class CreateCSVFile {
 
     /**
      * 写一行数据方法
+     *
      * @param row
      * @param csvWriter
      * @throws IOException

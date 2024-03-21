@@ -14,7 +14,7 @@ public class DirectRabbitConfig {
     //队列 起名：ProMemberQueue
     @Bean
     public Queue ProMemberQueue() {
-        return new Queue("ProMemberQueue",true);
+        return new Queue("ProMemberQueue", true);
     }
 //    //Direct交换机 起名：TestDirectExchange
 //    @Bean

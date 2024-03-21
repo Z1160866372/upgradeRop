@@ -17,19 +17,24 @@ import java.util.*;
 public interface ProMemberService {
     /**
      * 初始化用户
+     *
      * @param user
      * @return
      */
     ActivityUser insertUser(@ModelAttribute ActivityUser user);
+
     /**
      * 获取奖励列表
+     *
      * @param secToken
      * @param actId
      * @return
      */
     List<ActivityConfiguration> getConfiguration(String secToken, String actId);
+
     /**
      * 用户点击领取
+     *
      * @param secToken
      * @param actId
      * @param unlocked
@@ -37,6 +42,6 @@ public interface ProMemberService {
      * @return
      * @throws Exception
      */
-    JSONObject submit(String secToken, String actId, int unlocked, HttpSession session,String channelId);
+    JSONObject submit(String secToken, String actId, int unlocked, HttpSession session, String channelId);
 
 }

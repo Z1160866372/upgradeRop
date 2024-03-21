@@ -36,13 +36,13 @@ public class PacketHelper {
         }
         new_params = new_params.substring(0, new_params.lastIndexOf(","));
         new_params += "]";
-        String url="http://112.35.1.155:1992/sms/tmpsubmit";
-        String ecName="上海锐至信息技术股份有限公司";
-        String apId="shyd";
-        String secretkey="Richen123info.@";
-        String addSerial="";
-        String sign="RhXRSzBTR";
-        String templateId="4f764519aabd43beb336ee6d14dd82f6";
+        String url = "http://112.35.1.155:1992/sms/tmpsubmit";
+        String ecName = "上海锐至信息技术股份有限公司";
+        String apId = "shyd";
+        String secretkey = "Richen123info.@";
+        String addSerial = "";
+        String sign = "RhXRSzBTR";
+        String templateId = "4f764519aabd43beb336ee6d14dd82f6";
         String mac = ecName + apId + secretkey + templateId + mobiles + new_params + sign;
         jsonObject.put("ecName", ecName);//企业名称
         jsonObject.put("apId", apId);//用户名
@@ -727,7 +727,6 @@ public class PacketHelper {
     }
 
 
-
     /**
      * 查询用户当月的套餐是否在指定套餐范围内
      *
@@ -757,10 +756,11 @@ public class PacketHelper {
 
     /**
      * 日流量查询
+     *
      * @param userId
      * @return
      */
-    public Packet getCommitPacket4723(String userId, String beginDate,String endDate) {
+    public Packet getCommitPacket4723(String userId, String beginDate, String endDate) {
         Request request = new Request();
         request.setBusiCode("PT-SH-FS-OI4723");
         JSONObject businessParams = new JSONObject();
@@ -775,6 +775,7 @@ public class PacketHelper {
 
     /**
      * 入网时间查询
+     *
      * @param userId
      * @return
      */
@@ -790,6 +791,7 @@ public class PacketHelper {
 
     /**
      * 卡券发送
+     *
      * @param userId
      * @return
      */
@@ -803,11 +805,13 @@ public class PacketHelper {
         Packet packet = getBasePacket(request, "OUTERKAJUAN");
         return packet;
     }
+
     /**
      * 2267 上海移动卡套类型查询 -  1：全球通；2：动感地带；3：神州行；0：其他
+     *
      * @return
      */
-    public Packet getCommitPacket2267(String  mobile) {
+    public Packet getCommitPacket2267(String mobile) {
         // 请求参数
         Request request = new Request();
         request.setBusiCode("PT-SH-FS-OI2267");
@@ -820,6 +824,7 @@ public class PacketHelper {
 
     /**
      * 实名校验
+     *
      * @return
      */
     public Packet getCommitPacket3320(String mobile) {
@@ -834,13 +839,14 @@ public class PacketHelper {
 
     /**
      * 积分校验
-     * @param userId 手机号
-     * @param exchangeNum 积分兑换数量
+     *
+     * @param userId        手机号
+     * @param exchangeNum   积分兑换数量
      * @param exchangeCfgId 积分兑换项
-     * @param cardNo 原因
+     * @param cardNo        原因
      * @return
      */
-    public Packet valPointsPacket(String userId, String exchangeNum, String exchangeCfgId,String cardNo) {
+    public Packet valPointsPacket(String userId, String exchangeNum, String exchangeCfgId, String cardNo) {
         Request request = new Request();
         request.setBusiCode("PT-SH-FS-OI3852");
         JSONObject businessParams = new JSONObject();
@@ -852,15 +858,17 @@ public class PacketHelper {
         Packet packet = getBasePacket(request, "CRM3852");
         return packet;
     }
+
     /**
      * 积分兑换
-     * @param userId 手机号
-     * @param exchangeNum 积分兑换数量
+     *
+     * @param userId        手机号
+     * @param exchangeNum   积分兑换数量
      * @param exchangeCfgId 积分兑换项
-     * @param orderId 原因
+     * @param orderId       原因
      * @return
      */
-    public Packet exchangePointsPacket(String userId, String exchangeNum, String exchangeCfgId,String orderId) {
+    public Packet exchangePointsPacket(String userId, String exchangeNum, String exchangeCfgId, String orderId) {
         Request request = new Request();
         request.setBusiCode("PT-SH-FS-OI4670");
         JSONObject businessParams = new JSONObject();
@@ -875,13 +883,14 @@ public class PacketHelper {
 
     /**
      * 积分扣减
+     *
      * @param userId
-     * @param score 扣减积分数值
+     * @param score    扣减积分数值
      * @param peerCode 流水号
-     * @param reason 原因
+     * @param reason   原因
      * @return
      */
-    public Packet reducePointsPacket(String userId, String score, String peerCode,String reason) {
+    public Packet reducePointsPacket(String userId, String score, String peerCode, String reason) {
         Request request = new Request();
         request.setBusiCode("PT-SH-FS-OI2239");
         JSONObject businessParams = new JSONObject();
@@ -893,6 +902,7 @@ public class PacketHelper {
         Packet packet = getBasePacket(request, "CRM2239");
         return packet;
     }
+
     //接口入参（Request对象）
     public Packet getBasePacket(Request req, String apiCode) {
         PubInfo pubInfo = new PubInfo();
@@ -910,7 +920,7 @@ public class PacketHelper {
             pubInfo.setInterfaceId("25");
             pubInfo.setInterfaceType("05");
         }
-        if("BOSS4723".equals(apiCode)){
+        if ("BOSS4723".equals(apiCode)) {
             pubInfo.setInterfaceId("137");
         }
         Post post = new Post();
@@ -923,13 +933,15 @@ public class PacketHelper {
         packet.setPost(post);
         return packet;
     }
+
     /**
      * 业务办理的短信下发
+     *
      * @param userId
      * @param offerId
      * @return
      */
-    public Packet getCommitPacket5956(String userId, String offerId){
+    public Packet getCommitPacket5956(String userId, String offerId) {
         Request request = new Request();
         request.setBusiCode("PT-SH-FS-OI5956");
         JSONObject busiParams = new JSONObject();
@@ -939,15 +951,17 @@ public class PacketHelper {
         Packet packet = getBasePacket(request, "CRM5956");
         return packet;
     }
+
     /**
      * 业务二次确认办理
+     *
      * @param userId
      * @param offerList
      * @param randCode
      * @param channel_id
      * @return
      */
-    public Packet getCommitPacket306602(String userId,String randCode, List<VasOfferInfo> offerList,String channel_id) {
+    public Packet getCommitPacket306602(String userId, String randCode, List<VasOfferInfo> offerList, String channel_id) {
         Request request = new Request();
         request.setBusiCode("PT-SH-FS-OI3066");
         JSONObject busiParams = new JSONObject();
@@ -956,9 +970,9 @@ public class PacketHelper {
         busiParams.put("offerId1", offerList.get(0).getOfferId());
         busiParams.put("NeedSendMsg", "Y");
         busiParams.put("VasOfferInfo", offerList);
-        if(channel_id.equals("jtzt")){
-            busiParams.put("xOrgId","yjdq");
-            busiParams.put("xOpId","1000000002110700006");
+        if (channel_id.equals("jtzt")) {
+            busiParams.put("xOrgId", "yjdq");
+            busiParams.put("xOpId", "1000000002110700006");
         }
         JSONObject busiParams1 = new JSONObject();
         busiParams1.put("m_iOpEntityId", "0");
@@ -970,24 +984,26 @@ public class PacketHelper {
         packet.getPost().getPubInfo().setInterfaceId("25");
         return packet;
     }
+
     /**
      * 权益订购
+     *
      * @param phone
      * @param randCode
      * @param offerId
      * @param channelCode
      * @return
      */
-    public Packet purchaseNew02(String phone,String randCode,String offerId,String channelCode){
+    public Packet purchaseNew02(String phone, String randCode, String offerId, String channelCode) {
         JSONObject busiParams = new JSONObject();
-        busiParams.put("idType","1");//默认1
+        busiParams.put("idType", "1");//默认1
         busiParams.put("randCode", randCode);//验证码
         busiParams.put("phone", phone);//订购手机号码
-        busiParams.put("opid","999990144" );//工号
+        busiParams.put("opid", "999990144");//工号
         busiParams.put("offerId", offerId);//策划ID
-        busiParams.put("channelOrderNo",sdf.format(new Date()));//接入方（渠道）订单流水号，每笔订单唯一
-        busiParams.put("orgid","0");//组织编号
-        busiParams.put("channelCode",channelCode);//渠道号，测试环境CH5，正式环境H5
+        busiParams.put("channelOrderNo", sdf.format(new Date()));//接入方（渠道）订单流水号，每笔订单唯一
+        busiParams.put("orgid", "0");//组织编号
+        busiParams.put("channelCode", channelCode);//渠道号，测试环境CH5，正式环境H5
         Packet packet = getOUTER0001Packet(busiParams, "purchaseNew02");
         return packet;
     }

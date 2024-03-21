@@ -78,32 +78,33 @@ public class DESHelper {
     }
 
 
-
-
     public static void main(String[] args) throws Exception {
         String input = "270|851228|JieZi|13012341234";
-        String key="AssistantInfo";
-        String name="";
+        String key = "AssistantInfo";
+        String name = "";
         DESHelper crypt = new DESHelper(key);
         String encrypt = crypt.encrypt(input);
-        System.out.println("encrypt: "+encrypt);
+        System.out.println("encrypt: " + encrypt);
         String encode = URLEncoder.encode(encrypt, "UTF-8");
         System.out.println("Encode: " + encode);
         System.out.println("Decode: " + crypt.decrypt(URLDecoder.decode(encrypt, "UTF-8")));
         String data = crypt.decrypt(URLDecoder.decode(encrypt, "UTF-8"));
-        System.out.println("data: " +data);
+        System.out.println("data: " + data);
         String data_list[] = data.split("\\|");
         for (int i = 0; i < data_list.length; i++) {
-            if(i==0){
-                name="省份编码";
-            }if(i==1){
-                name="员工工号";
-            }if(i==2){
-                name="客户经理ID";
-            }if(i==3){
-                name="客户经理手机号";
+            if (i == 0) {
+                name = "省份编码";
             }
-            System.out.println(""+name+": " +data_list[i]);
+            if (i == 1) {
+                name = "员工工号";
+            }
+            if (i == 2) {
+                name = "客户经理ID";
+            }
+            if (i == 3) {
+                name = "客户经理手机号";
+            }
+            System.out.println("" + name + ": " + data_list[i]);
         }
     }
 }

@@ -15,17 +15,19 @@ public class AESCBC {
     /*
      * 加密用的Key 可以用26个字母和数字组成 使用AES-128-CBC加密模式，key需要为16位。
      */
-    private static final String iv ="0102030405060708";
+    private static final String iv = "0102030405060708";
+
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
+
     /**
-     * @author miracle.qu
-     * @Description AES算法加密明文
      * @param data 明文
      * @return 密文
+     * @author miracle.qu
+     * @Description AES算法加密明文
      */
-    public static String encryptAES(String data,String key) throws Exception {
+    public static String encryptAES(String data, String key) throws Exception {
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
             int blockSize = cipher.getBlockSize();
@@ -52,37 +54,40 @@ public class AESCBC {
     }
 
     /**
-     * @author miracle.qu
-     * @Description AES算法解密密文
      * @param data 密文
      * @return 明文
+     * @author miracle.qu
+     * @Description AES算法解密密文
      */
-    public static String decryptAES(String data,String key) throws Exception {
-        try
-        {
-            byte[] encrypted1 =CommonUtil.parseHexStr2Byte(data);//先用base64解密
+    public static String decryptAES(String data, String key) throws Exception {
+        try {
+            byte[] encrypted1 = CommonUtil.parseHexStr2Byte(data);//先用base64解密
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
             SecretKeySpec keyspec = new SecretKeySpec(key.getBytes(), "AES");
             IvParameterSpec ivspec = new IvParameterSpec(iv.getBytes());
             cipher.init(Cipher.DECRYPT_MODE, keyspec, ivspec);
             byte[] original = cipher.doFinal(encrypted1);
-            String originalString = new String(original);return originalString.trim();
-        }
-        catch (Exception e) {
+            String originalString = new String(original);
+            return originalString.trim();
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
     /**
      * 编码
+     *
      * @param byteArray
      * @return
      */
     public static String encode(byte[] byteArray) {
         return new String(new Base64().encode(byteArray));
     }
+
     /**
      * 解码
+     *
      * @param base64EncodedString
      * @return
      */

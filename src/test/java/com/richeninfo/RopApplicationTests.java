@@ -38,6 +38,7 @@ class RopApplicationTests {
     private CommonUtil commonUtil;
     @Resource
     private CreateCSVFile createCSVFile;
+
     //声明一个队列
     @Test
     public void createQueue() throws Exception {

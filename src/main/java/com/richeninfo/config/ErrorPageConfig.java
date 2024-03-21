@@ -28,6 +28,6 @@ public class ErrorPageConfig implements ErrorPageRegistrar {
         ErrorPage e500 = new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/error.html");
         ErrorPage e400 = new ErrorPage(HttpStatus.BAD_REQUEST, "/404.html");
         ErrorPage commonPage = new ErrorPage("/404.html");
-        registry.addErrorPages(e400 ,e404, e500,e405,commonPage);
+        registry.addErrorPages(e400, e404, e500, e405, commonPage);
     }
 }

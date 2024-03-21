@@ -19,7 +19,7 @@ public class PubInfo {
     private String InterfaceId = "94";
     private String strCcsOpId = "sys_bossmobile";
 
-    @JSONField(name="RegionCode")
+    @JSONField(name = "RegionCode")
     public String getRegionCode() {
         return RegionCode;
     }
@@ -28,7 +28,7 @@ public class PubInfo {
         RegionCode = regionCode;
     }
 
-    @JSONField(name="TransactionTime")
+    @JSONField(name = "TransactionTime")
     public String getTransactionTime() {
         return TransactionTime;
     }
@@ -37,7 +37,7 @@ public class PubInfo {
         TransactionTime = transactionTime;
     }
 
-    @JSONField(name="ClientIP")
+    @JSONField(name = "ClientIP")
     public String getClientIP() {
         return ClientIP;
     }
@@ -46,7 +46,7 @@ public class PubInfo {
         ClientIP = clientIP;
     }
 
-    @JSONField(name="OrgId")
+    @JSONField(name = "OrgId")
     public String getOrgId() {
         return OrgId;
     }
@@ -55,7 +55,7 @@ public class PubInfo {
         OrgId = orgId;
     }
 
-    @JSONField(name="CountyCode")
+    @JSONField(name = "CountyCode")
     public String getCountyCode() {
         return CountyCode;
     }
@@ -64,7 +64,7 @@ public class PubInfo {
         CountyCode = countyCode;
     }
 
-    @JSONField(name="OpId")
+    @JSONField(name = "OpId")
     public String getOpId() {
         return OpId;
     }
@@ -73,7 +73,7 @@ public class PubInfo {
         OpId = opId;
     }
 
-    @JSONField(name="InterfaceType")
+    @JSONField(name = "InterfaceType")
     public String getInterfaceType() {
         return InterfaceType;
     }
@@ -82,7 +82,7 @@ public class PubInfo {
         InterfaceType = interfaceType;
     }
 
-    @JSONField(name="TransactionId")
+    @JSONField(name = "TransactionId")
     public String getTransactionId() {
         return TransactionId;
     }
@@ -91,7 +91,7 @@ public class PubInfo {
         TransactionId = transactionId;
     }
 
-    @JSONField(name="InterfaceId")
+    @JSONField(name = "InterfaceId")
     public String getInterfaceId() {
         return InterfaceId;
     }
@@ -100,7 +100,7 @@ public class PubInfo {
         InterfaceId = interfaceId;
     }
 
-    @JSONField(name="strCcsOpId")
+    @JSONField(name = "strCcsOpId")
     public String getStrCcsOpId() {
         return strCcsOpId;
     }

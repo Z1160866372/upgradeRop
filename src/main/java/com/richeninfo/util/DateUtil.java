@@ -34,8 +34,7 @@ public class DateUtil {
     /**
      * 根据日期格式，返回日期按datePattern格式转换后的字符串
      *
-     * @param aDate
-     *            日期对象
+     * @param aDate 日期对象
      * @return 格式化后的日期的页面显示字符串
      */
     public static final String getDate(Date aDate) {
@@ -53,13 +52,11 @@ public class DateUtil {
     /**
      * 按照日期格式，将字符串解析为日期对象
      *
-     * @param aMask
-     *            输入字符串的格式
-     * @param strDate
-     *            一个按aMask格式排列的日期的字符串描述
+     * @param aMask   输入字符串的格式
+     * @param strDate 一个按aMask格式排列的日期的字符串描述
      * @return Date 对象
-     * @see java.text.SimpleDateFormat
      * @throws ParseException
+     * @see java.text.SimpleDateFormat
      */
     public static final Date convertStringToDate(String aMask, String strDate)
             throws ParseException {
@@ -81,8 +78,7 @@ public class DateUtil {
      * This method returns the current date time in the format: yyyy/MM/dd HH:MM
      * a
      *
-     * @param theTime
-     *            the current time
+     * @param theTime the current time
      * @return the current date/time
      */
     public static String getTimeNow(Date theTime) {
@@ -112,12 +108,9 @@ public class DateUtil {
      * This method generates a string representation of a date's date/time in
      * the format you specify on input
      *
-     * @param aMask
-     *            the date pattern the string is in
-     * @param aDate
-     *            a date object
+     * @param aMask the date pattern the string is in
+     * @param aDate a date object
      * @return a formatted string representation of the date
-     *
      * @see java.text.SimpleDateFormat
      */
     public static final String getDateTime(String aMask, Date aDate) {
@@ -159,10 +152,8 @@ public class DateUtil {
     /**
      * 按照日期格式，将字符串解析为日期对象
      *
-     * @param strDate
-     *            (格式 yyyy-MM-dd)
+     * @param strDate (格式 yyyy-MM-dd)
      * @return
-     *
      * @throws ParseException
      */
     public static Date convertStringToDate(String strDate)
@@ -182,10 +173,8 @@ public class DateUtil {
     /**
      * 按照日期格式，将字符串解析为日期对象
      *
-     * @param strDate
-     *            (格式 yyyy-MM-dd HH:mm:ss)
+     * @param strDate (格式 yyyy-MM-dd HH:mm:ss)
      * @return
-     *
      * @throws ParseException
      */
     public static Date convertStringToDateTime(String strDate)
@@ -235,27 +224,28 @@ public class DateUtil {
      * @return
      */
     public static long dateDifferOfDay(Date date1, Date date2) {
-        Calendar calendar=Calendar.getInstance();
-        if (date1 !=null) {
+        Calendar calendar = Calendar.getInstance();
+        if (date1 != null) {
             calendar.setTime(date1);
         }
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        Calendar calendar2=Calendar.getInstance();
-        if (date2 !=null) {
+        Calendar calendar2 = Calendar.getInstance();
+        if (date2 != null) {
             calendar2.setTime(date2);
         }
         calendar2.set(Calendar.HOUR_OF_DAY, 0);
         calendar2.set(Calendar.MINUTE, 0);
         calendar2.set(Calendar.SECOND, 0);
         calendar2.set(Calendar.MILLISECOND, 0);
-        return  dateDiffer(calendar.getTime(), calendar2.getTime());
+        return dateDiffer(calendar.getTime(), calendar2.getTime());
     }
 
     /**
      * 根据日期，和格式，返回对应字符串
+     *
      * @param date
      * @param format
      * @return
@@ -267,14 +257,16 @@ public class DateUtil {
         SimpleDateFormat dateFormat = new SimpleDateFormat(format);
         return dateFormat.format(date);
     }
+
     /**
      * 根据指定字符串获取上个月日期字符串格式
+     *
      * @param strDate
      * @return
      */
     public static String getLastMonth(String strDate) {
         try {
-            Date d = convertStringToDate(datePattern,strDate);
+            Date d = convertStringToDate(datePattern, strDate);
             Calendar cal = Calendar.getInstance();
             cal.setTime(d);
             cal.add(Calendar.MONTH, -1);
@@ -289,6 +281,7 @@ public class DateUtil {
 
     /**
      * 获取制定日期和当前日期的月份差
+     *
      * @param pTime
      * @return
      */
@@ -324,20 +317,21 @@ public class DateUtil {
         if (year == year1) {
             result = month1 - month;// 两个日期相差几个月，即月份差
         } else {
-            if(day>day1){
+            if (day > day1) {
                 result = 12 * (year1 - year) + month1 - month - 1; // 两个日期相差几个月，即月份差
-            }else{
+            } else {
                 result = 12 * (year1 - year) + month1 - month; // 两个日期相差几个月，即月份差
             }
         }
-        return (int)Math.ceil(result/12);
+        return (int) Math.ceil(result / 12);
     }
 
     /**
      * 长整型转换为日期类型
+     *
      * @return String 长整型对应的格式的时间
      */
-    public static String long2String(long longTime,String dataFormat){
+    public static String long2String(long longTime, String dataFormat) {
         Date d = new Date(longTime);
         SimpleDateFormat s = new SimpleDateFormat(dataFormat);
         String str = s.format(d);
@@ -347,15 +341,15 @@ public class DateUtil {
     /**
      * 长整型转换为日期类型
      */
-    public static Date long2Date(long longTime){
+    public static Date long2Date(long longTime) {
         Date d = new Date(longTime);
         return d;
     }
 
-    public static void main(String[]args){
+    public static void main(String[] args) {
         System.out.println(Calendar.getInstance().getTimeInMillis());
-        long longTime = 1446173857*1000L;
-        System.out.println(long2String(longTime,dateTimePattern));
+        long longTime = 1446173857 * 1000L;
+        System.out.println(long2String(longTime, dateTimePattern));
     }
 
 }

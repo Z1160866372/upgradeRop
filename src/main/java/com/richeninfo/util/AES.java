@@ -23,9 +23,10 @@ public class AES {
 
     /**
      * 加密方法
-     * @param data  要加密的数据
-     * @param key 加密key
-     * @param iv 加密iv
+     *
+     * @param data 要加密的数据
+     * @param key  加密key
+     * @param iv   加密iv
      * @return 加密的结果
      * @throws Exception
      */
@@ -60,9 +61,10 @@ public class AES {
 
     /**
      * 解密方法
+     *
      * @param data 要解密的数据
      * @param key  解密key
-     * @param iv 解密iv
+     * @param iv   解密iv
      * @return 解密的结果
      * @throws Exception
      */
@@ -87,6 +89,7 @@ public class AES {
 
     /**
      * 使用默认的key和iv加密
+     *
      * @param data
      * @return
      * @throws Exception
@@ -97,6 +100,7 @@ public class AES {
 
     /**
      * 使用默认的key和iv解密
+     *
      * @param data
      * @return
      * @throws Exception
@@ -112,6 +116,7 @@ public class AES {
         cipher.init(Cipher.ENCRYPT_MODE, aesKey);
         return cipher.doFinal(text);
     }
+
     private static byte[] decrypt(byte[] text, byte[] key) throws Exception {
         SecretKeySpec aesKey = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
@@ -120,10 +125,10 @@ public class AES {
     }
 
     /**
+     * @param text 明文
+     * @param key  密钥
      * @date 2017年8月1日
      * @desc 加密
-     * @param text 明文
-     * @param key 密钥
      */
     public static String encodeAES(String text, String key) throws Exception {
         byte[] keybBytes = DigestUtils.md5(key);
@@ -131,11 +136,12 @@ public class AES {
         byte[] aesBytyes = encrypt(passwdBytes, keybBytes);
         return new String(org.apache.commons.codec.binary.Base64.encodeBase64(aesBytyes));
     }
+
     /**
+     * @param password 密文
+     * @param key      密钥
      * @date 2017年8月1日
      * @desc 解密
-     * @param password 密文
-     * @param key 密钥
      */
     public static String deCodeAES(String password, String key) throws Exception {
         System.out.println("password == " + password + "\nkey == " + key);
@@ -144,7 +150,7 @@ public class AES {
         return new String(decrypt(debase64Bytes, keybBytes));
     }
 
-    public static String decrypt(String encrypted,String key,String initVector) {
+    public static String decrypt(String encrypted, String key, String initVector) {
         try {
             IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
             SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");

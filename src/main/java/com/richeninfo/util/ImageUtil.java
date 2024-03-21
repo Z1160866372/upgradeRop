@@ -51,7 +51,7 @@ public class ImageUtil {
     /**
      * codeSequence
      */
-    String[] codeSequence = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+    String[] codeSequence = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
     /**
      * 初始化验证图片属性

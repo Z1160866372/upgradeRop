@@ -26,9 +26,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class HttpClientTool {
-    public boolean isUseProxy=false;//不使用代理
+    public boolean isUseProxy = false;//不使用代理
     static final String CHARSET = "UTF-8";
     static HttpClient httpClient;
+
     /**
      * 获取httpclient
      *
@@ -39,15 +40,13 @@ public class HttpClientTool {
             httpClient = HttpClients.createDefault();
         }
     }
+
     /**
      * HTTP Get 获取内容
      *
-     * @param url
-     *            请求的url地址 ?之前的地址
-     * @param params
-     *            请求的参数
-     * @param charset
-     *            编码格式
+     * @param url     请求的url地址 ?之前的地址
+     * @param params  请求的参数
+     * @param charset 编码格式
      * @return 页面内容
      */
     public static String doGet(String url, Map<String, String> params,
@@ -70,7 +69,7 @@ public class HttpClientTool {
                         charset));
             }
             HttpGet httpGet = new HttpGet(url);
-            CloseableHttpResponse response = (CloseableHttpResponse)httpClient.execute(httpGet);
+            CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(httpGet);
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != 200) {
                 httpGet.abort();
@@ -94,15 +93,12 @@ public class HttpClientTool {
     /**
      * HTTP Post 获取内容
      *
-     * @param url
-     *            请求的url地址 ?之前的地址
-     * @param params
-     *            请求的参数
-     * @param charset
-     *            编码格式
+     * @param url     请求的url地址 ?之前的地址
+     * @param params  请求的参数
+     * @param charset 编码格式
      * @return 页面内容
      */
-    public static String doPost(String url, Map<String, String> params,String charset) {
+    public static String doPost(String url, Map<String, String> params, String charset) {
         if (StringUtils.isEmpty(url)) {
             return null;
         }
@@ -145,18 +141,19 @@ public class HttpClientTool {
 
     /**
      * post xml到服务器
+     *
      * @param url
      * @param xml
      * @return
      */
-    public static String doPostXml(String url, String xml){
+    public static String doPostXml(String url, String xml) {
         if (StringUtils.isEmpty(url)) {
             return null;
         }
         try {
             HttpPost httpPost = new HttpPost(url);
             httpPost.addHeader("Content-Type", "text/xml;charset=UTF-8");
-            httpPost.setEntity(new StringEntity(xml,CHARSET));
+            httpPost.setEntity(new StringEntity(xml, CHARSET));
 
             CloseableHttpResponse response = (CloseableHttpResponse) httpClient
                     .execute(httpPost);
@@ -190,11 +187,12 @@ public class HttpClientTool {
 
     /**
      * post string到服务器
+     *
      * @param url
      * @param param
      * @return
      */
-    public static String doPostString(String url, String param){
+    public static String doPostString(String url, String param) {
         String CONTENT_TYPE_TEXT_JSON = "text/json";
         if (StringUtils.isEmpty(url)) {
             return null;
@@ -226,23 +224,20 @@ public class HttpClientTool {
         }
         return null;
     }
-
-
     public static String EncodeString(String xml, String SrcSysID) throws Exception {
         DefaultCAPSigner dcs = new DefaultCAPSigner("123456", "00210",
-                "/ydsc.keystore",
+                "/static/ydsc.keystore",
                 "");
         DefaultCAPSigner dcsv = new DefaultCAPSigner("123456", "00210",
-                "/ydsc.keystore",
-                "/00210.cer");
+                "/static/ydsc.keystore",
+                "/static/00210.cer");
         String encyptXml = dcs.signatureCAP(xml);
         System.out.println("加密之前的报文：" + encyptXml);
+        System.out.println("签名验证：" + dcsv.verifyCAP(encyptXml));
         if (dcsv.verifyCAP(encyptXml))
-            System.out.println("验证签名通过");
-
+        {System.out.println("验证签名通过");}
         String a = Security.getEncryptString(encyptXml, "8997FB5B40319E9EFBD6F119C152E52CABAB37926419A4AB");
         System.out.println("加密之后的报文：" + a);
-
         return a;
     }
 }

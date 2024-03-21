@@ -57,5 +57,5 @@ public class ActivityUser {
     private Timestamp createTime;
 
     @ApiModelProperty(value = "活动编号")
-    private String  actId;
+    private String actId;
 }

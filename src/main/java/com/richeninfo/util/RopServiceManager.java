@@ -7,10 +7,16 @@ import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.pojo.OpcProperties;
 import com.richeninfo.pojo.Packet;
 import com.richeninfo.pojo.WsMessage;
+import com.richeninfo.wsdl.AssertionQryUIDWS;
 import com.richeninfo.wsdl.Security;
+import com.richeninfo.wsdl.WinXMLUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -27,30 +33,31 @@ import java.util.Date;
 @Component
 public class RopServiceManager {
     @Resource
-    private  OpcProperties opcProperties;
+    private OpcProperties opcProperties;
     @Value("${nengKai.appCode}")
-    private  String appCode;
+    private String appCode;
     @Value("${nengKai.apk_new}")
-    private  String apk_new;
+    private String apk_new;
     @Resource
-    private  HttpServletRequest request;
+    private HttpServletRequest request;
     @Resource
-    private  CommonMapper commonMapper;
+    private CommonMapper commonMapper;
     @Resource
     private OpenapiHttpCilent openapiHttpCilent;
-    public  String execute(Packet reqPack, String userId) throws Exception {
+
+    public String execute(Packet reqPack, String userId) throws Exception {
         String response = "";
         try {
-            log.info("appCode:"+appCode);
-            log.info("apk:"+apk_new);
+            log.info("appCode:" + appCode);
+            log.info("apk:" + apk_new);
             String message = JSON.toJSONString(reqPack.getPost());
             log.info("Request:\n" + message);
-           // OpenapiHttpCilent client = new OpenapiHttpCilent(appCode, apk_new);
-            response = openapiHttpCilent.call(reqPack.getApiCode(),reqPack.getPost().getPubInfo().getTransactionId(),message);
-            log.info("Response("+reqPack.getPost().getRequest().getBusiCode()+"|"+reqPack.getPost().getRequest().getBusiParams().getString("billId")+"):\n" + response);
+            // OpenapiHttpCilent client = new OpenapiHttpCilent(appCode, apk_new);
+            response = openapiHttpCilent.call(reqPack.getApiCode(), reqPack.getPost().getPubInfo().getTransactionId(), message);
+            log.info("Response(" + reqPack.getPost().getRequest().getBusiCode() + "|" + reqPack.getPost().getRequest().getBusiParams().getString("billId") + "):\n" + response);
             String status = JSON.parseObject(response).getString("status");
-            saveOpenapiLog(reqPack,message,response,userId);//保存用户调用记录
-            if(!"SUCCESS".equals(status)){
+            saveOpenapiLog(reqPack, message, response, userId);//保存用户调用记录
+            if (!"SUCCESS".equals(status)) {
                 throw new RuntimeException(JSON.parseObject(response).getString("result"));
             }
         } catch (Exception e) {
@@ -68,25 +75,26 @@ public class RopServiceManager {
         return JSON.parseObject(response).getString("result");
     }
 
-    public JSONObject executes(Packet reqPack,String userId) throws Exception {
+    public JSONObject executes(Packet reqPack, String userId) throws Exception {
         String response = "";
         try {
             String message = reqPack.getPost().getRequest().getBusiParams().toString();
             log.info("card Request:" + message);
-           // OpenapiHttpCilent client = new OpenapiHttpCilent(appCode, apk_new);
-            response = openapiHttpCilent.call(reqPack.getApiCode(),null,message);
+            // OpenapiHttpCilent client = new OpenapiHttpCilent(appCode, apk_new);
+            response = openapiHttpCilent.call(reqPack.getApiCode(), null, message);
             log.info("card Response " + response);
-            saveOpenapiLog(reqPack,message,response,userId);//保存用户调用记录
+            saveOpenapiLog(reqPack, message, response, userId);//保存用户调用记录
         } catch (Exception e) {
             log.error("Exception : " + e.getMessage());
             throw e;
         }
         return JSON.parseObject(response);
     }
+
     //接口调用日志
-    public  void saveOpenapiLog(Packet reqPack, String message, String response, String userId){
+    public void saveOpenapiLog(Packet reqPack, String message, String response, String userId) {
         OpenapiLog log = new OpenapiLog();
-        log.setAddress(request.getLocalAddr()+":"+request.getLocalPort());
+        log.setAddress(request.getLocalAddr() + ":" + request.getLocalPort());
         log.setAppCode(appCode);
         log.setApiCode(reqPack.getApiCode());
         log.setCode(message);
@@ -100,7 +108,7 @@ public class RopServiceManager {
         String url = APP_VALIDSERVICENUM_URL.replace("${SERVICE_NUM}", serviceNum).replace("${TOKEN}", token);
         log.info("接口[validServiceNum]url===" + url);
 
-        String userId = CommonUtil.decryptFromAES(CommonUtil .parseHexStr2Byte(serviceNum),
+        String userId = CommonUtil.decryptFromAES(CommonUtil.parseHexStr2Byte(serviceNum),
                 CommonUtil.DATAU_THIRDPART_PWD_KEY);
         log.info("接口[validServiceNum]入参===[" + userId + "]" + serviceNum + "," + token);
         String rep = HttpClientTool.doGet(url, null);
@@ -127,17 +135,23 @@ public class RopServiceManager {
             String xmlRequst = HttpClientTool.EncodeString(xmlReq, "00210");
             log.info("接口[sendPush]url===" + url);
             log.info("接口[sendPush]入参===" + xmlRequst);
-            JaxWsDynamicClientFactory clientFactory = JaxWsDynamicClientFactory.newInstance();
-            Client client = clientFactory.createClient(url);
-            client.getEndpoint().getEndpointInfo().setAddress("http://login.10086.cn:18080/services/AssertionQryUID");
-            Object[] result = client.invoke("getAssertInfoByUID", xmlRequst);
-            String outxml = (String)result[0];
+            JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+            factory.setServiceClass(AssertionQryUIDWS.class);
+            factory.setAddress("http://login.10086.cn:18080/services/AssertionQryUID");
+            AssertionQryUIDWS service = (AssertionQryUIDWS) factory.create();
+            Client proxy = ClientProxy.getClient(service);
+            HTTPConduit contduit = (HTTPConduit) proxy.getConduit();
+            HTTPClientPolicy policy = new HTTPClientPolicy();
+            policy.setConnectionTimeout(20 * 1000);
+            policy.setReceiveTimeout(120 * 1000);
+            contduit.setClient(policy);
+            String outxml = service.getAssertInfoByUID(xmlRequst);
             log.info("接口[sendPush]出参===" +outxml);
             String c = Security.getDecryptString(outxml);
             log.info("接口[sendPush]解密后的返回报文===" + c);
-            String UserName = CommonUtil.getNodeValue(c, "/CARoot/SessionBody/AssertionQryRsp/UserInfo/UserName");
-            String RspCode = CommonUtil.getNodeValue(c, "/CARoot/SessionHeader/Response/RspCode");
-            String RspDesc = CommonUtil.getNodeValue(c, "/CARoot/SessionHeader/Response/RspDesc");
+            String UserName = WinXMLUtils.getNodeValue(c, "/CARoot/SessionBody/AssertionQryRsp/UserInfo/UserName");
+            String RspCode = WinXMLUtils.getNodeValue(c, "/CARoot/SessionHeader/Response/RspCode");
+            String RspDesc = WinXMLUtils.getNodeValue(c, "/CARoot/SessionHeader/Response/RspDesc");
             System.out.println(UserName);
             WsMessage msgObj=new WsMessage();
             msgObj.setUserId(UserName);

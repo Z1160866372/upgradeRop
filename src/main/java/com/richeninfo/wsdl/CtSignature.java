@@ -22,13 +22,14 @@ public class CtSignature {
     /**
      * 私有构造函数.
      */
-    private CtSignature() {}
+    private CtSignature() {
+    }
 
     /**
      * 生成签名用的签名对象.
      *
-     * @param pwd String 证书库密码
-     * @param alias String 证书库别名
+     * @param pwd        String 证书库密码
+     * @param alias      String 证书库别名
      * @param priKeyFile 私钥文件名
      * @return Signature 签名对象
      */
@@ -37,9 +38,9 @@ public class CtSignature {
         try {
             KeyStore ks = KeyStore.getInstance("JKS");
             InputStream ksfis = null;
-            if(priKeyFile.indexOf(":")!=-1) {//绝对路径方式定义的文件.
+            if (priKeyFile.indexOf(":") != -1) {//绝对路径方式定义的文件.
                 ksfis = new FileInputStream(priKeyFile);
-            }else {
+            } else {
                 //load from classpath
                 ksfis = CtSignature.class.getResourceAsStream(priKeyFile);
             }
@@ -68,9 +69,9 @@ public class CtSignature {
                     .getInstance("X.509");
 
             InputStream fin = null;
-            if(pubKeyFile.indexOf(":")!=-1) {
+            if (pubKeyFile.indexOf(":") != -1) {
                 fin = new FileInputStream(pubKeyFile);
-            }else {
+            } else {
                 //load from classpath
                 fin = CtSignature.class.getResourceAsStream(pubKeyFile);
             }
@@ -87,9 +88,9 @@ public class CtSignature {
 
     /**
      * @param originalText String 明文数据
-     * @param pwd String 证书库密码
-     * @param alias String 证书库别名
-     * @param priKeyFile 私钥文件名
+     * @param pwd          String 证书库密码
+     * @param alias        String 证书库别名
+     * @param priKeyFile   私钥文件名
      * @return String 签名后的
      */
     public static String signature(String originalText, String pwd,
@@ -97,9 +98,9 @@ public class CtSignature {
         try {
             KeyStore ks = KeyStore.getInstance("JKS");
             InputStream ksfis = null;
-            if(priKeyFile.indexOf(":")!=-1) {
+            if (priKeyFile.indexOf(":") != -1) {
                 ksfis = new FileInputStream(priKeyFile);
-            }else {
+            } else {
                 //load from classpath
                 ksfis = CtSignature.class.getResourceAsStream(priKeyFile);
             }
@@ -121,8 +122,8 @@ public class CtSignature {
      * 验证签名.
      *
      * @param originalText String 原字符串的字节码
-     * @param signedText String 签名后的字符串的字节码
-     * @param pubKeyFile String 公钥保存文件名
+     * @param signedText   String 签名后的字符串的字节码
+     * @param pubKeyFile   String 公钥保存文件名
      * @return boolean 验证是否通过
      */
     public static boolean verify(String originalText, String signedText,
@@ -131,9 +132,9 @@ public class CtSignature {
             CertificateFactory certificatefactory = CertificateFactory
                     .getInstance("X.509");
             InputStream fin = null;
-            if(pubKeyFile.indexOf(":")!=-1) {
+            if (pubKeyFile.indexOf(":") != -1) {
                 fin = new FileInputStream(pubKeyFile);
-            }else {
+            } else {
                 //load from classpath
                 fin = CtSignature.class.getResourceAsStream(pubKeyFile);
             }
@@ -152,9 +153,9 @@ public class CtSignature {
     /**
      * 签名CAP协议.
      *
-     * @param cap String CAP协议的字符串
-     * @param pwd String 密码
-     * @param alias String 别名
+     * @param cap          String CAP协议的字符串
+     * @param pwd          String 密码
+     * @param alias        String 别名
      * @param keystorePath 私钥文件所在路径
      * @return String 签名后的协议.
      */
@@ -171,7 +172,7 @@ public class CtSignature {
     /**
      * 验证CAP协议.
      *
-     * @param cap String CAP协议的字符串
+     * @param cap          String CAP协议的字符串
      * @param keystorePath String 公钥(CER证书)文件所在路径
      * @return boolean 是否通过验证
      */

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,38 +34,51 @@ public class VoteController {
     @PostMapping("/getClassifyInfo")
     @ResponseBody
     @ApiOperation("获取分类内容")
-    public JSONObject getClassifyInfo(){
+    public JSONObject getClassifyInfo() {
         return this.voteService.getClassifyInfo();
     }
+
     @PostMapping("/getCode")
     @ResponseBody
     @ApiOperation("获取该类内容下用户分配的登录码")
-    public JSONObject getCode(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId,@ApiParam(name = "iid", value = "分类内容ID", required = true) String iid){
-        return this.voteService.getCode(secToken,channelId,iid);
+    public JSONObject getCode(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "iid", value = "分类内容ID", required = true) String iid) {
+        return this.voteService.getCode(secToken, channelId, iid);
     }
+
     @PostMapping("/getTopicList")
     @ResponseBody
     @ApiOperation("获取用户身份对应的题库")
-    public JSONObject getTopicList(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId,@ApiParam(name = "yid", value = "编码ID", required = true) String yid,@ApiParam(name = "iid", value = "分类内容ID", required = true) String iid){
-        return this.voteService.getTopicList(secToken,channelId,yid,iid);
+    public JSONObject getTopicList(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "yid", value = "编码ID", required = true) String yid, @ApiParam(name = "iid", value = "分类内容ID", required = true) String iid) {
+        return this.voteService.getTopicList(secToken, channelId, yid, iid);
     }
+
     @PostMapping("/saveAnswerLog")
     @ResponseBody
     @ApiOperation("保存用户答题记录")
-    public JSONObject saveAnswerLog(@ApiParam(name = "answerLog", value = "答题记录JSON", required = true) String answerLog){
+    public JSONObject saveAnswerLog(@ApiParam(name = "answerLog", value = "答题记录JSON", required = true) String answerLog) {
         return this.voteService.saveAnswerLog(answerLog);
     }
+
     @PostMapping("/saveVoteCode")
     @ResponseBody
     @ApiOperation("批量生成用户登录码")
-    public JSONObject saveVoteCode(){
+    public JSONObject saveVoteCode() {
         return this.voteService.saveVoteCode();
     }
 
     @PostMapping("/scoreStatistics")
     @ResponseBody
     @ApiOperation("根据岗位内容查询评分结果")
-    public JSONObject scoreStatistics(@ApiParam(name = "rid", value = "岗位编号", required = true) String rid){
+    public JSONObject scoreStatistics(@ApiParam(name = "rid", value = "岗位编号", required = true) String rid) {
         return this.voteService.scoreStatistics(rid);
     }
+
+    @PostMapping("/selectObjectList")
+    @ResponseBody
+    @ApiOperation("根据标识查询相应管理列表")
+    public JSONObject selectObjectList(@ApiParam(name = "signboard", value = "管理标识", required = true) int signboard) {
+        Map<String, String> map = new HashMap<>();
+        return this.voteService.selectObjectList(signboard, map);
+    }
+
 }

@@ -9,6 +9,10 @@ import lombok.Data;
  */
 @Data
 public class VoteList {
+    @ApiModelProperty("最小分")
+    private int minScore;
+    @ApiModelProperty("最大分")
+    private int maxScore;
     @ApiModelProperty("总分")
     private int totalScore;
     @ApiModelProperty("人数")
