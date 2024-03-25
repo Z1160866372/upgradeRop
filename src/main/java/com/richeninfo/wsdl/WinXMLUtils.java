@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) RICHENINFO [2024]
+ * Unauthorized use, copying, modification, or distribution of this software
+ * is strictly prohibited without the prior written consent of Richeninfo.
+ * https://www.richeninfo.com/
+ */
 package com.richeninfo.wsdl;
 
 import java.io.ByteArrayInputStream;
@@ -24,9 +30,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * 
- * @author YUTAO 下午4:20:30 2017年4月11日
- * 
+ * @Author : zhouxiaohu
+ * @create 2022/9/19 14:25
  */
 public class WinXMLUtils {
 	public static void main(String[] args) {

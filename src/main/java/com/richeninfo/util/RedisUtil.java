@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) RICHENINFO [2024]
+ * Unauthorized use, copying, modification, or distribution of this software
+ * is strictly prohibited without the prior written consent of Richeninfo.
+ * https://www.richeninfo.com/
+ */
 package com.richeninfo.util;
 
 import lombok.extern.slf4j.Slf4j;
