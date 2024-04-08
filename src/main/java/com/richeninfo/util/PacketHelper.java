@@ -992,6 +992,139 @@ public class PacketHelper {
     }
 
     /**
+     * 业务办理集团上报
+     * @param thirdTradeId
+     * @param channelId
+     * @param uniChannelId
+     * @param purchaseChannelName
+     * @param charge
+     * @param spayCharge
+     * @param billCharge
+     * @param orderType
+     * @param customerId
+     * @param orderSubType
+     * @param createTime
+     * @param payTime
+     * @param closeTime
+     * @param discountType
+     * @param payType
+     * @param busiStatus
+     * @param platformCode
+     * @param orderItemId
+     * @param commodityId
+     * @param commodityName
+     * @param commodityNum
+     * @param commodityType
+     * @param skuId
+     * @param skuName
+     * @param unitPrice
+     * @param bossId
+     * @param wtAcId
+     * @param wtAc
+     * @return
+     */
+    public Packet orderReporting(String thirdTradeId,String channelId,String uniChannelId,String purchaseChannelName,String charge,
+                            String spayCharge,String billCharge,String orderType,String customerId,String orderSubType,String createTime,String payTime,
+                            String closeTime,String discountType,String payType,String busiStatus,String platformCode,String orderItemId,String commodityId,
+                            String commodityName,String commodityNum,String commodityType,String skuId,String skuName,String unitPrice,String bossId,String wtAcId,String wtAc){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("logType","1");//必传 订单类型（1普通 2宽带 3号卡
+        JSONObject busiParams = new JSONObject();//
+        busiParams.put("thirdTradeId",thirdTradeId);//JYRZ请求渠道原始的订单编号，最长64位同一省份下单渠道ID的交易单编码不能重复
+        busiParams.put("systemId", "13");//请求系统编码
+        busiParams.put("channelId", channelId);//受理渠道102上海移动商城H5、007星火店铺、008一级云店H5
+        busiParams.put("charge", charge);//订单金额
+        busiParams.put("spayCharge", spayCharge);//应付金额
+        busiParams.put("billCharge",billCharge);//实付金额
+        busiParams.put("orderType", orderType);//订单类型
+        busiParams.put("orderSubType", orderSubType);//订单子类型
+        busiParams.put("customerId", customerId);//用户ID
+        busiParams.put("createTime", createTime);//订单创建时间
+        busiParams.put("payTime", payTime);//订单支付时间
+        busiParams.put("closeTime", closeTime);//订单完成时间
+        busiParams.put("discountType", discountType);//优惠类型
+        busiParams.put("payType", payType);//支付方式
+        busiParams.put("busiStatus", busiStatus);//订单状态
+        busiParams.put("province", "");//省份/商户编码
+        busiParams.put("platformCode", platformCode);//业务上架平台编码（eg:省份H5通过星火平台上架/分享，传 02即可）
+        //00：其他01：在线工具02：星火平台03：中国移动APP（APP整合分省订单同步传此值）
+        busiParams.put("phoneNo", "");//被充值号码
+        busiParams.put("chargeFee", "");//被充值金额
+        busiParams.put("chargeUnit", "");//充值单位
+        busiParams.put("payChannel", "");//支付渠道
+        busiParams.put("authSourceId", "");//移动认证分配的sourceId，用于订单详情页面跳转的单点登录。
+        busiParams.put("cmOrderId", "");//一级电渠订单号(由一级渠道创建订单并落地到省份)
+        busiParams.put("uniChannelId",uniChannelId);//19位全网统一渠道编码
+        busiParams.put("purchaseChannelName", purchaseChannelName);//用户购买渠道名称，中文
+        busiParams.put("assistantUserInfo", "");//推荐人附加信息
+        busiParams.put("nickName", "");//用户昵称
+        busiParams.put("bindCusId", "");//推荐人ID
+        busiParams.put("bindCusNo", "");//推荐人手机号
+        busiParams.put("cardType", "");//卡券类型话费 hf01流量 ll01实物 sw01套餐 tc01通用 ty01花卡宝藏版 bzk01花卡 hk01合作券 hz01咪咕券 99hz肯德基券 898KFC
+        busiParams.put("cardName", "");//卡券名称
+        busiParams.put("cardUnit", "");//卡券单位
+        busiParams.put("cardValue", "");//卡券面值
+        busiParams.put("cardNo", "");//卡券编码
+        busiParams.put("deliverWay", "");//配送方式SP：门店自提ED：物流配送DA：上门激活
+        busiParams.put("orderPostName", "");//收货人姓名
+        busiParams.put("orderPostPhone", "");//收货人手机号
+        busiParams.put("orderPostAddr", "");//收货地址（当配送方式为SP，该字段表示 自提地址门店名称）
+        busiParams.put("invoiceType", "");//发票类型
+        busiParams.put("invoiceCustomerType", "");//发票客户类型
+        busiParams.put("invoiceTitle", "");//发票抬头
+        busiParams.put("invoiceTaxNo", "");//发票税号
+        busiParams.put("invoiceRemark", "");//发票备注
+        busiParams.put("invoiceContent", "");//发票内容
+        busiParams.put("invoiceMail", "");//收票人邮箱
+        busiParams.put("freight", "");//运费，单位：分，若有运费，必传
+        busiParams.put("creditAmount", "");//减免金额 单位：分
+        busiParams.put("distributionId", "");//物流单号，配送方式为物流配送时必传
+        busiParams.put("deliveryCode", "");//提货码
+        busiParams.put("wtAcId", wtAcId);//触点码或者IOP营销码
+        busiParams.put("effectiveType", "");//生效方式01：立即生效；02：下月生效
+        busiParams.put("orderDetailUrl", "");//订单详情页链接
+        JSONObject new_busiParams = new JSONObject();
+        JSONArray newArray = new JSONArray();//
+        new_busiParams.put("orderItemId", orderItemId);//订单项ID。若一笔订单存在多个订单项时必填。
+        new_busiParams.put("commodityId", commodityId);// 商品id
+        new_busiParams.put("netExpensesCode", commodityId);//全网统一资费编码
+        new_busiParams.put("commodityName", commodityName);//商品名称 （商品名或者商品简要描述信息）
+        new_busiParams.put("commodityUrl", "");//商品链接
+        new_busiParams.put("commodityVersion", "");//商品版本号
+        new_busiParams.put("commodityNum", commodityNum);//商品数量，默认1
+        new_busiParams.put("commodityCode", "");//商品编码
+        new_busiParams.put("commodityType", commodityType);//商品类型
+        new_busiParams.put("saleType", "");//商品销售类型
+        new_busiParams.put("skuId", skuId);//skuId，没有传 –
+        new_busiParams.put("skuName", skuName);//sku名称，没有传 –
+        new_busiParams.put("sourceChannel", "");//引流渠道，星火/云店渠道引流订单必传。星火：007云店：008星火省份自有：017
+        new_busiParams.put("unitPrice", unitPrice);//单价 单位：分
+        new_busiParams.put("discountPrice", "");//优惠前金额
+        new_busiParams.put("price", "");//优惠后金额
+        new_busiParams.put("discountCharge", "");//优惠金额
+        new_busiParams.put("shopName", "");// 店铺名称（云店平台订单必传）
+        new_busiParams.put("withContract", "");//是否合约机Y表示是N表示不是
+        new_busiParams.put("contractGearName", "");//
+        new_busiParams.put("bossId", bossId);//bossId，多个值以英文逗号分割
+        new_busiParams.put("merchantName", "");//商户名称
+        new_busiParams.put("imgUrl", "");//商品图片url
+        new_busiParams.put("wtAc", wtAc);//来源触点和策略 ID
+        new_busiParams.put("merchantId", "");//商户编码（全网统一渠道编码）
+        new_busiParams.put("shopId", "");//店铺id（云店平台订单必传）
+        new_busiParams.put("aggPageCode", "");//记录聚合页面商品
+        JSONObject new_last_busiParams = new JSONObject();
+        JSONArray new_newArray = new JSONArray();
+        new_last_busiParams.put("specId", "");//规格属性ID
+        new_last_busiParams.put("specValue", "");//规格属性值
+        new_newArray.add(new_last_busiParams);
+        new_busiParams.put("orderItemSpecs",new_newArray);//（订单明细规格）
+        newArray.add(new_busiParams);
+        busiParams.put("orderItems", newArray);//订单项列表
+        jsonObject.put("busInfo",busiParams);
+        Packet packet = getOUTER0001Packet(jsonObject, "addOrder");
+        return packet;
+    }
+    /**
      * 权益订购
      *
      * @param phone
