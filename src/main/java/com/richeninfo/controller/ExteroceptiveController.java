@@ -12,7 +12,6 @@ import com.richeninfo.entity.mapper.mapper.master.ExteroceptiveMapper;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.ExteroceptiveService;
-import com.richeninfo.util.RedisUtil;
 import io.swagger.annotations.ApiParam;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,13 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
- * @auth lei
+ * @auth sunxiaolei
  * @date 2024/3/22 15:40
  */
 
@@ -40,15 +36,6 @@ public class ExteroceptiveController {
     private ExteroceptiveService exteroceptiveService;
     @Resource
     private ExteroceptiveMapper exteroceptiveMapper;
-    @Resource
-    private HttpSession session;
-    @Resource
-    private HttpServletRequest request;
-    @Resource
-    private HttpServletResponse resp;
-    @Resource
-    private RedisUtil redisUtil;
-
     /**
      * 初始化用户数据
      *
@@ -62,7 +49,6 @@ public class ExteroceptiveController {
     public @ResponseBody
     JSONObject initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
-        ActivityUser user = new ActivityUser();
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {

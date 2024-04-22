@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) RICHENINFO [2024]
+ * Unauthorized use, copying, modification, or distribution of this software
+ * is strictly prohibited without the prior written consent of Richeninfo.
+ * https://www.richeninfo.com/
+ */
 package com.richeninfo.service.impl;
 
 import com.alibaba.fastjson.JSON;
@@ -12,20 +18,17 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jms.core.JmsMessagingTemplate;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.jms.Queue;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * @auth sunxialei
+ * @auth sunxiaolei
  * @date 2024/3/22 15:43
  */
-
 @Log4j
 @Service("exteroceptiveService")
 public class ExteroceptiveServiceImpl implements ExteroceptiveService {
@@ -33,44 +36,36 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
     ExteroceptiveMapper exteroceptiveMapper;
     @Resource
     private CommonService commonService;
-
     @Resource
     private JmsMessagingTemplate jmsMessagingTemplate;
-
-    /*@Resource
-    private JmsTemplate jmsTemplate;*/
     @Resource
     private RedisUtil redisUtil;
-    @Resource
-    private Queue queue;
-
     @Override
     public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
         JSONObject object = new JSONObject();
         ActivityUser users = findEveryDayUser(userId, secToken);
         if (users == null) {
-            ActivityUser user = new ActivityUser();
             //查询第一期的分数和对应等级 导入第二期
             ActivityUser olduser = exteroceptiveMapper.findOldUserInfoByUserId(userId);
             if (olduser == null) {
-                user.setGrade(0);
+                users.setGrade(0);
             } else {
-                user.setGrade(olduser.getGrade());
-                user.setMark(olduser.getMark());
+                users.setGrade(olduser.getGrade());
+                users.setMark(olduser.getMark());
                 InsertRecord("2023年心级体验官累积分值", userId, olduser.getMark(), channelId, 0);
             }
-            user.setLevel(0);// 第一次进游戏
-            user.setAward(0);
-            user.setUserId(userId);
-            user.setChannelId(channelId);
-            user.setPlayNum(2);
-            user.setBlowNum(1);
-            user.setAnswerNum(1);
-            user.setUnlocked(0);
-            user.setActId(actId);
-            user.setSecToken(secToken);
-            exteroceptiveMapper.saveUser(user);
-            object.put("user", user);
+            users.setLevel(0);// 第一次进游戏
+            users.setAward(0);
+            users.setUserId(userId);
+            users.setChannelId(channelId);
+            users.setPlayNum(2);
+            users.setBlowNum(1);
+            users.setAnswerNum(1);
+            users.setUnlocked(0);
+            users.setActId(actId);
+            users.setSecToken(secToken);
+            exteroceptiveMapper.saveUser(users);
+            object.put("user", users);
         } else {
             object.put("user", users);
         }
@@ -92,11 +87,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
         record.setStatus(fenshu);
         record.setUserId(userId);
         record.setTypeId(typeId);
-        if (channel_id == null || channel_id.equals("")) {
-            record.setChannel_id("weiting");
-        } else {
-            record.setChannel_id(channel_id);
-        }
+        record.setChannel_id(channel_id);
         try {
             exteroceptiveMapper.saveUserRecord(record);
         } catch (Exception e) {
@@ -119,17 +110,17 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
         try {
             if (userId != null) {
                 ActivityUser user = exteroceptiveMapper.findUserInfoByUserId(userId);
-                List<ReedToAnswer> answerlist = new ArrayList<ReedToAnswer>();
+                List<ActivityAnswer> answerlist = new ArrayList<ActivityAnswer>();
                 if (user.getAnswerNum() > 0) {
-                    ReedToAnswer randAnswer = exteroceptiveMapper.findRandAnswerOne();
-                    ReedToAnswer firstanswer = exteroceptiveMapper.findFirstAnswer();//第一题固定
+                    ActivityAnswer randAnswer = exteroceptiveMapper.findRandAnswerOne();
+                    ActivityAnswer firstanswer = exteroceptiveMapper.findFirstAnswer();//第一题固定
                     answerlist.add(firstanswer);
                     answerlist.add(randAnswer);
                 } else {
                     int oneAnswerType = Integer.valueOf(user.getAnswerTitle().split(",")[0]);
                     int twoAnswerType = Integer.valueOf(user.getAnswerTitle().split(",")[1]);
-                    ReedToAnswer randAnswerone = exteroceptiveMapper.findAnswerByType(oneAnswerType);
-                    ReedToAnswer randAnswertwo = exteroceptiveMapper.findAnswerByType(twoAnswerType);
+                    ActivityAnswer randAnswerone = exteroceptiveMapper.findAnswerByType(oneAnswerType);
+                    ActivityAnswer randAnswertwo = exteroceptiveMapper.findAnswerByType(twoAnswerType);
                     answerlist.add(randAnswerone);
                     answerlist.add(randAnswertwo);
                 }
@@ -241,7 +232,6 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
                 } else {
                     map.put("msg", "Repeated request");
                 }
-                String curmonth = DateTimeTool.formatDateMonth(new Date());
                 ActivityUser newuser = exteroceptiveMapper.findUserInfoByUserId(userId);
                 map.put("user", newuser);
             }
@@ -337,9 +327,9 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
                                 if (Double.valueOf(gift.getValue()) > 0) {//抽中流量话费
                                     //达80%（剩余/奖励总量 <20%）
                                     String curmonth = DateTimeTool.formatDateMonth(new Date());
-                                    ExperienceGiftList monthgift = exteroceptiveMapper.findExperienceGiftList(gift.getUnlocked(), curmonth);
-                                    log.info("剩余量/总量：" + (Double.valueOf(monthgift.getCount()) / Double.valueOf(gift.getAmount())));
-                                    if ((Double.valueOf(monthgift.getCount()) / Double.valueOf(gift.getAmount())) < 0.2) {
+                                    ActivityConfiguration monthgift = exteroceptiveMapper.findExperienceGiftList(gift.getUnlocked(), curmonth);
+                                    log.info("剩余量/总量：" + (Double.valueOf(monthgift.getAmount()) / Double.valueOf(gift.getAmount())));
+                                    if ((Double.valueOf(monthgift.getAmount()) / Double.valueOf(gift.getAmount())) < 0.2) {
                                         Random random = new Random();
                                         int n = random.nextInt(2);
                                         if (n == 1) {//发放权益
@@ -480,9 +470,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
         int offset2 = 5 - dayOfWeek;
         calendar1.add(Calendar.DATE, offset1 - 7);
         calendar2.add(Calendar.DATE, offset2 - 7);
-        // System.out.println(sdf.format(calendar1.getTime()));// last Monday
         String lastBeginDate = sdf.format(calendar1.getTime());
-        // System.out.println(sdf.format(calendar2.getTime()));// last Sunday
         Date lastEndDate = calendar2.getTime();
         log.info("上周更新时间：" + lastEndDate);
         return lastEndDate;
@@ -614,7 +602,6 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
                 Date curDate = dateFormat.parse(dangDate);
                 Date lastweek5 = dateFormat.parse(dateFormat.format(getLastWeek5()));
                 Date userweektime = dateFormat.parse(dateFormat.format(user.getWeekTime()));
-
                 log.info("user.getWeekTime()" + userweektime.getTime());
                 log.info("lastweek5" + lastweek5.getTime());
                 //当前时间大于本周五  且更新日期小于本周五
@@ -672,24 +659,12 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             if (null == userId || userId.length() < 11 || userId.equals("")) {
                 jsonObject.put("msg", "error");
             }
-            List<ActivityUserHistory> newlist = new ArrayList<ActivityUserHistory>();
             List<ActivityUserHistory> list = exteroceptiveMapper.findUserRecived(userId);
-           /* List<ActivityConfiguration> userGift=new ArrayList<ActivityConfiguration>();
-            if(list != null && !list.isEmpty()){
-                for(ActivityUserHistory giftlist:list){
-                    if(giftlist.getUnlocked()>1){
-                        ActivityConfiguration gift=exteroceptiveMapper.findGiftByTypeId(giftlist.getUnlocked(),actId);
-                        giftlist.setChannelId(gift.getWinSrc());
-                    }
-                    newlist.add(giftlist);
-                }
-            }*/
             jsonObject.put("list", JSON.toJSON(list));
             jsonObject.put("userId", userId);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return jsonObject;
     }
 }

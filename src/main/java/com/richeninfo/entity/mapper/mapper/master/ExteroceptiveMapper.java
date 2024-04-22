@@ -8,7 +8,6 @@ package com.richeninfo.entity.mapper.mapper.master;
 
 import com.richeninfo.entity.mapper.entity.*;
 import org.apache.ibatis.annotations.*;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -35,13 +34,13 @@ public interface ExteroceptiveMapper {
     void saveUser(ActivityUser user);
 
     @Select(" SELECT * FROM `wt_proem_answer` where answerType >0 ORDER BY RAND() LIMIT 1")
-    ReedToAnswer findRandAnswerOne();
+    ActivityAnswer findRandAnswerOne();
 
     @Select("select * from wt_proem_answer where answerType=0")
-    ReedToAnswer findFirstAnswer();
+    ActivityAnswer findFirstAnswer();
 
     @Select("select * from wt_proem_answer where answerType=#{answerType}")
-    ReedToAnswer findAnswerByType(int answerType);
+    ActivityAnswer findAnswerByType(int answerType);
 
     @Select("select * from wt_proem_history where userId=#{userId}")
     List<ActivityUserHistory> findUserRecived(String userId);
@@ -84,10 +83,10 @@ public interface ExteroceptiveMapper {
     List<ActivityConfiguration> findGiftList(int month, String actId);
 
 
-    @Select(" select * from wt_proem_gift_list where typeId=#{typeId} and   month=#{month}")
-    ExperienceGiftList findExperienceGiftList(@Param("typeId") int typeId, @Param("month") String month);//查询奖励配置数量
+    @Select(" select * from activity_configuration where unlocked=#{typeId} and   value=#{month}")
+    ActivityConfiguration findExperienceGiftList(@Param("typeId") int typeId, @Param("month") String month);//查询奖励配置数量
 
-    @Update("update  wt_proem_gift_list set count=count-1  where typeId=#{unlocked} and   month=#{month} and count >0")
+    @Update("update  activity_configuration set amount=amount-1  where unlocked=#{unlocked} and   value=#{month} and count >0")
     int lostGiftListCount(@Param("unlocked") int unlocked, @Param("month") String month);
 
     @Insert("INSERT INTO wt_proem_history (userId,rewardName,typeId,unlocked,belongFlag,status,code,message,secToken,channelId,createTime,createDate,actId,winSrc,remark) value (#{userId},#{rewardName},#{typeId},#{unlocked},#{belongFlag},#{status},#{code},#{message},#{secToken},#{channelId},now(),curdate(),#{actId},#{winSrc},#{remark})")

@@ -3,15 +3,21 @@ package com.richeninfo.entity.mapper.entity;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 @Data
 public class RemindRecord {
 	private int id;
-	private String userId;//手机号
-	private String caozuo;//caozuo
-	private int typeId;//  
-	private int    status;// 0  还没出结果，1已出结果
-	private String channel_id;//渠道
+	@ApiModelProperty(value = "手机号")
+	private String userId;
+	@ApiModelProperty(value = "操作步骤")
+	private String caozuo;
+	@ApiModelProperty(value = "唯一标识")
+	private int typeId;
+	@ApiModelProperty(value = "状态")
+	private int    status;
+	@ApiModelProperty(value = "渠道")
+	private String channel_id;
 	private Timestamp createTime;
 	private Date createDate;
 	private  long time;
