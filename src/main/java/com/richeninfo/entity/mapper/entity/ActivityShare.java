@@ -38,5 +38,5 @@ public class ActivityShare {
     private Timestamp createTime;
 
     @ApiModelProperty(value = "活动编号")
-    private int actId;
+    private String actId;
 }

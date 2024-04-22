@@ -37,7 +37,8 @@ import java.util.List;
 @Controller
 @RequestMapping(value = "/proMember")
 @Api(value = "PRO会员日活动接口", tags = {"PRO会员日活动接口"})
-public class ProMemberController {
+public class
+ProMemberController {
 
     @Resource
     private CommonService commonService;

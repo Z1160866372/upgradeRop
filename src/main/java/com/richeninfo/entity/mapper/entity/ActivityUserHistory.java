@@ -78,4 +78,12 @@ public class ActivityUserHistory {
 
     @ApiModelProperty(value = "活动编号")
     private String actId;
+
+    @ApiModelProperty(value = "奖品说明")
+    private String remark;
+
+    @ApiModelProperty(value = "跳转地址")
+    private String winSrc;
+
+
 }

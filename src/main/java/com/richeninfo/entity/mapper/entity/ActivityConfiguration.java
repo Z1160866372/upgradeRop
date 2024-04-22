@@ -90,4 +90,8 @@ public class ActivityConfiguration {
 
     @ApiModelProperty(value = "插码")
     private String wtEvent;
+
+    @ApiModelProperty(value = "奖品说明")
+    private String remark;
+
 }

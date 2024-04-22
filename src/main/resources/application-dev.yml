@@ -31,19 +31,19 @@ spring:
       # 合并多个DruidDataSource的监控数据
       useGlobalDataSourceStat: true
   #activemq配置
-  activemq:
-    broker-url: 10.102.75.24:8161  #activeMQ的ip和端口号
-    user: admin   #activeMq账号
-    password: Jy*Ftp&$8 #activeMq密码
-    non-blocking-redelivery: false # 是否在回滚回滚消息之前停止消息传递。这意味着当启用此命令时，消息顺序不会被保留。
-    send-timeout: 0 # 等待消息发送响应的时间。设置为0等待永远。
-    in-memory: true
-    queue-name: examQueue  # queue队列的名称
-    topic-name: examTopic  # topic队列的名称
-    pool:
-      enabled: true # 启用连接池
-      max-connections: 100 # 最大连接数
-      idle-timeout: 30000 # 空闲的连接过期时间，默认为30秒
+#  activemq:
+#    broker-url: 47.111.174.33:61616
+#    user: richen
+#    password: Richen123info.
+#    non-blocking-redelivery: false
+#    send-timeout: 0
+#    in-memory: true
+#    queue-name: examQueue
+#    topic-name: examTopic
+#    pool:
+#      enabled: true
+#      max-connections: 100
+#      idle-timeout: 30000
 #文件上传地址
 basePath: https://richeninfo.com
 filePath: /opt

@@ -227,7 +227,7 @@ public class ProMemberServiceImpl implements ProMemberService {
                 if (insert_result) {
                     mqMsg = commonService.issueReward(config, history);
                     log.info("4147请求信息：" + mqMsg);
-                    jmsMessagingTemplate.convertAndSend("proMemberQueue",mqMsg);
+                    //jmsMessagingTemplate.convertAndSend("proMemberQueue",mqMsg);
                 }
             } else if (config.getUnlocked() == 1) {//3066业务
                 object = commonService.transact3066Business(config, history, channelId);
@@ -237,7 +237,7 @@ public class ProMemberServiceImpl implements ProMemberService {
             } else if (config.getUnlocked() == 2) {//4147礼包接口
                 mqMsg = commonService.issueReward(config, history);
                 log.info("4147请求信息：" + mqMsg);
-                jmsMessagingTemplate.convertAndSend("proMemberQueue",mqMsg);
+               // jmsMessagingTemplate.convertAndSend("proMemberQueue",mqMsg);
             }
         }
         return insert_result;

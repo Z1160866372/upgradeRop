@@ -26,7 +26,7 @@ import javax.annotation.Resource;
 
 @Log
 @Component
-@ConditionalOnProperty(prefix = "spring.activemq.jms", name = "enable",havingValue = "true")
+//@ConditionalOnProperty(prefix = "spring.activemq.jms", name = "enable",havingValue = "true")
 public class ProMemberListener {
 
     @Resource
@@ -34,7 +34,7 @@ public class ProMemberListener {
     @Resource
     private RopServiceManager ropServiceManager;
 
-    @JmsListener(destination="proMemberQueue", containerFactory="queueListener")
+    @JmsListener(destination="proMemberQueue")
     public void readActiveQueue(String message) {
         log.info("接收信息" + message);
         PacketMq mq = JSON.parseObject(message, PacketMq.class);

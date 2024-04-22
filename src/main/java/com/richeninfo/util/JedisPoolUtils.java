@@ -24,8 +24,8 @@ import redis.clients.jedis.JedisPoolConfig;
 public class JedisPoolUtils {
     private static JedisPool pool;
 
-    // public static final String AUTH = "h1e2j3i4a5o6s7h8o9u0!@#$%^&*";
-    public static final String AUTH = "root";
+    public static final String AUTH = "h1e2j3i4a5o6s7h8o9u0!@#$%^&*";
+   // public static final String AUTH = "";
 
     /**
      * 建立连接池 真实环境，一般把配置参数缺抽取出来。
@@ -48,8 +48,8 @@ public class JedisPoolUtils {
 
         // 创建连接池
 //		pool = new JedisPool(config, "172.16.176.78", 6379, 10000, AUTH);
-        pool = new JedisPool(config, "127.0.0.1", 6379, 10000, AUTH);
-//		pool = new JedisPool(config, "121.40.205.162", 6379, 10000, AUTH);
+       // pool = new JedisPool(config, "127.0.0.1", 6379, 10000);
+	pool = new JedisPool(config, "121.40.205.162", 6379, 10000, AUTH);
 
 
     }

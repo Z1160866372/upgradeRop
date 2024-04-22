@@ -62,6 +62,36 @@ public class ActivityUser {
     @ApiModelProperty(value = "参与时间")
     private Timestamp createTime;
 
+    @ApiModelProperty(value = "宝箱机会")
+    private int playNum;
+
+    @ApiModelProperty(value = "用户段位")
+    private int grade;
+
+    @ApiModelProperty(value = "答题机会")
+    private int answerNum;
+
+    @ApiModelProperty(value = "用户分数")
+    private int mark;
+
+    @ApiModelProperty(value = "是否获取第一次奖励")
+    private int award;
+
+    @ApiModelProperty(value = "吹泡泡游戏机会")
+    private int blowNum;
+
+    @ApiModelProperty(value = "选择的题目")
+    private String 	answerTitle;
+
+    @ApiModelProperty(value = "选择的答案")
+    private String 	answer;
+
+    @ApiModelProperty(value = "首次进入页面 0|1   首次进入|已进过")
+    private int level;
+
+    @ApiModelProperty(value = "每周更新时间")
+    private Timestamp weekTime;
+
     @ApiModelProperty(value = "活动编号")
     private String actId;
 }
