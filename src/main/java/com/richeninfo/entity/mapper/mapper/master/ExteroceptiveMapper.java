@@ -28,7 +28,7 @@ public interface ExteroceptiveMapper {
     ActivityUser findOldUserInfoByUserId(String userId);
 
     @Insert("INSERT INTO wt_proem_record (userId,status,caozuo,typeId,channel_id,createTime,createDate) value (#{userId},#{status},#{caozuo},#{typeId},#{channel_id},now(),curdate())")
-    void saveUserRecord(RemindRecord record);
+    void saveUserRecord(ActivityRecord record);
 
     @Insert("INSERT INTO wt_proem_user (userId,level,award,playNum,channelId,grade,answerNum,mark,blowNum,weekTime,createTime,createDate,secToken) value (#{userId},#{level},#{award},#{playNum},#{channelId},#{grade},#{answerNum},#{mark},#{blowNum},now(),now(),curdate(),#{secToken})")
     void saveUser(ActivityUser user);
@@ -61,7 +61,7 @@ public interface ExteroceptiveMapper {
     int lostBlowNum(@Param("userId") String userId);
 
     @Select("select * from wt_proem_record where userId=#{userId} ORDER BY createTime desc")
-    List<RemindRecord> findUserRecord(String userId);
+    List<ActivityRecord> findUserRecord(String userId);
 
     @Update("update  wt_proem_user set grade=#{grade}  where userId=#{userId}  and grade <#{grade}")
     void updateUserGrade(@Param("userId") String userId, @Param("grade") int grade);
@@ -86,14 +86,14 @@ public interface ExteroceptiveMapper {
     @Select(" select * from activity_configuration where unlocked=#{typeId} and   value=#{month}")
     ActivityConfiguration findExperienceGiftList(@Param("typeId") int typeId, @Param("month") String month);//查询奖励配置数量
 
-    @Update("update  activity_configuration set amount=amount-1  where unlocked=#{unlocked} and   value=#{month} and count >0")
+    @Update("update  activity_configuration set amount=amount-1  where unlocked=#{unlocked} and   value=#{month} and amount >0")
     int lostGiftListCount(@Param("unlocked") int unlocked, @Param("month") String month);
 
     @Insert("INSERT INTO wt_proem_history (userId,rewardName,typeId,unlocked,belongFlag,status,code,message,secToken,channelId,createTime,createDate,actId,winSrc,remark) value (#{userId},#{rewardName},#{typeId},#{unlocked},#{belongFlag},#{status},#{code},#{message},#{secToken},#{channelId},now(),curdate(),#{actId},#{winSrc},#{remark})")
     int saveHistory(ActivityUserHistory history);
 
     @Insert(" INSERT INTO wt_proem_access (userId,status,caozuo,typeId,channel_id,createTime,createDate) value (#{userId},#{status},#{caozuo},#{typeId},#{channel_id},now(),curdate())")
-    int saveUserAccess(RemindRecord RemindRecord);
+    int saveUserAccess(ActivityRecord ActivityRecord);
 
     @Insert(" INSERT INTO wt_proem_share_history (userId,channelId,actId,secToken,createTime,createDate) value (#{userId},#{channel_id},#{actId},#{secToken},now(),curdate())")
     void saveShareHistory(ActivityShare share);

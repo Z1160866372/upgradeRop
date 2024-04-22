@@ -11,7 +11,7 @@ spring:
       password: richen123.
     #activemq配置
   activemq:
-    broker-url: tcp://localhost:61616  #activeMQ的ip和端口号
+    broker-url: tcp://47.111.174.33:61616  #activeMQ的ip和端口号
     user: richen   #activeMq账号
     password: Richen123info. #activeMq密码
     non-blocking-redelivery: false # 是否在回滚回滚消息之前停止消息传递。这意味着当启用此命令时，消息顺序不会被保留。

@@ -82,7 +82,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
      * @param channel_id
      */
     public void InsertRecord(String caozuo, String userId, int fenshu, String channel_id, int typeId) {
-        RemindRecord record = new RemindRecord();
+        ActivityRecord record = new ActivityRecord();
         record.setCaozuo(caozuo);
         record.setStatus(fenshu);
         record.setUserId(userId);
@@ -158,7 +158,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             } else {
                 Object userjedis = redisUtil.get(userId + "play");
                 if (Objects.isNull(userjedis)) {
-                    redisUtil.set(userId + "play", userId + "play", 3);
+                    redisUtil.set(userId + "play", userId + "play", 1);
                     ActivityUser user = exteroceptiveMapper.findUserInfoByUserId(userId);
                     if (user.getAnswerNum() > 0) {//时间内，白名单用户
                         int lostAnswerNum = exteroceptiveMapper.lostAnswerNum(userId);
@@ -209,7 +209,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             } else {
                 Object userjedis = redisUtil.get(userId + "play");
                 if (Objects.isNull(userjedis)) {
-                    redisUtil.set(userId + "play", userId + "play", 3);
+                    redisUtil.set(userId + "play", userId + "play", 1);
                     if (user.getBlowNum() > 0) {//时间内，白名单用户
                         int lostBlowNum = exteroceptiveMapper.lostBlowNum(userId);
                         if (lostBlowNum > 0) {
@@ -304,7 +304,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             } else {
                 Object userjedis = redisUtil.get(userId + "play");
                 if (Objects.isNull(userjedis)) {
-                    redisUtil.set(userId + "play", userId + "play", 3);
+                    redisUtil.set(userId + "play", userId + "play", 1);
                     ActivityUser user = exteroceptiveMapper.findUserInfoByUserId(userId);
                     //流量礼包开始发放
                     if (user.getPlayNum() > 0) {//时间内，白名单用户
@@ -431,8 +431,8 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
         try {
             if (userId != null) {
                 ActivityUser user = exteroceptiveMapper.findUserInfoByUserId(userId);
-                List<RemindRecord> userRecordList = exteroceptiveMapper.findUserRecord(userId);
-                for (RemindRecord record : userRecordList) {
+                List<ActivityRecord> userRecordList = exteroceptiveMapper.findUserRecord(userId);
+                for (ActivityRecord record : userRecordList) {
                     record.setTime(record.getCreateTime().getTime());
                 }
                 map.put("userRecordList", JSON.toJSON(userRecordList));
@@ -532,16 +532,12 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
     public void changeStatus(String caozuo, String channel_id, int type, String userId) {
         log.info("userId:" + userId + ",caozuo" + caozuo);
         Map<String, Object> map = new HashMap<>();
-        RemindRecord record = new RemindRecord();
+        ActivityRecord record = new ActivityRecord();
         record.setCaozuo(caozuo);
         record.setStatus(0);
         record.setUserId(userId);
         record.setTypeId(type);
-        if (channel_id == null || channel_id.equals("")) {
-            record.setChannel_id("weiting");
-        } else {
-            record.setChannel_id(channel_id);
-        }
+        record.setChannel_id(channel_id);
         try {
             exteroceptiveMapper.saveUserAccess(record);
         } catch (Exception e) {
