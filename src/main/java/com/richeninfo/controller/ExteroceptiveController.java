@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) RICHENINFO [2024]
+ * Unauthorized use, copying, modification, or distribution of this software
+ * is strictly prohibited without the prior written consent of Richeninfo.
+ * https://www.richeninfo.com/
+ */
 package com.richeninfo.controller;
 
 import com.alibaba.fastjson.JSONObject;
@@ -74,6 +80,7 @@ public class ExteroceptiveController {
 
     /**
      * 去答题
+     *
      * @param secToken
      * @param channelId
      * @param actId
@@ -91,13 +98,15 @@ public class ExteroceptiveController {
             if (user.getUserId().isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-               object=exteroceptiveService.toAnswer(channelId,user.getUserId());
+                object = exteroceptiveService.toAnswer(channelId, user.getUserId());
             }
         }
         return object;
     }
+
     /**
      * 提交评测内容
+     *
      * @param secToken
      * @param channelId
      * @param actId
@@ -106,7 +115,7 @@ public class ExteroceptiveController {
      */
     @PostMapping(value = "/answer")
     @ResponseBody
-    public JSONObject answer(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String answer,String answerTitle ) throws IOException {
+    public JSONObject answer(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, String answer, String answerTitle) throws IOException {
         JSONObject object = new JSONObject();
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
@@ -115,7 +124,7 @@ public class ExteroceptiveController {
             if (user.getUserId().isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object=exteroceptiveService.answer(channelId,answer,answerTitle,user.getUserId());
+                object = exteroceptiveService.answer(channelId, answer, answerTitle, user.getUserId());
             }
         }
         return object;
@@ -123,6 +132,7 @@ public class ExteroceptiveController {
 
     /**
      * 吹泡泡游戏
+     *
      * @param secToken
      * @param channelId
      * @param actId
@@ -131,7 +141,7 @@ public class ExteroceptiveController {
      */
     @PostMapping(value = "/play")
     @ResponseBody
-    public JSONObject play(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String paopao ) throws IOException {
+    public JSONObject play(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, String paopao) throws IOException {
         JSONObject object = new JSONObject();
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
@@ -140,7 +150,7 @@ public class ExteroceptiveController {
             if (user.getUserId().isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object=exteroceptiveService.play(channelId,paopao,user.getUserId());
+                object = exteroceptiveService.play(channelId, paopao, user.getUserId());
             }
         }
         return object;
@@ -148,6 +158,7 @@ public class ExteroceptiveController {
 
     /**
      * 心级好礼
+     *
      * @param secToken
      * @param channelId
      * @param actId
@@ -156,7 +167,7 @@ public class ExteroceptiveController {
      */
     @PostMapping(value = "/tochoujiang")
     @ResponseBody
-    public JSONObject tochoujiang(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId ) throws IOException {
+    public JSONObject tochoujiang(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
@@ -165,7 +176,7 @@ public class ExteroceptiveController {
             if (user.getUserId().isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object=exteroceptiveService.tochoujiang(channelId,user.getUserId());
+                object = exteroceptiveService.tochoujiang(channelId, user.getUserId());
             }
         }
         return object;
@@ -174,6 +185,7 @@ public class ExteroceptiveController {
 
     /**
      * 抽奖
+     *
      * @param secToken
      * @param channelId
      * @param actId
@@ -182,7 +194,7 @@ public class ExteroceptiveController {
      */
     @PostMapping(value = "/choujiang")
     @ResponseBody
-    public JSONObject choujiang(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId ) throws IOException {
+    public JSONObject choujiang(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
@@ -191,7 +203,7 @@ public class ExteroceptiveController {
             if (user.getUserId().isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object=exteroceptiveService.choujiang(channelId,user.getUserId(),actId);
+                object = exteroceptiveService.choujiang(channelId, user.getUserId(), actId);
             }
         }
         return object;
@@ -199,6 +211,7 @@ public class ExteroceptiveController {
 
     /**
      * 个人经验值明细
+     *
      * @param secToken
      * @param channelId
      * @param actId
@@ -207,7 +220,7 @@ public class ExteroceptiveController {
      */
     @PostMapping(value = "/todetail")
     @ResponseBody
-    public JSONObject todetail(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId ) throws IOException {
+    public JSONObject todetail(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
@@ -216,7 +229,7 @@ public class ExteroceptiveController {
             if (user.getUserId().isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object=exteroceptiveService.todetail(channelId,user.getUserId());
+                object = exteroceptiveService.todetail(channelId, user.getUserId());
             }
         }
         return object;
@@ -224,6 +237,7 @@ public class ExteroceptiveController {
 
     /**
      * 用户操作记录
+     *
      * @param secToken
      * @param channelId
      * @param actId
@@ -232,7 +246,7 @@ public class ExteroceptiveController {
      */
     @PostMapping(value = "/actRecord")
     @ResponseBody
-    public JSONObject actRecord(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String caozuo,int type ) throws IOException {
+    public JSONObject actRecord(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, String caozuo, int type) throws IOException {
         JSONObject object = new JSONObject();
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
@@ -241,8 +255,8 @@ public class ExteroceptiveController {
             if (user.getUserId().isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                exteroceptiveService.changeStatus(caozuo,channelId,type,user.getUserId());
-                object.put(Constant.MSG,"success");
+                exteroceptiveService.changeStatus(caozuo, channelId, type, user.getUserId());
+                object.put(Constant.MSG, "success");
             }
         }
         return object;
@@ -251,6 +265,7 @@ public class ExteroceptiveController {
 
     /**
      * 我的奖励
+     *
      * @param secToken
      * @param channelId
      * @param actId
@@ -259,7 +274,7 @@ public class ExteroceptiveController {
      */
     @PostMapping(value = "/received")
     @ResponseBody
-    public JSONObject received(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId ) throws IOException {
+    public JSONObject received(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
@@ -268,8 +283,8 @@ public class ExteroceptiveController {
             if (user.getUserId().isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object=exteroceptiveService.myReceived(channelId,user.getUserId(),actId);
-                object.put(Constant.MSG,"success");
+                object = exteroceptiveService.myReceived(channelId, user.getUserId(), actId);
+                object.put(Constant.MSG, "success");
             }
         }
         return object;
@@ -277,6 +292,7 @@ public class ExteroceptiveController {
 
     /**
      * 活动时间
+     *
      * @param secToken
      * @param channelId
      * @param actId
@@ -285,13 +301,13 @@ public class ExteroceptiveController {
      */
     @PostMapping(value = "/ifActDate")
     @ResponseBody
-    public JSONObject ifDate(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String caozuo,int type ) throws IOException {
+    public JSONObject ifDate(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, String caozuo, int type) throws IOException {
         JSONObject object = new JSONObject();
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {
-           String msg= exteroceptiveService.selectTime(actId);
-            object.put(Constant.MSG,msg);
+            String msg = exteroceptiveService.selectTime(actId);
+            object.put(Constant.MSG, msg);
         }
         return object;
     }

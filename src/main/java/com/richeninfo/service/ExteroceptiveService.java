@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) RICHENINFO [2024]
+ * Unauthorized use, copying, modification, or distribution of this software
+ * is strictly prohibited without the prior written consent of Richeninfo.
+ * https://www.richeninfo.com/
+ */
 package com.richeninfo.service;
 
 
@@ -7,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * @auth lei
+ * @auth sunxialei
  * @date 2024/3/22 15:43
  */
 public interface ExteroceptiveService {
@@ -24,15 +30,15 @@ public interface ExteroceptiveService {
 
     JSONObject tochoujiang(String channelId, String userId);
 
-    JSONObject choujiang(String channelId, String userId,String actId);
+    JSONObject choujiang(String channelId, String userId, String actId);
 
     JSONObject todetail(String channelId, String userId);
 
     void changeStatus(String caozuo, String channelId, int type, String userId);
 
-    String  selectTime(String actId);
+    String selectTime(String actId);
 
-    JSONObject myReceived(String channelId, String userId,String actId);
+    JSONObject myReceived(String channelId, String userId, String actId);
 
 
 }

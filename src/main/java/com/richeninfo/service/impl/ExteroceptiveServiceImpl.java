@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import javax.jms.Queue;
 import java.text.DateFormat;
@@ -21,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * @auth lei
+ * @auth sunxialei
  * @date 2024/3/22 15:43
  */
 
@@ -42,20 +43,21 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
     private RedisUtil redisUtil;
     @Resource
     private Queue queue;
+
     @Override
     public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
-        JSONObject object=new JSONObject();
-        ActivityUser users=  findEveryDayUser(userId,secToken);
-        if(users==null){
+        JSONObject object = new JSONObject();
+        ActivityUser users = findEveryDayUser(userId, secToken);
+        if (users == null) {
             ActivityUser user = new ActivityUser();
-                //查询第一期的分数和对应等级 导入第二期
-            ActivityUser olduser =exteroceptiveMapper.findOldUserInfoByUserId(userId);
-            if(olduser==null) {
+            //查询第一期的分数和对应等级 导入第二期
+            ActivityUser olduser = exteroceptiveMapper.findOldUserInfoByUserId(userId);
+            if (olduser == null) {
                 user.setGrade(0);
-            }else {
+            } else {
                 user.setGrade(olduser.getGrade());
                 user.setMark(olduser.getMark());
-                InsertRecord("2023年心级体验官累积分值",userId,olduser.getMark(),channelId,0);
+                InsertRecord("2023年心级体验官累积分值", userId, olduser.getMark(), channelId, 0);
             }
             user.setLevel(0);// 第一次进游戏
             user.setAward(0);
@@ -68,29 +70,31 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             user.setActId(actId);
             user.setSecToken(secToken);
             exteroceptiveMapper.saveUser(user);
-            object.put("user",user);
-        }else{
-            object.put("user",users);
+            object.put("user", user);
+        } else {
+            object.put("user", users);
         }
-        object.put("actStatus",selectTime(actId));
+        object.put("actStatus", selectTime(actId));
         return object;
     }
+
     /**
      * 积分记录
+     *
      * @param caozuo
      * @param userId
      * @param fenshu
      * @param channel_id
      */
-    public void InsertRecord(String caozuo,String userId,int fenshu,String channel_id,int typeId){
-        RemindRecord record=new RemindRecord();
+    public void InsertRecord(String caozuo, String userId, int fenshu, String channel_id, int typeId) {
+        RemindRecord record = new RemindRecord();
         record.setCaozuo(caozuo);
         record.setStatus(fenshu);
         record.setUserId(userId);
         record.setTypeId(typeId);
-        if(channel_id==null||channel_id.equals("")){
+        if (channel_id == null || channel_id.equals("")) {
             record.setChannel_id("weiting");
-        }else{
+        } else {
             record.setChannel_id(channel_id);
         }
         try {
@@ -102,6 +106,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
 
     /**
      * 服务评测
+     *
      * @param channel_id
      * @param userId
      * @return
@@ -109,59 +114,60 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
     @Override
     public JSONObject toAnswer(String channel_id, String userId) {
         System.out.println("toanswer");
-        JSONObject jsonObject=new JSONObject();
-        Map<String, Object> map =new HashMap<>();
+        JSONObject jsonObject = new JSONObject();
+        Map<String, Object> map = new HashMap<>();
         try {
-            if (userId != null){
-                ActivityUser user=exteroceptiveMapper.findUserInfoByUserId(userId);
-                List<ReedToAnswer> answerlist=new ArrayList<ReedToAnswer>();
-                if(user.getAnswerNum()>0){
-                    ReedToAnswer randAnswer=exteroceptiveMapper.findRandAnswerOne();
-                    ReedToAnswer firstanswer=exteroceptiveMapper.findFirstAnswer();//第一题固定
+            if (userId != null) {
+                ActivityUser user = exteroceptiveMapper.findUserInfoByUserId(userId);
+                List<ReedToAnswer> answerlist = new ArrayList<ReedToAnswer>();
+                if (user.getAnswerNum() > 0) {
+                    ReedToAnswer randAnswer = exteroceptiveMapper.findRandAnswerOne();
+                    ReedToAnswer firstanswer = exteroceptiveMapper.findFirstAnswer();//第一题固定
                     answerlist.add(firstanswer);
                     answerlist.add(randAnswer);
-                }else{
-                    int oneAnswerType= Integer.valueOf(user.getAnswerTitle().split(",")[0]) ;
-                    int twoAnswerType= Integer.valueOf(user.getAnswerTitle().split(",")[1]) ;
-                    ReedToAnswer randAnswerone=exteroceptiveMapper.findAnswerByType(oneAnswerType);
-                    ReedToAnswer randAnswertwo=exteroceptiveMapper.findAnswerByType(twoAnswerType);
+                } else {
+                    int oneAnswerType = Integer.valueOf(user.getAnswerTitle().split(",")[0]);
+                    int twoAnswerType = Integer.valueOf(user.getAnswerTitle().split(",")[1]);
+                    ReedToAnswer randAnswerone = exteroceptiveMapper.findAnswerByType(oneAnswerType);
+                    ReedToAnswer randAnswertwo = exteroceptiveMapper.findAnswerByType(twoAnswerType);
                     answerlist.add(randAnswerone);
                     answerlist.add(randAnswertwo);
                 }
                 map.put("answerList", JSON.toJSON(answerlist));
                 map.put("user", user);
                 map.put("channel_id", channel_id);
-            }else{
+            } else {
                 map.put("loginFlag", false);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        jsonObject.put("data",map);
+        jsonObject.put("data", map);
         return jsonObject;
     }
 
 
     /**
      * 提交评测内容
+     *
      * @param channel_id
      * @param answer
      * @param answerTitle
      * @param userId
      */
     @Override
-    public JSONObject answer( String channel_id,String answer,String answerTitle,String userId) {
+    public JSONObject answer(String channel_id, String answer, String answerTitle, String userId) {
         JSONObject jsonObject = null;
-        Map<String, Object> map =new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         try {
             jsonObject = new JSONObject();
             if (StringUtils.isBlank(userId) || userId.length() < 11) {
                 map.put("msg", "error");
             } else {
-                Object userjedis = redisUtil.get(userId+"play");
+                Object userjedis = redisUtil.get(userId + "play");
                 if (Objects.isNull(userjedis)) {
-                    redisUtil.set(userId+"play", userId+"play", 3);
+                    redisUtil.set(userId + "play", userId + "play", 3);
                     ActivityUser user = exteroceptiveMapper.findUserInfoByUserId(userId);
                     if (user.getAnswerNum() > 0) {//时间内，白名单用户
                         int lostAnswerNum = exteroceptiveMapper.lostAnswerNum(userId);
@@ -188,53 +194,54 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             map.put("msg", "error");
             e.printStackTrace();
         }
-        jsonObject.put("data",map);
+        jsonObject.put("data", map);
         return jsonObject;
     }
 
     /**
      * 完成吹泡泡
+     *
      * @param channel_id
      * @param paopao
      * @param userId
      * @return
      */
     @Override
-    public JSONObject  play(String channel_id,String paopao,String userId) {
-        JSONObject jsonObject=new JSONObject();
-        Map<String, Object> map =new HashMap<>();
+    public JSONObject play(String channel_id, String paopao, String userId) {
+        JSONObject jsonObject = new JSONObject();
+        Map<String, Object> map = new HashMap<>();
         try {
             ActivityUser user = exteroceptiveMapper.findUserInfoByUserId(userId);
-            log.info("吹泡泡"+userId+"paopao=="+paopao);
-            if(StringUtils.isBlank(userId)||userId.length()<11){
+            log.info("吹泡泡" + userId + "paopao==" + paopao);
+            if (StringUtils.isBlank(userId) || userId.length() < 11) {
                 map.put("msg", "error");
-            }else{
-                Object userjedis = redisUtil.get(userId+"play");
+            } else {
+                Object userjedis = redisUtil.get(userId + "play");
                 if (Objects.isNull(userjedis)) {
-                    redisUtil.set(userId+"play", userId+"play", 3);
-                    if(user.getBlowNum()>0){//时间内，白名单用户
-                        int lostBlowNum=exteroceptiveMapper.lostBlowNum(userId);
-                        if(lostBlowNum>0){
+                    redisUtil.set(userId + "play", userId + "play", 3);
+                    if (user.getBlowNum() > 0) {//时间内，白名单用户
+                        int lostBlowNum = exteroceptiveMapper.lostBlowNum(userId);
+                        if (lostBlowNum > 0) {
                             //添加成绩 并创建表记录
-                            int newpaopao=Integer.valueOf(paopao);
-                            if(newpaopao>100){
-                                newpaopao=100;
+                            int newpaopao = Integer.valueOf(paopao);
+                            if (newpaopao > 100) {
+                                newpaopao = 100;
                             }
-                            int allMark=user.getMark()+newpaopao;
-                            int addmark=exteroceptiveMapper.addUserMark(userId,allMark);
-                            if(addmark>0){
-                                InsertRecord("趣味游戏",userId,newpaopao,channel_id,2);
+                            int allMark = user.getMark() + newpaopao;
+                            int addmark = exteroceptiveMapper.addUserMark(userId, allMark);
+                            if (addmark > 0) {
+                                InsertRecord("趣味游戏", userId, newpaopao, channel_id, 2);
                             }
                             map.put("msg", "success");
                             map.put("paopao", paopao);
                         }
-                    }else{
+                    } else {
                         map.put("msg", "timeout");
                     }
-                }else{
+                } else {
                     map.put("msg", "Repeated request");
                 }
-                String curmonth= DateTimeTool.formatDateMonth(new Date());
+                String curmonth = DateTimeTool.formatDateMonth(new Date());
                 ActivityUser newuser = exteroceptiveMapper.findUserInfoByUserId(userId);
                 map.put("user", newuser);
             }
@@ -242,136 +249,136 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             map.put("msg", "error");
             e.printStackTrace();
         }
-        jsonObject.put("data",map);
-        return  jsonObject;
+        jsonObject.put("data", map);
+        return jsonObject;
     }
 
     @Override
-    public JSONObject  tochoujiang( String channel_id,String userId) {
+    public JSONObject tochoujiang(String channel_id, String userId) {
         System.out.println("tochoujiang");
-        Map<String, Object> map =new HashMap<>();
-        JSONObject jsonObject=new JSONObject();
+        Map<String, Object> map = new HashMap<>();
+        JSONObject jsonObject = new JSONObject();
         try {
-            if (userId != null){
+            if (userId != null) {
                 ActivityUser user = exteroceptiveMapper.findUserInfoByUserId(userId);
-                int tishi=0;
-                String dengji="0";
-                int gameNum=0;
-                if(user.getMark()>=4500&&user.getGrade()<1){
-                    tishi=1;
-                    dengji="白银";
-                    gameNum=2;
-                }else if(user.getMark()>=9000&&user.getGrade()<2){
-                    tishi=2;
-                    gameNum=3;
-                    dengji="黄金";
-                }else if(user.getMark()>=20000&&user.getGrade()<3){
-                    tishi=3;
-                    gameNum=5;
-                    dengji="铂金";
-                }else if(user.getMark()>=40000&&user.getGrade()<3){
-                    tishi=4;
-                    gameNum=6;
-                    dengji="钻石";
+                int tishi = 0;
+                String dengji = "0";
+                int gameNum = 0;
+                if (user.getMark() >= 4500 && user.getGrade() < 1) {
+                    tishi = 1;
+                    dengji = "白银";
+                    gameNum = 2;
+                } else if (user.getMark() >= 9000 && user.getGrade() < 2) {
+                    tishi = 2;
+                    gameNum = 3;
+                    dengji = "黄金";
+                } else if (user.getMark() >= 20000 && user.getGrade() < 3) {
+                    tishi = 3;
+                    gameNum = 5;
+                    dengji = "铂金";
+                } else if (user.getMark() >= 40000 && user.getGrade() < 3) {
+                    tishi = 4;
+                    gameNum = 6;
+                    dengji = "钻石";
                 }
-                String dangDate= DateTimeTool.formatDate(new Date());
-                String weekDate=DateTimeTool.formatDate(user.getWeekTime());
-                if(dangDate.equals(weekDate)&&tishi>0){
+                String dangDate = DateTimeTool.formatDate(new Date());
+                String weekDate = DateTimeTool.formatDate(user.getWeekTime());
+                if (dangDate.equals(weekDate) && tishi > 0) {
                     map.put("msg", "update");
                 }
-                exteroceptiveMapper.updateUserGrade(userId,tishi);
+                exteroceptiveMapper.updateUserGrade(userId, tishi);
                 map.put("user", user);
                 map.put("tishi", tishi);
                 map.put("dengji", dengji);
                 map.put("gameNum", gameNum);
                 map.put("level", dengji);
                 map.put("channel_id", channel_id);
-            }else{
+            } else {
                 map.put("loginFlag", false);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        jsonObject.put("data",map);
-        return  jsonObject;
+        jsonObject.put("data", map);
+        return jsonObject;
     }
 
     @Override
-    public JSONObject choujiang(String channel_id,String userId,String actId) {
-        JSONObject jsonObject=new JSONObject();
-        Map<String, Object> map =new HashMap<>();
+    public JSONObject choujiang(String channel_id, String userId, String actId) {
+        JSONObject jsonObject = new JSONObject();
+        Map<String, Object> map = new HashMap<>();
         try {
-            log.info("开始抽奖"+userId);
-            if(StringUtils.isBlank(userId)||userId.length()<11){
+            log.info("开始抽奖" + userId);
+            if (StringUtils.isBlank(userId) || userId.length() < 11) {
                 map.put("msg", "error");
-            }else{
-                Object userjedis = redisUtil.get(userId+"play");
+            } else {
+                Object userjedis = redisUtil.get(userId + "play");
                 if (Objects.isNull(userjedis)) {
-                    redisUtil.set(userId+"play", userId+"play", 3);
+                    redisUtil.set(userId + "play", userId + "play", 3);
                     ActivityUser user = exteroceptiveMapper.findUserInfoByUserId(userId);
                     //流量礼包开始发放
-                    if(user.getPlayNum()>0){//时间内，白名单用户
-                        int lostPlayNum=exteroceptiveMapper.LostPlayNum(user.getId());
-                        if(lostPlayNum>0){
-                            ActivityConfiguration gift=new ActivityConfiguration();
+                    if (user.getPlayNum() > 0) {//时间内，白名单用户
+                        int lostPlayNum = exteroceptiveMapper.LostPlayNum(user.getId());
+                        if (lostPlayNum > 0) {
+                            ActivityConfiguration gift = new ActivityConfiguration();
                             //用户首次抽奖  500MB流量
-                            if(user.getAward()<1){
-                                int changestatus=exteroceptiveMapper.updateUserAward(userId);
-                                if(changestatus>0){
-                                    gift=exteroceptiveMapper.findGiftByTypeId(0,actId);
-                                }else{
-                                    gift= randomQYGift(actId);
+                            if (user.getAward() < 1) {
+                                int changestatus = exteroceptiveMapper.updateUserAward(userId);
+                                if (changestatus > 0) {
+                                    gift = exteroceptiveMapper.findGiftByTypeId(0, actId);
+                                } else {
+                                    gift = randomQYGift(actId);
                                 }
-                            }else{
+                            } else {
                                 Calendar calendar = Calendar.getInstance();
                                 int month = calendar.get(Calendar.MONTH) + 1;
-                                List<ActivityConfiguration> giftList=exteroceptiveMapper.findGiftList(month,actId);
-                                gift=randomGiftByUserGrade(giftList,user.getGrade());
-                                if(Double.valueOf(gift.getValue())>0){//抽中流量话费
+                                List<ActivityConfiguration> giftList = exteroceptiveMapper.findGiftList(month, actId);
+                                gift = randomGiftByUserGrade(giftList, user.getGrade());
+                                if (Double.valueOf(gift.getValue()) > 0) {//抽中流量话费
                                     //达80%（剩余/奖励总量 <20%）
-                                    String curmonth= DateTimeTool.formatDateMonth(new Date());
-                                    ExperienceGiftList monthgift=exteroceptiveMapper.findExperienceGiftList(gift.getUnlocked(),curmonth);
-                                    log.info("剩余量/总量："+ (Double.valueOf(monthgift.getCount())/Double.valueOf(gift.getAmount())));
-                                    if((Double.valueOf(monthgift.getCount())/Double.valueOf(gift.getAmount()))<0.2){
+                                    String curmonth = DateTimeTool.formatDateMonth(new Date());
+                                    ExperienceGiftList monthgift = exteroceptiveMapper.findExperienceGiftList(gift.getUnlocked(), curmonth);
+                                    log.info("剩余量/总量：" + (Double.valueOf(monthgift.getCount()) / Double.valueOf(gift.getAmount())));
+                                    if ((Double.valueOf(monthgift.getCount()) / Double.valueOf(gift.getAmount())) < 0.2) {
                                         Random random = new Random();
                                         int n = random.nextInt(2);
-                                        if(n==1){//发放权益
-                                            gift= randomQYGift(actId);
-                                            log.info("达80% 抽权益===="+gift.toString());
+                                        if (n == 1) {//发放权益
+                                            gift = randomQYGift(actId);
+                                            log.info("达80% 抽权益====" + gift.toString());
                                         }
                                     }
-                                    if(Double.valueOf(gift.getValue())>0){
-                                        int lostCount=exteroceptiveMapper.lostGiftListCount(gift.getUnlocked(),curmonth);
-                                        if(lostCount<1){
-                                            gift= randomQYGift(actId);
-                                            log.info("数量不足 发放权益===="+gift.toString());
+                                    if (Double.valueOf(gift.getValue()) > 0) {
+                                        int lostCount = exteroceptiveMapper.lostGiftListCount(gift.getUnlocked(), curmonth);
+                                        if (lostCount < 1) {
+                                            gift = randomQYGift(actId);
+                                            log.info("数量不足 发放权益====" + gift.toString());
                                         }
                                     }
                                 }
                             }
                             saveHistory(gift, userId, channel_id);
-                            ActivityUser users= exteroceptiveMapper.findUserInfoByUserId(userId);
+                            ActivityUser users = exteroceptiveMapper.findUserInfoByUserId(userId);
                             map.put("gift", gift);
                             map.put("msg", "success");
                             map.put("user", users);
-                            int tishi=0;
-                            if(user.getMark()>=4500&&user.getGrade()<1){
-                                tishi=1;
-                            }else if(user.getMark()>=9000&&user.getGrade()<2){
-                                tishi=2;
-                            }else if(user.getMark()>=20000&&user.getGrade()<3){
-                                tishi=3;
-                            }else if(user.getMark()>=40000&&user.getGrade()<4){
-                                tishi=4;
+                            int tishi = 0;
+                            if (user.getMark() >= 4500 && user.getGrade() < 1) {
+                                tishi = 1;
+                            } else if (user.getMark() >= 9000 && user.getGrade() < 2) {
+                                tishi = 2;
+                            } else if (user.getMark() >= 20000 && user.getGrade() < 3) {
+                                tishi = 3;
+                            } else if (user.getMark() >= 40000 && user.getGrade() < 4) {
+                                tishi = 4;
                             }
-                            exteroceptiveMapper.updateUserGrade(userId,tishi);
-                        }else{
+                            exteroceptiveMapper.updateUserGrade(userId, tishi);
+                        } else {
                             map.put("msg", "mjh");
                         }
-                    }else{
+                    } else {
                         map.put("msg", "timeout");
                     }
-                }else{
+                } else {
                     map.put("msg", "Repeated request");
                 }
             }
@@ -379,12 +386,13 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             map.put("msg", "error");
             e.printStackTrace();
         }
-        jsonObject.put("data",map);
-        return  jsonObject;
+        jsonObject.put("data", map);
+        return jsonObject;
     }
+
     //保存中奖记录
-    public void saveHistory(ActivityConfiguration gift,String userId,String channel_id){
-        ActivityUserHistory  history=new ActivityUserHistory();
+    public void saveHistory(ActivityConfiguration gift, String userId, String channel_id) {
+        ActivityUserHistory history = new ActivityUserHistory();
         history.setUserId(userId);
         history.setChannelId(channel_id);
         history.setRewardName(gift.getName());
@@ -392,59 +400,64 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
         history.setUnlocked(gift.getUnlocked());
         history.setRemark(gift.getRemark());
         history.setWinSrc(gift.getWinSrc());
-        int status= exteroceptiveMapper.saveHistory(history);
+        int status = exteroceptiveMapper.saveHistory(history);
         try {
-            if(status>0&&Double.valueOf(gift.getValue())>0){
+            if (status > 0 && Double.valueOf(gift.getValue()) > 0) {
                 String mqMsg = commonService.issueReward(gift, history);
                 log.info("4147请求信息：" + mqMsg);
-                jmsMessagingTemplate.convertAndSend("proemMQ",mqMsg);
+                jmsMessagingTemplate.convertAndSend("proemMQ", mqMsg);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+
     /**
      * 权益随机抽取
+     *
      * @return
      */
-    public ActivityConfiguration randomQYGift(String actId){
+    public ActivityConfiguration randomQYGift(String actId) {
         Calendar calendar = Calendar.getInstance();
         int month = calendar.get(Calendar.MONTH) + 1;
-        List<ActivityConfiguration> qyGiftList=  exteroceptiveMapper.findGiftListByObtain(month,actId);
-        ActivityConfiguration gift=randomListGift(qyGiftList);
+        List<ActivityConfiguration> qyGiftList = exteroceptiveMapper.findGiftListByObtain(month, actId);
+        ActivityConfiguration gift = randomListGift(qyGiftList);
         return gift;
     }
+
     /**
      * 用户经验值明细
+     *
      * @param channel_id
      * @param userId
      * @return
      */
     @Override
-    public JSONObject  todetail( String channel_id,String userId) {
+    public JSONObject todetail(String channel_id, String userId) {
         System.out.println("todetail");
-        Map<String, Object> map =new HashMap<>();
-        JSONObject jsonObject =new JSONObject();
+        Map<String, Object> map = new HashMap<>();
+        JSONObject jsonObject = new JSONObject();
         try {
-            if (userId != null){
+            if (userId != null) {
                 ActivityUser user = exteroceptiveMapper.findUserInfoByUserId(userId);
-                List<RemindRecord> userRecordList=exteroceptiveMapper.findUserRecord(userId);
-                for(RemindRecord record:userRecordList ){
+                List<RemindRecord> userRecordList = exteroceptiveMapper.findUserRecord(userId);
+                for (RemindRecord record : userRecordList) {
                     record.setTime(record.getCreateTime().getTime());
                 }
-                map.put("userRecordList",JSON.toJSON(userRecordList));
+                map.put("userRecordList", JSON.toJSON(userRecordList));
                 map.put("user", user);
                 map.put("channel_id", channel_id);
-            }else{
+            } else {
                 map.put("loginFlag", false);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        jsonObject.put("data",map);
+        jsonObject.put("data", map);
         return jsonObject;
     }
+
     public static Date[] getWeekDay() {
         Calendar calendar = Calendar.getInstance();
         while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
@@ -457,6 +470,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
         }
         return dates;
     }
+
     public static Date getLastWeek5() {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar1 = Calendar.getInstance();
@@ -469,69 +483,75 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
         // System.out.println(sdf.format(calendar1.getTime()));// last Monday
         String lastBeginDate = sdf.format(calendar1.getTime());
         // System.out.println(sdf.format(calendar2.getTime()));// last Sunday
-        Date lastEndDate =calendar2.getTime();
-        log.info("上周更新时间："+lastEndDate);
-        return  lastEndDate;
+        Date lastEndDate = calendar2.getTime();
+        log.info("上周更新时间：" + lastEndDate);
+        return lastEndDate;
     }
+
     /**
      * 全部随机抽取
+     *
      * @param giftList
      * @return
      */
-    public  ActivityConfiguration randomListGift(List<ActivityConfiguration> giftList){
+    public ActivityConfiguration randomListGift(List<ActivityConfiguration> giftList) {
         log.info(giftList.toString());
         Random random = new Random();
         int n = random.nextInt(giftList.size());
-        log.info("n的值==="+n);
-        ActivityConfiguration zjgift=giftList.get(n);
-        System.out.println("随机的奖励==="+zjgift);
+        log.info("n的值===" + n);
+        ActivityConfiguration zjgift = giftList.get(n);
+        System.out.println("随机的奖励===" + zjgift);
         return zjgift;
     }
+
     /**
-     *  按照个人等级来抽奖，
+     * 按照个人等级来抽奖，
+     *
      * @param giftList
      * @return
      */
-    private ActivityConfiguration randomGiftByUserGrade(List<ActivityConfiguration> giftList,int grade){
+    private ActivityConfiguration randomGiftByUserGrade(List<ActivityConfiguration> giftList, int grade) {
         double randomNum = RandomUtils.nextDouble();
         //0-1 随机小数
         log.info("随机数=" + randomNum);
         double startRate = 0;
         double endRate = 0;
-        for (int i = 0; i < giftList.size(); i++){
+        for (int i = 0; i < giftList.size(); i++) {
             log.info("rate=" + giftList.get(i).getProb());//0.33
             startRate = endRate; //0
             log.info("startRate=" + startRate);
-            String[] newrate=giftList.get(i).getProb().split("_");
-            String rate1=newrate[(grade)];
+            String[] newrate = giftList.get(i).getProb().split("_");
+            String rate1 = newrate[(grade)];
             endRate += Double.valueOf(rate1);//0.33
             log.info("endRate=" + endRate);
-            if(randomNum >= startRate && randomNum < endRate){
-                log.info("抽中奖励"+giftList.get(i).toString());
+            if (randomNum >= startRate && randomNum < endRate) {
+                log.info("抽中奖励" + giftList.get(i).toString());
                 return giftList.get(i);
             }
         }
         return null;
     }
+
     /**
      * 用户记录操作
+     *
      * @param caozuo
      * @param channel_id
      * @param type
      * @param userId
      */
     @Override
-    public void changeStatus(String caozuo,String channel_id,int type,String userId) {
-        log.info("userId:"+userId+",caozuo"+caozuo);
-        Map<String, Object> map =new HashMap<>();
-        RemindRecord record=new RemindRecord();
+    public void changeStatus(String caozuo, String channel_id, int type, String userId) {
+        log.info("userId:" + userId + ",caozuo" + caozuo);
+        Map<String, Object> map = new HashMap<>();
+        RemindRecord record = new RemindRecord();
         record.setCaozuo(caozuo);
         record.setStatus(0);
         record.setUserId(userId);
         record.setTypeId(type);
-        if(channel_id==null||channel_id.equals("")){
+        if (channel_id == null || channel_id.equals("")) {
             record.setChannel_id("weiting");
-        }else{
+        } else {
             record.setChannel_id(channel_id);
         }
         try {
@@ -540,21 +560,23 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             e.printStackTrace();
         }
     }
+
     /**
      * 分享接口
+     *
      * @param userId
      * @param channel_id
      * @param event
      */
-    public void addShare( String userId, String channel_id,String event) {
-        Map<String, Object> map =new HashMap<>();
-        log.info("addShare===" + userId+"channel_id==="+channel_id);
-        if(userId.equals("")||userId==""){
+    public void addShare(String userId, String channel_id, String event) {
+        Map<String, Object> map = new HashMap<>();
+        log.info("addShare===" + userId + "channel_id===" + channel_id);
+        if (userId.equals("") || userId == "") {
 
-        }else{
+        } else {
             ActivityUser user = exteroceptiveMapper.findUserInfoByUserId(userId);
-            if(null==channel_id||channel_id.equals("")){
-                channel_id="weiting";
+            if (null == channel_id || channel_id.equals("")) {
+                channel_id = "weiting";
             }
             if (null == event || event.equals("")) { // 普通分享 只增加计数
             } else if (event.equals("index") || event.equals("game")) {// 首页分享，
@@ -567,40 +589,41 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             exteroceptiveMapper.saveShareHistory(share);
         }
     }
-    public ActivityUser findEveryDayUser(String userId,String secToken){
+
+    public ActivityUser findEveryDayUser(String userId, String secToken) {
         try {
             ActivityUser user = exteroceptiveMapper.findUserInfoByUserId(userId);
             if (user == null) {
                 return user;
-            }else{
+            } else {
                 //更新 secToken
-                if(!secToken.equals(user.getSecToken())){
-                    exteroceptiveMapper.updateUserSecToken(userId,secToken);
+                if (!secToken.equals(user.getSecToken())) {
+                    exteroceptiveMapper.updateUserSecToken(userId, secToken);
                 }
                 //每天更新吹泡泡 答题游戏机会
-                if(!DateTimeTool.formatDate(user.getCreateTime()).equals(DateTimeTool.formatDate(new Date()))){
+                if (!DateTimeTool.formatDate(user.getCreateTime()).equals(DateTimeTool.formatDate(new Date()))) {
                     //更新机会和时间
                     exteroceptiveMapper.updateUserCurInfo(userId);
                 }
                 //周五更新抽奖机会
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                System.out.println("本周更新日期："+dateFormat.format(getWeekDay()[4]));
-                String week5Date=dateFormat.format(getWeekDay()[4]);
-                String dangDate= DateTimeTool.formatDate(new Date());
-                Date week5= dateFormat.parse(week5Date);
-                Date  curDate=dateFormat.parse(dangDate);
-                Date lastweek5=dateFormat.parse(dateFormat.format(getLastWeek5()));
+                System.out.println("本周更新日期：" + dateFormat.format(getWeekDay()[4]));
+                String week5Date = dateFormat.format(getWeekDay()[4]);
+                String dangDate = DateTimeTool.formatDate(new Date());
+                Date week5 = dateFormat.parse(week5Date);
+                Date curDate = dateFormat.parse(dangDate);
+                Date lastweek5 = dateFormat.parse(dateFormat.format(getLastWeek5()));
                 Date userweektime = dateFormat.parse(dateFormat.format(user.getWeekTime()));
 
-                log.info("user.getWeekTime()"+userweektime.getTime());
-                log.info("lastweek5"+lastweek5.getTime());
+                log.info("user.getWeekTime()" + userweektime.getTime());
+                log.info("lastweek5" + lastweek5.getTime());
                 //当前时间大于本周五  且更新日期小于本周五
-                if((curDate.getTime()>=week5.getTime()&&user.getWeekTime().getTime()<week5.getTime())||userweektime.getTime()<lastweek5.getTime()){
-                    int playNum=0;
-                    if(!DateTimeTool.formatDate(user.getWeekTime()).equals(DateTimeTool.formatDate(new Date()))){
+                if ((curDate.getTime() >= week5.getTime() && user.getWeekTime().getTime() < week5.getTime()) || userweektime.getTime() < lastweek5.getTime()) {
+                    int playNum = 0;
+                    if (!DateTimeTool.formatDate(user.getWeekTime()).equals(DateTimeTool.formatDate(new Date()))) {
                         //根据用户等级更新宝箱抽奖机会 //二期是每周只有一次游戏机会了
-                        playNum=1;
-                        exteroceptiveMapper.updateUserBaoXiangPlayNum(userId,playNum);
+                        playNum = 1;
+                        exteroceptiveMapper.updateUserBaoXiangPlayNum(userId, playNum);
                     }
                 }
                 ActivityUser newuser = exteroceptiveMapper.findUserInfoByUserId(userId);
@@ -611,12 +634,14 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
         }
         return null;
     }
+
     /**
      * 时间控制
+     *
      * @return
      */
-   @Override
-    public String  selectTime(String actId) {
+    @Override
+    public String selectTime(String actId) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ActivityList list = exteroceptiveMapper.selectTime(actId);
         try {
@@ -628,9 +653,9 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             if (dt3.getTime() >= dt1.getTime() && dt3.getTime() <= dt2.getTime()) {
                 return "success";
             } else {
-                if(dt3.getTime() < dt1.getTime()){
+                if (dt3.getTime() < dt1.getTime()) {
                     return "wks";
-                }else if(dt3.getTime() > dt2.getTime()){
+                } else if (dt3.getTime() > dt2.getTime()) {
                     return "ygq";
                 }
             }
@@ -641,13 +666,13 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
     }
 
     @Override
-    public JSONObject myReceived(String channelId, String userId,String actId) {
-       JSONObject jsonObject=new JSONObject();
+    public JSONObject myReceived(String channelId, String userId, String actId) {
+        JSONObject jsonObject = new JSONObject();
         try {
-            if(null==userId||userId.length()<11||userId.equals("")){
+            if (null == userId || userId.length() < 11 || userId.equals("")) {
                 jsonObject.put("msg", "error");
             }
-            List<ActivityUserHistory> newlist=new ArrayList<ActivityUserHistory>();
+            List<ActivityUserHistory> newlist = new ArrayList<ActivityUserHistory>();
             List<ActivityUserHistory> list = exteroceptiveMapper.findUserRecived(userId);
            /* List<ActivityConfiguration> userGift=new ArrayList<ActivityConfiguration>();
             if(list != null && !list.isEmpty()){

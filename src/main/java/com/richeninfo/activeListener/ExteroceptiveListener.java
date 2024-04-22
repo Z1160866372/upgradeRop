@@ -1,4 +1,11 @@
+/*
+ * Copyright (c) RICHENINFO [2024]
+ * Unauthorized use, copying, modification, or distribution of this software
+ * is strictly prohibited without the prior written consent of Richeninfo.
+ * https://www.richeninfo.com/
+ */
 package com.richeninfo.activeListener;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
@@ -7,6 +14,7 @@ import com.richeninfo.entity.mapper.mapper.master.ProMemberMapper;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.pojo.PacketMq;
 import com.richeninfo.util.RopServiceManager;
+
 import lombok.extern.java.Log;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jms.annotation.JmsListener;
@@ -14,13 +22,18 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
+/**
+ * @author  sunxialei
+ * @date 2024/4/22 13:15
+ */
 @Log
 @Component
 //@ConditionalOnProperty(prefix = "spring.activemq.jms", name = "enable",havingValue = "true")
 public class ExteroceptiveListener {
     @Resource
     private ExteroceptiveMapper exteroceptiveMapper;
-    @JmsListener(destination="proemMQ")
+
+    @JmsListener(destination = "proemMQ")
     public void readActiveQueue(String message) {
         log.info("proemMQ接收信息======" + message);
         PacketMq mq = JSON.parseObject(message, PacketMq.class);
