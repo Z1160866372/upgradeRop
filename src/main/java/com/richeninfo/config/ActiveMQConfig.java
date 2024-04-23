@@ -1,11 +1,9 @@
-
 /*
  * Copyright (c) RICHENINFO [2024]
  * Unauthorized use, copying, modification, or distribution of this software
  * is strictly prohibited without the prior written consent of Richeninfo.
  * https://www.richeninfo.com/
  */
-
 package com.richeninfo.config;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -30,7 +28,7 @@ import javax.jms.Topic;
  * @create 2024/3/19 13:52
  */
 @Configuration
-//@ConditionalOnProperty(prefix = "spring.activemq.jms", name = "enable",havingValue = "true")
+@ConditionalOnProperty(prefix = "spring.activemq.jms", name = "enable",havingValue = "true")
 public class ActiveMQConfig{
 
     @Value("${spring.activemq.broker-url}")
