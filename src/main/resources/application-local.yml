@@ -1,31 +1,30 @@
 spring:
   redis:
-    host: 10.102.75.24
-    password: Jy*Rds&$8
+    host: 121.40.205.162
+    password: h1e2j3i4a5o6s7h8o9u0!@#$%^&*
     port: 6379
   master:
     datasource:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://10.102.74.10:3308/rop?characterEncoding=utf8&allowMultiQueries=true&useSSL=false
-      #url: jdbc:mysql://10.102.74.20:3308/rop?characterEncoding=utf8&allowMultiQueries=true&useSSL=false
+      url: jdbc:mysql://121.40.205.162:3306/weixin?characterEncoding=utf8&allowMultiQueries=true&useSSL=false
       username: root
-      password: Jy#BC8&%
+      password: richen123.
   #activemq配置
   activemq:
-    broker-url: tcp://10.102.75.24:61616  #activeMQ的ip和端口号
-    user: admin   #activeMq账号
-    password: Jy*Mq&$8 #activeMq密码
+    broker-url: tcp://47.111.174.33:61616  #activeMQ的ip和端口号
+    user: richen   #activeMq账号
+    password: Richen123info. #activeMq密码
     non-blocking-redelivery: false # 是否在回滚回滚消息之前停止消息传递。这意味着当启用此命令时，消息顺序不会被保留。
     send-timeout: 0 # 等待消息发送响应的时间。设置为0等待永远。
     in-memory: true
-    #    queue-name: proemMQ  # queue队列的名称
-    #    topic-name: examTopic  # topic队列的名称
+    queue-name: proemMQ  # queue队列的名称
+    topic-name: examTopic  # topic队列的名称
     pool:
-      enabled: true # 启用连接池
-      max-connections: 100 # 最大连接数
-      idle-timeout: 30000 # 空闲的连接过期时间，默认为30秒
+     enabled: true # 启用连接池
+     max-connections: 100 # 最大连接数
+     idle-timeout: 30000 # 空闲的连接过期时间，默认为30秒
 #能开平台相关配置信息
-#测试地址test
+#正式地址product
 nengKai:
   ip: 211.136.164.123
   config_context: /secret
@@ -34,3 +33,6 @@ nengKai:
   apk: gBPWtWgf4Gvpnu+8xJTEDYAT1rVoH+Br
   securityUrl: http://211.136.164.123/open/security
   openapiUrl: http://211.136.164.123/open/service
+
+
+

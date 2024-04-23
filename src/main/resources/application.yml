@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod
+    active: local
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
@@ -9,30 +9,41 @@ spring:
     servlet:
       load-on-startup: 1
 server:
-  port: 8088
+  port: 9999
   servlet:
-    context-path: /newrop
+    context-path: /rop
     session:
       timeout: 30m
   tomcat:
     uri-encoding: utf-8
+#mybatis-plus
 mybatis-plus:
-  # 启动时是否检查MyBatis XML文件是否存在
-  check-config-location: true
-  # MyBatis原生配置
+  mapper-locations: classpath*:/mapper/*.xml
+  type-aliases-package: com.richeninfo.entity.mapper.entity
   configuration:
-    # 字段名称下划线转驼峰命名
-    map-underscore-to-camel-case: true
-    # 打印SQL日志
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  global-config:
-    db-config:
-      # 全局默认主键类型
-      id-type: id_worker
-      logic-delete-field: isDelete
-      # 逻辑已删除值(默认为 1)
-      logic-delete-value: true # 逻辑已删除值(默认为 1)
-      # 逻辑未删除值(默认为 0)
-      logic-not-delete-value: false # 逻辑未删除值(默认为 0)
-  # mapper xml映射路径
-  mapper-locations: classpath*:mybatis/mapper/*.xml
+    mapUnderscoreToCamelCase: false
+#showSql
+logging:
+  level:
+    #配置日志打印级别
+    root: info
+    org:
+      mybatis: debug
+    com:
+      sxl:
+        mybatispluss:
+          mapper: debug
+ftp.info:
+  server: 10.196.26.178  #FTP服务器地址
+  port: 21    #FTP端口号
+  username: ftpdir    #FTP用户名
+  password: Rh20Gw23#Wx    #FTP密码
+  encoding: UTF-8   #FTP文件编码
+  base-path: /   #FTP默认根路径
+  systemSymbols: /
+  size: 200Mb   #上传文件大小限制，由应用控制（需要有返回提示）
+  pattern: .gif|.jpg|.jpeg|.png|.xls|.doc|.xlsx|.docx|.pdf|.zip|.rar|.txt|.mp4|.svg|.avif|.webp  #允许的扩展名配置，不限制则配置all
+  show-path: /img/ftppic
+# 设置文件上传大小限制
+spring.servlet.multipart.max-file-size: 500MB
+spring.servlet.multipart.max-request-size: 500MB
