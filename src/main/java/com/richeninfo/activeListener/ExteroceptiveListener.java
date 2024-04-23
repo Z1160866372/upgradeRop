@@ -28,7 +28,6 @@ import javax.annotation.Resource;
  */
 @Log
 @Component
-//@ConditionalOnProperty(prefix = "spring.activemq.jms", name = "enable",havingValue = "true")
 public class ExteroceptiveListener {
     @Resource
     private ExteroceptiveMapper exteroceptiveMapper;

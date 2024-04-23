@@ -37,5 +37,4 @@ public class VoteTopic {
     private int status;
     @ApiModelProperty("创建时间")
     private String createdDate;
-
 }

@@ -44,8 +44,8 @@ public class ActivityList {
     private String endTime;
     @ApiModelProperty(value = "密钥文件地址")
     private String keyUrl;
-    @ApiModelProperty(value = "")
-    private String principal;//活动负责人
-    @ApiModelProperty(value = "")
-    private String content;//活动备注（活动修改）
+    @ApiModelProperty(value = "活动负责人")
+    private String principal;
+    @ApiModelProperty(value = "活动备注（活动修改）")
+    private String content;
 }

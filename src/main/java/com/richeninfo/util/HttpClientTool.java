@@ -239,7 +239,6 @@ public class HttpClientTool {
                 "/static/00210.cer");
         String encyptXml = dcs.signatureCAP(xml);
         System.out.println("加密之前的报文：" + encyptXml);
-        System.out.println("签名验证：" + dcsv.verifyCAP(encyptXml));
         if (dcsv.verifyCAP(encyptXml))
         {System.out.println("验证签名通过");}
         String a = Security.getEncryptString(encyptXml, "8997FB5B40319E9EFBD6F119C152E52CABAB37926419A4AB");

@@ -28,7 +28,6 @@ import javax.jms.Topic;
  * @create 2024/3/19 13:52
  */
 @Configuration
-@ConditionalOnProperty(prefix = "spring.activemq.jms", name = "enable",havingValue = "true")
 public class ActiveMQConfig{
 
     @Value("${spring.activemq.broker-url}")

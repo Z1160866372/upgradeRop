@@ -234,10 +234,6 @@
             <artifactId>activemq-pool</artifactId>
             <version>5.12.1</version>
         </dependency>
-       <!-- <dependency>
-            <groupId>org.messaginghub</groupId>
-            <artifactId>pooled-jms</artifactId>
-        </dependency>-->
     </dependencies>
     <build>
         <plugins>

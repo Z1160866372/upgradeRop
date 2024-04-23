@@ -20,7 +20,6 @@ public interface ExteroceptiveMapper {
 
     @Select("select * from wt_proem_user where userId = #{userId}")
     ActivityUser findUserInfoByUserId(String userId);
-
     @Select("select * from wt_proem_user where secToken = #{secToken}")
     ActivityUser findUserInfoByUserSecToken(String secToken);
 
@@ -32,7 +31,6 @@ public interface ExteroceptiveMapper {
 
     @Insert("INSERT INTO wt_proem_user (userId,level,award,playNum,channelId,grade,answerNum,mark,blowNum,weekTime,createTime,createDate,secToken) value (#{userId},#{level},#{award},#{playNum},#{channelId},#{grade},#{answerNum},#{mark},#{blowNum},now(),now(),curdate(),#{secToken})")
     void saveUser(ActivityUser user);
-
     @Select(" SELECT * FROM `wt_proem_answer` where answerType >0 ORDER BY RAND() LIMIT 1")
     ActivityAnswer findRandAnswerOne();
 

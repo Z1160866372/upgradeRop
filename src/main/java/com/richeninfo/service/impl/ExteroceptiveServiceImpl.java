@@ -17,6 +17,7 @@ import com.richeninfo.util.RedisUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ import java.util.*;
  * @date 2024/3/22 15:43
  */
 @Log4j
-@Service("exteroceptiveService")
+@Service
 public class ExteroceptiveServiceImpl implements ExteroceptiveService {
     @Resource
     ExteroceptiveMapper exteroceptiveMapper;
