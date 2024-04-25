@@ -11,6 +11,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jms.JmsProperties;
 import org.springframework.context.annotation.Bean;
@@ -63,7 +64,7 @@ public class ActiveMQConfig{
     }
 
     // 在Queue模式中，对消息的监听需要对containerFactory进行配置
-    //@Bean("queueListener")
+    @Bean("queueListener")
     public JmsListenerContainerFactory<?> queueJmsListenerContainerFactory(ConnectionFactory connectionFactory){
         SimpleJmsListenerContainerFactory factory = new SimpleJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
@@ -71,7 +72,10 @@ public class ActiveMQConfig{
         return factory;
     }
 
-    @Bean(name = "queueListener")
+  /*  @Bean
+    @ConditionalOnMissingBean(
+            name = {"queueListener"}
+    )
     public JmsListenerContainerFactory<?> jmsListenerContainerQueue(ActiveMQConnectionFactory connectionFactory) {
         //如果用自定义bean,高版本需要添加这行,否则会报错
         connectionFactory.setTrustAllPackages(true);
@@ -79,7 +83,7 @@ public class ActiveMQConfig{
         bean.setConnectionFactory(connectionFactory);
         return bean;
     }
-
+*/
 
 
     @Bean(name = "topicListener")

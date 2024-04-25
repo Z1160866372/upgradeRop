@@ -52,35 +52,6 @@ public class ProMemberServiceImpl implements ProMemberService {
     Date current_time = new Date();
 
     /**
-     * 初始化用户
-     *
-     * @param user
-     * @return
-     */
-    public ActivityUser insertUser(ActivityUser user) {
-        ActivityUser select_user = proMemberMapper.selectUser(user.getUserId(), user.getActId());
-        if (select_user == null) {
-            ActivityUser new_user = new ActivityUser();
-            new_user.setSecToken(user.getSecToken());
-            new_user.setUserId(user.getUserId());
-            new_user.setActId(user.getActId());
-            new_user.setChannelId(user.getChannelId());
-            List<ActivityRoster> roster = proMemberMapper.selectRoster(user.getUserId());
-            if (CollectionUtils.isEmpty(roster)) {
-                new_user.setUserType(0);
-            } else {
-                new_user.setUserType(1);
-            }
-            proMemberMapper.insertUser(new_user);
-            user = new_user;
-        } else {
-            user = select_user;
-        }
-        session.setAttribute(Constant.KEY_MOBILE, user.getUserId());
-        return user;
-    }
-
-    /**
      * 获取奖励列表
      *
      * @param mobilePhone
@@ -139,7 +110,7 @@ public class ProMemberServiceImpl implements ProMemberService {
     public JSONObject submit(String mobilePhone, String actId, int unlocked, HttpSession session, String channelId) {
         JSONObject object = new JSONObject();
         try {
-            if (commonService.verityActive(actId, false, session, channelId).getString(Constant.MSG).equals("success")) {
+            if (commonService.verityActive(actId, false, channelId).getString(Constant.MSG).equals("success")) {
                 ActivityUser user = proMemberMapper.selectUser(mobilePhone, actId);
                 ActivityConfiguration config = commonMapper.selectActivitySomeConfiguration(actId, unlocked);
                 ActivityUserHistory history;
@@ -163,7 +134,7 @@ public class ProMemberServiceImpl implements ProMemberService {
                 object = verityHistory(object, config, history, user, channelId);
 
             } else {
-                return commonService.verityActive(actId, false, session, channelId);
+                return commonService.verityActive(actId, false, channelId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -222,22 +193,23 @@ public class ProMemberServiceImpl implements ProMemberService {
             history.setTypeId(config.getTypeId());
             history.setUnlocked(config.getUnlocked());
             history.setActId(config.getActId());
+            history.setKeyword(commonMapper.selectActivityByActId(config.getActId()).getKeyword());
             proMemberMapper.insertUserHistory(history);
             if (config.getUnlocked() == 0) {//4147礼包接口
                 if (insert_result) {
                     mqMsg = commonService.issueReward(config, history);
                     log.info("4147请求信息：" + mqMsg);
-                    //jmsMessagingTemplate.convertAndSend("proMemberQueue",mqMsg);
+                    //jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
                 }
             } else if (config.getUnlocked() == 1) {//3066业务
                 object = commonService.transact3066Business(config, history, channelId);
                 insert_result = object.getBoolean("transact_result");
                 history = JSON.parseObject(object.getString("update_history"), ActivityUserHistory.class);
-                proMemberMapper.updateHistory(history);
+                commonMapper.updateHistory(history);
             } else if (config.getUnlocked() == 2) {//4147礼包接口
                 mqMsg = commonService.issueReward(config, history);
                 log.info("4147请求信息：" + mqMsg);
-               // jmsMessagingTemplate.convertAndSend("proMemberQueue",mqMsg);
+               // jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
             }
         }
         return insert_result;

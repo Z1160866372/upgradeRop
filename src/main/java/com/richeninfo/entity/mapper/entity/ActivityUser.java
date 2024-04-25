@@ -56,12 +56,6 @@ public class ActivityUser {
     @ApiModelProperty(value = "触点")
     private String ditch;
 
-    @ApiModelProperty(value = "参与日期")
-    private Date createDate;
-
-    @ApiModelProperty(value = "参与时间")
-    private Timestamp createTime;
-
     @ApiModelProperty(value = "宝箱机会")
     private int playNum;
 
@@ -94,4 +88,10 @@ public class ActivityUser {
 
     @ApiModelProperty(value = "活动编号")
     private String actId;
+
+    @ApiModelProperty(value = "参与日期")
+    private Date createDate;
+
+    @ApiModelProperty(value = "参与时间")
+    private Timestamp createTime;
 }

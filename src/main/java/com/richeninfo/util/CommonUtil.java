@@ -6,7 +6,9 @@
  */
 package com.richeninfo.util;
 
+import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
+import com.richeninfo.pojo.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +17,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import redis.clients.jedis.Jedis;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
@@ -30,9 +33,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Author : zhouxiaohu
@@ -539,5 +545,96 @@ public class CommonUtil {
             }
         }
         return msg;
+    }
+    /**
+     * 获取事务id
+     *
+     * @return
+     */
+    public String generateTransactionId() {
+        String timestamp = DateUtil.convertDateToString(new Date(), Constant.YYYYMMDDHH24MMSSSSS);
+        SecureRandom rand = new SecureRandom();
+        int randNum = rand.nextInt(10000);
+        String pattern = "0000";
+        DecimalFormat df = new DecimalFormat(pattern);
+        return "WXHJS" + timestamp + df.format(randNum);
+    }
+
+    /**
+     * 获取sessionKey
+     *
+     * @param value
+     */
+    public void saveJedisByExpire(String key, String value, int time) {
+        Jedis jedis = null;
+        try {
+            jedis = JedisPoolUtils.getJedis();
+            jedis.set(key, value);
+            jedis.expire(key, time);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            JedisPoolUtils.returnRes(jedis);
+        }
+    }
+
+    public String getValueByJedis(String key) {
+        Jedis jedis = null;
+        try {
+            jedis = JedisPoolUtils.getJedis();
+            return jedis.get(key);
+        } catch (Exception e) {
+            return null;
+        } finally {
+            JedisPoolUtils.returnRes(jedis);
+        }
+    }
+
+    /**
+     * 隐藏手机号中间四位
+     *
+     * @param mobilePhone
+     * @return
+     */
+    public String hideMidPhone(String mobilePhone) {
+        return mobilePhone.replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2");
+    }
+
+    /**
+     * 处理微信昵称表情
+     *
+     * @param source
+     * @return
+     */
+    public String filterEmoji(String source) {
+        if (source == null) {
+            return source;
+        }
+        Pattern emoji = Pattern.compile("[\ud83c\udc00-\ud83c\udfff]|[\ud83d\udc00-\ud83d\udfff]|[\u2600-\u27ff]",
+                Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
+        Matcher emojiMatcher = emoji.matcher(source);
+        if (emojiMatcher.find()) {
+            source = emojiMatcher.replaceAll("*");
+        }
+        return source;
+    }
+
+    /**
+     * 转参数
+     *
+     * @param map
+     * @return
+     */
+    public JSONObject multipleParmToJSON(Map<String, String[]> map) {
+        JSONObject result = new JSONObject();
+        for (Map.Entry<String, String[]> entry : map.entrySet()) {
+            String[] array = entry.getValue();
+            if (array != null && array.length > 1) {
+                result.put(entry.getKey(), array);
+            } else if (array != null && array.length == 1) {
+                result.put(entry.getKey(), array[0]);
+            }
+        }
+        return result;
     }
 }

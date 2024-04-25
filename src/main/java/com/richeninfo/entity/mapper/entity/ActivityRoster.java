@@ -6,6 +6,7 @@
  */
 package com.richeninfo.entity.mapper.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -27,4 +28,7 @@ public class ActivityRoster {
     private int user_type;
     @ApiModelProperty(value = "活动编号")
     private String actId;
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private String createTime;
 }

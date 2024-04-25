@@ -7,9 +7,7 @@
 package com.richeninfo.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
-import com.richeninfo.entity.mapper.entity.ActivityShare;
-import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
+import com.richeninfo.entity.mapper.entity.*;
 import com.richeninfo.pojo.Packet;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -28,19 +26,17 @@ public interface CommonService {
      * 短信发送
      *
      * @param userId
-     * @param session
      * @return
      */
-    JSONObject sendMsgCode(String userId, HttpSession session);
+    JSONObject sendMsgCode(String userId);
 
     /**
      * 短信校验
      *
      * @param userId
-     * @param session
      * @return
      */
-    boolean valSendMsgCode(String userId, String smsCode, HttpSession session);
+    boolean valSendMsgCode(String userId, String smsCode);
 
     /**
      * 判断用户是否  中国移动用户
@@ -79,10 +75,16 @@ public interface CommonService {
      *
      * @param actId
      * @param isTestWhite
-     * @param session
+      * @return
+     */
+    JSONObject verityActive(String actId, boolean isTestWhite, String channelId);
+    /**
+     * 初始化用户
+     *
+     * @param user
      * @return
      */
-    JSONObject verityActive(String actId, boolean isTestWhite, HttpSession session, String channelId);
+    ActivityUser insertUser(@ModelAttribute ActivityUser user);
 
     /**
      * 3066业务办理
@@ -105,44 +107,6 @@ public interface CommonService {
     String issueReward(ActivityConfiguration config, ActivityUserHistory history);
 
     /**
-     * 获取事务id
-     *
-     * @return
-     */
-    String generateTransactionId();
-
-    /**
-     * 获取sessionKey
-     *
-     * @param value
-     */
-    void saveJedisByExpire(String key, String value, int time);
-
-    /**
-     * 隐藏手机号中间四位
-     *
-     * @param mobilePhone
-     * @return
-     */
-    String hideMidPhone(String mobilePhone);
-
-    /**
-     * 处理微信昵称表情
-     *
-     * @param source
-     * @return
-     */
-    String filterEmoji(String source);
-
-    /**
-     * 转参数
-     *
-     * @param map
-     * @return
-     */
-    JSONObject multipleParmToJSON(Map<String, String[]> map);
-
-    /**
      * 根据渠道和secToken获取手机号
      *
      * @param secToken
@@ -156,5 +120,20 @@ public interface CommonService {
      *
      * @param share
      */
-    void saveShare(@ModelAttribute ActivityShare share);
+    void insertShare(@ModelAttribute ActivityShare share);
+
+    /**
+     * 保存用户操作记录
+     * @param operationLog
+     */
+    void insertOperationLog(@ModelAttribute OperationLog operationLog);
+
+    /**
+     * 我的奖励
+     * @param channelId
+     * @param actId
+     * @return
+     */
+    JSONObject getMyReward(String channelId,String actId);
+
 }

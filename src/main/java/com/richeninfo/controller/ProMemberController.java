@@ -53,35 +53,6 @@ ProMemberController {
     @Resource
     private RedisUtil redisUtil;
 
-
-    @ApiOperation(value = "初始化用户", httpMethod = "POST")
-    @PostMapping(value = "/initialize")
-    public @ResponseBody
-    void initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
-        JSONObject object = new JSONObject();
-        ActivityUser user = new ActivityUser();
-        secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
-        channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
-        actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
-        if (secToken.isEmpty()) {
-            object.put(Constant.MSG, "login");
-        } else {
-            String mobile = commonService.getMobile(secToken, channelId);
-            if (mobile.isEmpty()) {
-                object.put(Constant.MSG, "channelId_error");
-            } else {
-                user.setUserId(mobile);
-                user.setSecToken(secToken);
-                user.setChannelId(channelId);
-                user.setActId(actId);
-                user = proMemberService.insertUser(user);
-                object.put(Constant.MSG, Constant.SUCCESS);
-                object.put("user", user);
-            }
-        }
-        resp.getWriter().write(object.toJSONString());
-    }
-
     @ApiOperation("获取奖励列表")
     @PostMapping("/getConf")
     public @ResponseBody

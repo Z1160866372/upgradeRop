@@ -6,6 +6,8 @@
  */
 package com.richeninfo.entity.mapper.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -38,9 +40,12 @@ public class ActivityCardList {
     @ApiModelProperty(value = "奖励配置时间")
     private String createDate;
     @ApiModelProperty(value = "具体领取日期")
-    private String createDateTime;
+    private String updateTime;
     @ApiModelProperty(value = "IP地址")
     private String ip;
     @ApiModelProperty(value = "IP段")
     private String ipScanner;
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private String createTime;
 }

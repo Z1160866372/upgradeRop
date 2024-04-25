@@ -6,6 +6,7 @@
  */
 package com.richeninfo.entity.mapper.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -48,4 +49,11 @@ public class ActivityList {
     private String principal;
     @ApiModelProperty(value = "活动备注（活动修改）")
     private String content;
+    @ApiModelProperty(value = "活动关键字")
+    private String keyword;
+    @ApiModelProperty(value = "活动规则")
+    private String rulesText;
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private String createTime;
 }

@@ -44,6 +44,9 @@ public class OperationLog {
     @ApiModelProperty(value = "操作说明")
     private String instructions;
 
+    @ApiModelProperty(value = "渠道")
+    private String channelId;
+
     @ApiModelProperty(value = "操作时间")
     private Timestamp createTime;
 }

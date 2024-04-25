@@ -13,9 +13,11 @@ import com.richeninfo.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.Jedis;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.net.URLDecoder;
 import java.security.SecureRandom;
@@ -44,22 +46,51 @@ public class CommonServiceImpl implements CommonService {
     private UniapiTokenValidateService uniapiTokenValidateService;
     @Resource
     private CommonUtil commonUtil;
-    private HttpSession session;
     @Resource
     private RedisUtil redisUtil;
+    @Resource
+    private HttpServletRequest request;
 
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Date current_time = new Date();
 
     /**
+     * 初始化用户
+     *
+     * @param user
+     * @return
+     */
+    public ActivityUser insertUser(ActivityUser user) {
+        String keyword=commonMapper.selectActivityByActId(user.getActId()).getKeyword();
+        ActivityUser select_user = commonMapper.selectUser(user.getUserId(), user.getActId(),keyword);
+        if (select_user == null) {
+            ActivityUser new_user = new ActivityUser();
+            new_user.setSecToken(user.getSecToken());
+            new_user.setUserId(user.getUserId());
+            new_user.setActId(user.getActId());
+            new_user.setChannelId(user.getChannelId());
+            List<ActivityRoster> roster = commonMapper.selectRoster(user.getUserId(), user.getActId());
+            if (CollectionUtils.isEmpty(roster)) {
+                new_user.setUserType(0);
+            } else {
+                new_user.setUserType(1);
+            }
+            commonMapper.insertUser(new_user,keyword);
+            user = new_user;
+        } else {
+            user = select_user;
+        }
+        redisUtil.set(Constant.KEY_MOBILE, user.getUserId());
+        return user;
+    }
+    /**
      * 短信发送
      *
      * @param userId
-     * @param session
      * @return
      */
     @Override
-    public JSONObject sendMsgCode(String userId, HttpSession session) {
+    public JSONObject sendMsgCode(String userId) {
         JSONObject resultObj = new JSONObject();
         //TODO 校验是否中国移动客户
         String content = Constant.USER_SEND_MSG_TEXT;
@@ -95,11 +126,10 @@ public class CommonServiceImpl implements CommonService {
      * 短信校验
      *
      * @param userId
-     * @param session
      * @return
      */
     @Override
-    public boolean valSendMsgCode(String userId, String smsCode, HttpSession session) {
+    public boolean valSendMsgCode(String userId, String smsCode) {
         Object tmpCode = redisUtil.get(userId);
         if(!Objects.isNull(tmpCode)){
             return true;
@@ -208,20 +238,20 @@ public class CommonServiceImpl implements CommonService {
      *
      * @param actId
      * @param isTestWhite
-     * @param session
      * @return
      */
     @Override
-    public JSONObject verityActive(String actId, boolean isTestWhite, HttpSession session, String channelId) {
+    public JSONObject verityActive(String actId, boolean isTestWhite, String channelId) {
         JSONObject object = new JSONObject();
         try {
             if (verityTime(actId).equals("underway")) {
                 ActivityList activity = commonMapper.selectActivityByActId(actId);
+                object.put(Constant.RulesText,activity.getRulesText());
                 if (activity.getIsWhiteList() == 3) {
                     object.put(Constant.MSG, verityTime(actId));
                     return object;
                 }
-                String mobilePhone = session.getAttribute(Constant.KEY_MOBILE) == null ? "" : (String) session.getAttribute(Constant.KEY_MOBILE);
+                String mobilePhone = redisUtil.get(Constant.KEY_MOBILE) == null ? "" : (String) redisUtil.get(Constant.KEY_MOBILE);
                 if (mobilePhone.isEmpty()) {
                     object.put(Constant.MSG, "login");
                 } else {
@@ -314,103 +344,6 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
-     * 获取事务id
-     *
-     * @return
-     */
-    @Override
-    public String generateTransactionId() {
-        String timestamp = DateUtil.convertDateToString(new Date(), Constant.YYYYMMDDHH24MMSSSSS);
-        SecureRandom rand = new SecureRandom();
-        int randNum = rand.nextInt(10000);
-        String pattern = "0000";
-        DecimalFormat df = new DecimalFormat(pattern);
-        return "WXHJS" + timestamp + df.format(randNum);
-    }
-
-    /**
-     * 获取sessionKey
-     *
-     * @param value
-     */
-    @Override
-    public void saveJedisByExpire(String key, String value, int time) {
-        Jedis jedis = null;
-        try {
-            jedis = JedisPoolUtils.getJedis();
-            jedis.set(key, value);
-            jedis.expire(key, time);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            JedisPoolUtils.returnRes(jedis);
-        }
-    }
-
-    public String getValueByJedis(String key) {
-        Jedis jedis = null;
-        try {
-            jedis = JedisPoolUtils.getJedis();
-            return jedis.get(key);
-        } catch (Exception e) {
-            return null;
-        } finally {
-            JedisPoolUtils.returnRes(jedis);
-        }
-    }
-
-    /**
-     * 隐藏手机号中间四位
-     *
-     * @param mobilePhone
-     * @return
-     */
-    @Override
-    public String hideMidPhone(String mobilePhone) {
-        return mobilePhone.replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2");
-    }
-
-    /**
-     * 处理微信昵称表情
-     *
-     * @param source
-     * @return
-     */
-    @Override
-    public String filterEmoji(String source) {
-        if (source == null) {
-            return source;
-        }
-        Pattern emoji = Pattern.compile("[\ud83c\udc00-\ud83c\udfff]|[\ud83d\udc00-\ud83d\udfff]|[\u2600-\u27ff]",
-                Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
-        Matcher emojiMatcher = emoji.matcher(source);
-        if (emojiMatcher.find()) {
-            source = emojiMatcher.replaceAll("*");
-        }
-        return source;
-    }
-
-    /**
-     * 转参数
-     *
-     * @param map
-     * @return
-     */
-    @Override
-    public JSONObject multipleParmToJSON(Map<String, String[]> map) {
-        JSONObject result = new JSONObject();
-        for (Map.Entry<String, String[]> entry : map.entrySet()) {
-            String[] array = entry.getValue();
-            if (array != null && array.length > 1) {
-                result.put(entry.getKey(), array);
-            } else if (array != null && array.length == 1) {
-                result.put(entry.getKey(), array[0]);
-            }
-        }
-        return result;
-    }
-
-    /**
      * 根据渠道和secToken获取手机号
      *
      * @param secToken
@@ -450,15 +383,45 @@ public class CommonServiceImpl implements CommonService {
 
     /**
      * 保存用户分享记录
-     *
      * @param share
      */
     @Override
-    public void saveShare(ActivityShare share) {
-        String secToken = (String) session.getAttribute("secToken");
-        if (!secToken.isEmpty() || !share.getSecToken().isEmpty()) {
-            share.setUserId(getMobile(secToken, share.getChannelId()));
-            commonMapper.insertShareUser(share);
+    public void insertShare(ActivityShare share) {
+        String mobilePhone = redisUtil.get(Constant.KEY_MOBILE) == null ? "" : (String)redisUtil.get(Constant.KEY_MOBILE);
+        if (!mobilePhone.isEmpty()) {
+            share.setUserId(mobilePhone);
+            commonMapper.insertShareUser(share,commonMapper.selectActivityByActId(share.getActId()).getKeyword());
         }
+    }
+
+    /**
+     * 保存用户操作记录
+     * @param operationLog
+     */
+    @Override
+    public void insertOperationLog(OperationLog operationLog) {
+        String mobilePhone = redisUtil.get(Constant.KEY_MOBILE) == null ? "" : (String)redisUtil.get(Constant.KEY_MOBILE);
+        if (!mobilePhone.isEmpty()) {
+            operationLog.setUserId(mobilePhone);
+            operationLog.setAddress(IPUtil.getRealRequestIp(request));
+            commonMapper.insertOperationLog(operationLog,commonMapper.selectActivityByActId(operationLog.getActId()).getKeyword());
+        }
+    }
+
+    /**
+     * 我的奖励
+     * @param channelId
+     * @param actId
+     * @return
+     */
+    @Override
+    public JSONObject getMyReward(String channelId, String actId) {
+        JSONObject object = new JSONObject();
+        String mobilePhone = redisUtil.get(Constant.KEY_MOBILE) == null ? "" : (String)redisUtil.get(Constant.KEY_MOBILE);
+        if (!mobilePhone.isEmpty()) {
+            List<ActivityUserHistory> historyList = commonMapper.selectHistory(mobilePhone,actId,commonMapper.selectActivityByActId(actId).getKeyword());
+                object.put(Constant.ObjectList,historyList);
+            }
+        return object;
     }
 }

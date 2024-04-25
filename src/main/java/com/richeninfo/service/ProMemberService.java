@@ -22,14 +22,6 @@ import java.util.*;
 @Service("proMemberService")
 public interface ProMemberService {
     /**
-     * 初始化用户
-     *
-     * @param user
-     * @return
-     */
-    ActivityUser insertUser(@ModelAttribute ActivityUser user);
-
-    /**
      * 获取奖励列表
      *
      * @param secToken

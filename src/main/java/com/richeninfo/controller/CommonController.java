@@ -8,6 +8,9 @@ package com.richeninfo.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.richeninfo.entity.mapper.entity.ActivityShare;
+import com.richeninfo.entity.mapper.entity.ActivityUser;
+import com.richeninfo.entity.mapper.entity.OperationLog;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
@@ -21,6 +24,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Encoder;
 
@@ -52,8 +56,6 @@ public class CommonController {
     @Resource
     private CommonMapper commonMapper;
     @Resource
-    private HttpSession session;
-    @Resource
     private HttpServletRequest request;
     @Resource
     private HttpServletResponse resp;
@@ -72,8 +74,6 @@ public class CommonController {
         //利用图片工具生成图片
         //第一个参数是生成的验证码，第二个参数是生成的图片
         Object[] objs = imageUtil.createImage();
-        //将验证码存入Session
-       // session.setAttribute(Constant.SMS_RANDOM, objs[0]);
         //将验证码存入redis
         redisUtil.set(Constant.SMS_RANDOM, objs[0]);
         //将图片转正base64
@@ -116,7 +116,7 @@ public class CommonController {
             resultObj.put(Constant.MSG, Constant.ERROR);
             return resultObj;
         }
-        return this.commonService.sendMsgCode(mobilePhone, request.getSession());
+        return this.commonService.sendMsgCode(mobilePhone);
     }
 
     @PostMapping(value = "/login_check")
@@ -135,7 +135,7 @@ public class CommonController {
         }
         //校验验证码
         boolean isMatched = false;
-        isMatched = this.commonService.valSendMsgCode(mobilePhone, keyCode, request.getSession());
+        isMatched = this.commonService.valSendMsgCode(mobilePhone, keyCode);
         if (isMatched) {
             redisUtil.set(Constant.KEY_MOBILE,mobilePhone);
             String key = commonMapper.selectTheDayKey().getSecretKey();
@@ -160,7 +160,69 @@ public class CommonController {
     @PostMapping(value = "/verityActive")
     public @ResponseBody
     Object getActiveStatus(@ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId, @ApiParam(name = "isTestWhite", value = "是否加白名单验证", required = true) boolean isTestWhite) throws Exception {
-        return this.commonService.verityActive(actId, isTestWhite, session, channelId);
+        return this.commonService.verityActive(actId, isTestWhite, channelId);
+    }
+
+    @ApiOperation(value = "初始化用户", httpMethod = "POST")
+    @PostMapping(value = "/initialize")
+    public @ResponseBody
+    void initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
+        JSONObject object = new JSONObject();
+        ActivityUser user = new ActivityUser();
+        secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
+        channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
+        actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
+        if (secToken.isEmpty()) {
+            object.put(Constant.MSG, "login");
+        } else {
+            String mobile = commonService.getMobile(secToken, channelId);
+            if (mobile.isEmpty()) {
+                object.put(Constant.MSG, "channelId_error");
+            } else {
+                user.setUserId(mobile);
+                user.setSecToken(secToken);
+                user.setChannelId(channelId);
+                user.setActId(actId);
+                user = commonService.insertUser(user);
+                object.put(Constant.MSG, Constant.SUCCESS);
+                object.put("user", user);
+            }
+        }
+        resp.getWriter().write(object.toJSONString());
+    }
+
+    /**
+     * 保存分享记录
+     * @return
+     */
+    @ApiOperation("保存分享记录")
+    @PostMapping(value = "/insertShare")
+    public void insertShare(@RequestBody  ActivityShare share)  {
+         this.commonService.insertShare(share);
+    }
+
+    /**
+     * 保存用户操作记录
+     * @return
+     */
+    @ApiOperation("保存用户操作记录")
+    @PostMapping(value = "/insertOperationLog")
+    public
+    void insertOperationLog(@RequestBody OperationLog log) {
+         this.commonService.insertOperationLog(log);
+    }
+
+    /**
+     * 我的奖励
+     * @param actId
+     * @param channelId
+     * @return
+     */
+    @ApiOperation("我的奖励")
+    @PostMapping(value = "/getMyReward")
+    public @ResponseBody
+    Object getMyReward(@ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId){
+        return this.commonService.getMyReward(channelId,actId);
     }
 
 }
