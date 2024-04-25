@@ -17,8 +17,8 @@ spring:
     non-blocking-redelivery: false # 是否在回滚回滚消息之前停止消息传递。这意味着当启用此命令时，消息顺序不会被保留。
     send-timeout: 0 # 等待消息发送响应的时间。设置为0等待永远。
     in-memory: true
-    queue-name: proemMQ  # queue队列的名称
-    topic-name: examTopic  # topic队列的名称
+    queue-name: commonQueue  # queue队列的名称
+    topic-name: commonTopic  # topic队列的名称
     pool:
      enabled: true # 启用连接池
      max-connections: 100 # 最大连接数
