@@ -8,7 +8,7 @@ package com.richeninfo.activeListener;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
-import com.richeninfo.entity.mapper.mapper.master.ProMemberMapper;
+import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.pojo.PacketMq;
 import com.richeninfo.util.RopServiceManager;
@@ -26,10 +26,10 @@ import javax.annotation.Resource;
 
 @Log
 @Component
-public class ProMemberListener {
+public class ActivityMqListener {
 
     @Resource
-    private ProMemberMapper proMemberMapper;
+    private CommonMapper commonMapper;
     @Resource
     private RopServiceManager ropServiceManager;
 
@@ -42,7 +42,7 @@ public class ProMemberListener {
             if (mq == null) {
                 return;
             }
-            history = proMemberMapper.selectHistoryByUnlocked(mq.getHistory().getUserId(), mq.getHistory().getUnlocked(), mq.getHistory().getActId());
+            history = commonMapper.selectHistoryByUnlocked(mq.getHistory().getUserId(), mq.getHistory().getUnlocked(), mq.getHistory().getActId(),commonMapper.selectActivityByActId( mq.getHistory().getActId()).getKeyword());
             if (history == null || history.getStatus() == Constant.STATUS_RECEIVED || mq.getRequest() == null) {
                 return;
             }
@@ -66,6 +66,6 @@ public class ProMemberListener {
             history.setStatus(Constant.STATUS_RECEIVED_ERROR);
             history.setMessage(e.getMessage());
         }
-        proMemberMapper.updateHistory(history);//更新用户发放状态
+        commonMapper.updateHistory(history);//更新用户发放状态
     }
 }
