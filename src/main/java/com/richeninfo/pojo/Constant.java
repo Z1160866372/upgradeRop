@@ -27,7 +27,7 @@ public class Constant {
     public static final int STATUS_RECEIVED = 3, STATUS_RECEIVED_ERROR = 4;
     public static final String USER_SEND_MSG_TEXT = "动态密码：${code}，30分钟内有效，请您尽快输入动态密码登录，此动态密码将在您登录后失效。【中国移动】";
     //返回json数据时状态 及key
-    public static final String MSG = "msg", YZM_ERROR = "yzm_error", ERROR = "error", SUCCESS = "success", FAILURE = "failure", NO_DATA = "noDate", LOGIN = "login", YLQ = "ylq", NO_RIGHTS = "noRights", DATA = "data", CODE = "code", IS_SEND_PRIZE = "isSendPrize";
+    public static final String MSG = "msg", YZM_ERROR = "yzm_error", ERROR = "error", SUCCESS = "success", FAILURE = "failure", NO_DATA = "noDate", LOGIN = "login", YLQ = "ylq", NO_RIGHTS = "noRights", DATA = "data", CODE = "code", IS_SEND_PRIZE = "isSendPrize",RulesText="rulesText",ObjectList="ObjectList";
     //错误key  用户类型错误
     public static final String ERROR_CODE = "errorCode", USER_TYPE_IS_ERROR = "userTypeError", CHANNEL_CODE_STR = "channelCodeStr";
     //名单类型

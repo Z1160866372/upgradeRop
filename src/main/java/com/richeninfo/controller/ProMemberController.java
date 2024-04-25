@@ -39,9 +39,6 @@ import java.util.List;
 @Api(value = "PRO会员日活动接口", tags = {"PRO会员日活动接口"})
 public class
 ProMemberController {
-
-    @Resource
-    private CommonService commonService;
     @Resource
     private ProMemberService proMemberService;
     @Resource
