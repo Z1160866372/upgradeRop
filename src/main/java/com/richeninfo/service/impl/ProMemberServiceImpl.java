@@ -54,17 +54,18 @@ public class ProMemberServiceImpl implements ProMemberService {
     /**
      * 获取奖励列表
      *
-     * @param mobilePhone
+     * @param secToken
      * @param actId
      * @return
      */
-    public List<ActivityConfiguration> getConfiguration(String mobilePhone, String actId) {
+    public List<ActivityConfiguration> getConfiguration(String secToken, String actId,String channelId) {
         List<ActivityConfiguration> last_pro_config = new ArrayList<ActivityConfiguration>();
         try {
             List<ActivityConfiguration> pro_config = commonMapper.selectActivityConfigurationByActId(actId);
-            if (mobilePhone.isEmpty()) {
+            if (secToken.isEmpty()) {
                 last_pro_config = pro_config;
             } else {
+                String mobilePhone= commonService.getMobile(secToken,channelId);
                 ActivityUser user = proMemberMapper.selectUser(mobilePhone, actId);
                 if (user == null) {
                     last_pro_config = pro_config;
@@ -100,17 +101,18 @@ public class ProMemberServiceImpl implements ProMemberService {
     /**
      * 用户点击领取
      *
-     * @param mobilePhone
+     * @param secToken
      * @param actId
      * @param unlocked
      * @param session
      * @return
      * @throws Exception
      */
-    public JSONObject submit(String mobilePhone, String actId, int unlocked, HttpSession session, String channelId) {
+    public JSONObject submit(String secToken, String actId, int unlocked, HttpSession session, String channelId,String randCode) {
         JSONObject object = new JSONObject();
         try {
-            if (commonService.verityActive(actId, false, channelId).getString(Constant.MSG).equals("success")) {
+            if (commonService.verityActive(actId,secToken, false, channelId).getString(Constant.MSG).equals("success")) {
+               String mobilePhone = commonService.getMobile(secToken,channelId);
                 ActivityUser user = proMemberMapper.selectUser(mobilePhone, actId);
                 ActivityConfiguration config = commonMapper.selectActivitySomeConfiguration(actId, unlocked);
                 ActivityUserHistory history;
@@ -125,16 +127,16 @@ public class ProMemberServiceImpl implements ProMemberService {
                         history = proMemberMapper.selectHistoryByUnlocked(mobilePhone, Constant.white_figure, actId);
                         if (history == null) {
                             List<ActivityConfiguration> conf_list = commonMapper.selectActivityConfigurationByActIdAndModule(actId, Constant.wap_figure);
-                            insertHistory(conf_list, user, channelId);
+                            insertHistory(conf_list, user,randCode, channelId);
                             proMemberMapper.updateUser_type(user.getId());//更新用户办理状态
                         }
                     }
                 }
                 history = proMemberMapper.selectHistoryByUnlocked(mobilePhone, config.getUnlocked(), actId);
-                object = verityHistory(object, config, history, user, channelId);
+                object = verityHistory(object, config, history, user,randCode, channelId);
 
             } else {
-                return commonService.verityActive(actId, false, channelId);
+                return commonService.verityActive(actId,secToken, false, channelId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,7 +144,7 @@ public class ProMemberServiceImpl implements ProMemberService {
         return object;
     }
 
-    private JSONObject verityHistory(JSONObject object, ActivityConfiguration config, ActivityUserHistory history, ActivityUser user, String channelId) throws Exception {
+    private JSONObject verityHistory(JSONObject object, ActivityConfiguration config, ActivityUserHistory history, ActivityUser user,String randCode, String channelId) throws Exception {
         String msg = "";
         boolean flog = false;
         if (history == null) {
@@ -152,7 +154,7 @@ public class ProMemberServiceImpl implements ProMemberService {
                     int update_result = commonMapper.updateAmount(config.getId());//更新数量
                     if (update_result > 0) {
                         conf_list.add(config);
-                        flog = insertHistory(conf_list, user, channelId);
+                        flog = insertHistory(conf_list, user,randCode, channelId);
                         if (flog) {
                             msg = "success";
                         } else {
@@ -166,7 +168,7 @@ public class ProMemberServiceImpl implements ProMemberService {
                 }
             } else {
                 conf_list.add(config);
-                flog = insertHistory(conf_list, user, channelId);
+                flog = insertHistory(conf_list, user,randCode, channelId);
                 if (flog) {
                     msg = "success";
                 } else {
@@ -180,7 +182,7 @@ public class ProMemberServiceImpl implements ProMemberService {
         return object;
     }
 
-    private boolean insertHistory(List<ActivityConfiguration> conf_list, ActivityUser user, String channelId) throws Exception {
+    private boolean insertHistory(List<ActivityConfiguration> conf_list, ActivityUser user,String randCode, String channelId) throws Exception {
         boolean insert_result = true;
         JSONObject object;
         String mqMsg;
@@ -202,7 +204,7 @@ public class ProMemberServiceImpl implements ProMemberService {
                     //jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
                 }
             } else if (config.getUnlocked() == 1) {//3066业务
-                object = commonService.transact3066Business(config, history, channelId);
+                object = commonService.transact3066Business(config, history,randCode, channelId);
                 insert_result = object.getBoolean("transact_result");
                 history = JSON.parseObject(object.getString("update_history"), ActivityUserHistory.class);
                 commonMapper.updateHistory(history);

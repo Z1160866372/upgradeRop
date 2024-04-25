@@ -27,9 +27,6 @@ public interface CommonMapper {
     @Select("select * from activity_roll where userId=#{userId} and user_type=#{user_type}")
     ActivityRoll selectRoll(@Param("userId") String userId, @Param("user_type") Integer user_type);//查询wap｜测试白名单
 
-    @Select("select * from activity_roster where userId=#{userId} and actId=#{actId}")
-    List<ActivityRoster> selectRoster(@Param("userId") String userId, @Param("actId") String actId);//查询用户名单列表
-
     @Select("select * from activity_list where actId = #{actId}")
     ActivityList selectActivityByActId(String actId);//查询活动信息
 
@@ -68,4 +65,7 @@ public interface CommonMapper {
 
     @Insert("insert into wt_#{keyword}_operationLog(actId,name,address,userId,instructions,createTime)values(#{actId},#{name},#{address},#{userId},#{instructions},now())")
     int insertOperationLog(OperationLog log, @Param("keyword") String keyword);//添加用户操作记录
+
+    @Select("select * from wt_#{keyword}_roster where userId=#{userId} and actId=#{actId}")
+    List<ActivityRoster> selectRoster(@Param("userId") String userId, @Param("actId") String actId, @Param("keyword") String keyword);//查询用户名单列表
 }

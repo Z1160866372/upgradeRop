@@ -952,7 +952,13 @@ public class PacketHelper {
         request.setBusiCode("PT-SH-FS-OI5956");
         JSONObject busiParams = new JSONObject();
         busiParams.put("billId", userId);
-        busiParams.put("offerId1", offerId);
+        if(offerId.contains(",")){
+            for (int i = 0; i < offerId.split(",").length; i++) {
+                busiParams.put("offerId"+(i+1), offerId.split(",")[i]);
+            }
+        }else{
+            busiParams.put("offerId1", offerId);
+        }
         request.setBusiParams(busiParams);
         Packet packet = getBasePacket(request, "CRM5956");
         return packet;
@@ -974,9 +980,12 @@ public class PacketHelper {
         busiParams.put("billid", userId);
         busiParams.put("randCode", randCode);
         busiParams.put("offerId1", offerList.get(0).getOfferId());
+        if(offerList.size()>1){
+            busiParams.put("offerId2", offerList.get(1).getOfferId());
+        }
         busiParams.put("NeedSendMsg", "Y");
         busiParams.put("VasOfferInfo", offerList);
-        if (channel_id.equals("jtzt")) {
+        if (channel_id.equals("leadeon")) {
             busiParams.put("xOrgId", "yjdq");
             busiParams.put("xOpId", "1000000002110700006");
         }

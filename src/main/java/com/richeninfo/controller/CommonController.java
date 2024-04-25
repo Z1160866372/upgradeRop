@@ -75,7 +75,7 @@ public class CommonController {
         //第一个参数是生成的验证码，第二个参数是生成的图片
         Object[] objs = imageUtil.createImage();
         //将验证码存入redis
-        redisUtil.set(Constant.SMS_RANDOM, objs[0]);
+        redisUtil.set(""+objs[0]+"", objs[0]);
         //将图片转正base64
         BufferedImage image = (BufferedImage) objs[1];
         //转base64
@@ -98,13 +98,13 @@ public class CommonController {
     @ApiOperation("获取短信验证码")
     public @ResponseBody
     Object sendMsg(@ApiParam(name = "smsRandom", value = "图形验证码", required = true) String smsRandom, @ApiParam(name = "mobilePhone", value = "用户号码", required = true) String mobilePhone) throws Exception {
-        log.info("获取：" + redisUtil.get(Constant.SMS_RANDOM));
+        log.info("获取：" + redisUtil.get(smsRandom));
         Cookie[] cookies = request.getCookies();
         smsRandom = request.getParameter(Constant.SMS_RANDOM) == null ? "" : request.getParameter(Constant.SMS_RANDOM);
         JSONObject resultObj = new JSONObject();
         resultObj.put("cookie", cookies);
         //校验图形参数是否正确 不区分大小写
-        if (redisUtil.get(Constant.SMS_RANDOM) == null || !smsRandom.toLowerCase().equals(redisUtil.get(Constant.SMS_RANDOM).toString().toLowerCase())) {
+        if (redisUtil.get(smsRandom) == null || !smsRandom.toLowerCase().equals(redisUtil.get(smsRandom).toString().toLowerCase())) {
             resultObj.put(Constant.MSG, Constant.YZM_ERROR);
             return resultObj;
         }
@@ -159,8 +159,8 @@ public class CommonController {
     @ApiOperation("活动校验(时间||白名单||WAP20用户)")
     @PostMapping(value = "/verityActive")
     public @ResponseBody
-    Object getActiveStatus(@ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId, @ApiParam(name = "isTestWhite", value = "是否加白名单验证", required = true) boolean isTestWhite) throws Exception {
-        return this.commonService.verityActive(actId, isTestWhite, channelId);
+    Object getActiveStatus(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId, @ApiParam(name = "isTestWhite", value = "是否加白名单验证", required = true) boolean isTestWhite) throws Exception {
+        return this.commonService.verityActive(secToken,actId, isTestWhite, channelId);
     }
 
     @ApiOperation(value = "初始化用户", httpMethod = "POST")
@@ -221,8 +221,8 @@ public class CommonController {
     @ApiOperation("我的奖励")
     @PostMapping(value = "/getMyReward")
     public @ResponseBody
-    Object getMyReward(@ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId){
-        return this.commonService.getMyReward(channelId,actId);
+    Object getMyReward(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId){
+        return this.commonService.getMyReward(secToken,channelId,actId);
     }
 
 }

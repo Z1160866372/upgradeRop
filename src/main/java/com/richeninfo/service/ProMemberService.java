@@ -28,7 +28,7 @@ public interface ProMemberService {
      * @param actId
      * @return
      */
-    List<ActivityConfiguration> getConfiguration(String secToken, String actId);
+    List<ActivityConfiguration> getConfiguration(String secToken, String actId,String channelId);
 
     /**
      * 用户点击领取
@@ -40,6 +40,6 @@ public interface ProMemberService {
      * @return
      * @throws Exception
      */
-    JSONObject submit(String secToken, String actId, int unlocked, HttpSession session, String channelId);
+    JSONObject submit(String secToken, String actId, int unlocked, HttpSession session, String channelId,String randCode);
 
 }

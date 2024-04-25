@@ -69,7 +69,7 @@ public class CommonServiceImpl implements CommonService {
             new_user.setUserId(user.getUserId());
             new_user.setActId(user.getActId());
             new_user.setChannelId(user.getChannelId());
-            List<ActivityRoster> roster = commonMapper.selectRoster(user.getUserId(), user.getActId());
+            List<ActivityRoster> roster = commonMapper.selectRoster(user.getUserId(), user.getActId(),keyword);
             if (CollectionUtils.isEmpty(roster)) {
                 new_user.setUserType(0);
             } else {
@@ -83,6 +83,41 @@ public class CommonServiceImpl implements CommonService {
         redisUtil.set(Constant.KEY_MOBILE, user.getUserId());
         return user;
     }
+
+    /**
+     * 二次短信下发
+     * @param actId
+     * @param unlocked
+     * @return
+     */
+    @Override
+    public JSONObject sendSms5956(String userId,String actId, int unlocked) {
+        JSONObject resultObj = new JSONObject();
+        Object tmpCode = redisUtil.get(userId);
+        if(!Objects.isNull(tmpCode)){
+            resultObj.put(Constant.MSG, Constant.SEND_MSG_SEPARATION_NOT_ENOUGH);
+            return resultObj;
+        }
+        ActivityConfiguration configuration =commonMapper.selectActivitySomeConfiguration(actId,unlocked);
+        try {
+            Packet packet = packetHelper.getCommitPacket5956(userId, configuration.getActivityId());
+            Result result = JSON.parseObject(ropService.execute(packet, userId), Result.class);
+            String code = result.getResponse().getErrorInfo().getCode();
+            String bizCode = result.getResponse().getRetInfo().getString("bizCode");
+            if (Constant.SUCCESS_CODE.equals(code)&&Constant.SUCCESS_CODE.equals(bizCode)) {
+                resultObj.put(Constant.MSG, Constant.SUCCESS);
+            } else {
+                resultObj.put(Constant.MSG, Constant.ERROR);
+                resultObj.put(Constant.CODE, code);
+                return resultObj;
+            }
+            resultObj.put(Constant.MSG, Constant.SUCCESS);
+        } catch (Exception e) {
+            log.info("Exception message = {}", e);
+            resultObj.put(Constant.MSG, Constant.FAILURE);
+        }
+        return null;
+    }
     /**
      * 短信发送
      *
@@ -92,7 +127,6 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public JSONObject sendMsgCode(String userId) {
         JSONObject resultObj = new JSONObject();
-        //TODO 校验是否中国移动客户
         String content = Constant.USER_SEND_MSG_TEXT;
         Object tmpCode = redisUtil.get(userId);
         if(!Objects.isNull(tmpCode)){
@@ -241,7 +275,7 @@ public class CommonServiceImpl implements CommonService {
      * @return
      */
     @Override
-    public JSONObject verityActive(String actId, boolean isTestWhite, String channelId) {
+    public JSONObject verityActive(String secToken,String actId, boolean isTestWhite, String channelId) {
         JSONObject object = new JSONObject();
         try {
             if (verityTime(actId).equals("underway")) {
@@ -251,10 +285,10 @@ public class CommonServiceImpl implements CommonService {
                     object.put(Constant.MSG, verityTime(actId));
                     return object;
                 }
-                String mobilePhone = redisUtil.get(Constant.KEY_MOBILE) == null ? "" : (String) redisUtil.get(Constant.KEY_MOBILE);
-                if (mobilePhone.isEmpty()) {
+                if (secToken.isEmpty()) {
                     object.put(Constant.MSG, "login");
                 } else {
+                    String mobilePhone =getMobile(secToken,channelId);
                     if (isTestWhite) {
                         if (!isTestWhite(mobilePhone)) {
                             object.put(Constant.MSG, "noTestWhite");
@@ -279,7 +313,6 @@ public class CommonServiceImpl implements CommonService {
 
     /**
      * 3066业务办理
-     *
      * @param config
      * @param history
      * @param channelId
@@ -287,18 +320,28 @@ public class CommonServiceImpl implements CommonService {
      * @throws Exception
      */
     @Override
-    public JSONObject transact3066Business(ActivityConfiguration config, ActivityUserHistory history, String channelId) {
+    public JSONObject transact3066Business(ActivityConfiguration config, ActivityUserHistory history, String randCode, String channelId) {
         JSONObject object = new JSONObject();
         boolean transact_result = false;
         Result result = new Result();
         try {
             List<VasOfferInfo> offerList = new ArrayList<VasOfferInfo>();
-            VasOfferInfo vasOfferInfo = new VasOfferInfo();
-            vasOfferInfo.setOfferId(config.getActivityId());
-            vasOfferInfo.setEffectiveType("0");
-            vasOfferInfo.setOperType("0");
-            offerList.add(vasOfferInfo);
-            Packet packet = packetHelper.getCommitPacket3066(history.getUserId(), offerList, channelId);
+            if(config.getActivityId().contains(",")){
+                for (int i = 0; i < config.getActivityId().split(",").length; i++) {
+                    VasOfferInfo vasOfferInfo = new VasOfferInfo();
+                    vasOfferInfo.setOfferId(config.getActivityId().split(",")[i]);
+                    vasOfferInfo.setEffectiveType("0");
+                    vasOfferInfo.setOperType("0");
+                    offerList.add(vasOfferInfo);
+                }
+            }else{
+                VasOfferInfo vasOfferInfo = new VasOfferInfo();
+                vasOfferInfo.setOfferId(config.getActivityId());
+                vasOfferInfo.setEffectiveType("0");
+                vasOfferInfo.setOperType("0");
+                offerList.add(vasOfferInfo);
+            }
+            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId);
             /*String message = ropService.execute(packet,history.getUserId());
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message,Result.class);
@@ -373,7 +416,6 @@ public class CommonServiceImpl implements CommonService {
                         mobile = object.getString("mobile");
                     }
                 }
-                redisUtil.set(Constant.KEY_MOBILE, mobile);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -387,9 +429,8 @@ public class CommonServiceImpl implements CommonService {
      */
     @Override
     public void insertShare(ActivityShare share) {
-        String mobilePhone = redisUtil.get(Constant.KEY_MOBILE) == null ? "" : (String)redisUtil.get(Constant.KEY_MOBILE);
-        if (!mobilePhone.isEmpty()) {
-            share.setUserId(mobilePhone);
+        if (!share.getSecToken().isEmpty()) {
+            share.setUserId(getMobile(share.getSecToken(), share.getChannelId()));
             commonMapper.insertShareUser(share,commonMapper.selectActivityByActId(share.getActId()).getKeyword());
         }
     }
@@ -400,9 +441,8 @@ public class CommonServiceImpl implements CommonService {
      */
     @Override
     public void insertOperationLog(OperationLog operationLog) {
-        String mobilePhone = redisUtil.get(Constant.KEY_MOBILE) == null ? "" : (String)redisUtil.get(Constant.KEY_MOBILE);
-        if (!mobilePhone.isEmpty()) {
-            operationLog.setUserId(mobilePhone);
+        if (!operationLog.getSecToken().isEmpty()) {
+            operationLog.setUserId(getMobile(operationLog.getSecToken(), operationLog.getChannelId()));
             operationLog.setAddress(IPUtil.getRealRequestIp(request));
             commonMapper.insertOperationLog(operationLog,commonMapper.selectActivityByActId(operationLog.getActId()).getKeyword());
         }
@@ -415,11 +455,10 @@ public class CommonServiceImpl implements CommonService {
      * @return
      */
     @Override
-    public JSONObject getMyReward(String channelId, String actId) {
+    public JSONObject getMyReward(String secToken,String channelId, String actId) {
         JSONObject object = new JSONObject();
-        String mobilePhone = redisUtil.get(Constant.KEY_MOBILE) == null ? "" : (String)redisUtil.get(Constant.KEY_MOBILE);
-        if (!mobilePhone.isEmpty()) {
-            List<ActivityUserHistory> historyList = commonMapper.selectHistory(mobilePhone,actId,commonMapper.selectActivityByActId(actId).getKeyword());
+        if (!secToken.isEmpty()) {
+            List<ActivityUserHistory> historyList = commonMapper.selectHistory(getMobile(secToken, channelId),actId,commonMapper.selectActivityByActId(actId).getKeyword());
                 object.put(Constant.ObjectList,historyList);
             }
         return object;

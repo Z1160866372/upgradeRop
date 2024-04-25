@@ -77,7 +77,7 @@ public interface CommonService {
      * @param isTestWhite
       * @return
      */
-    JSONObject verityActive(String actId, boolean isTestWhite, String channelId);
+    JSONObject verityActive(String secToken,String actId, boolean isTestWhite, String channelId);
     /**
      * 初始化用户
      *
@@ -87,6 +87,14 @@ public interface CommonService {
     ActivityUser insertUser(@ModelAttribute ActivityUser user);
 
     /**
+     * 二次短信下发
+     * @param userId
+     * @param actId
+     * @param unlocked
+     * @return
+     */
+    JSONObject sendSms5956(String userId,String actId, int unlocked);
+    /**
      * 3066业务办理
      *
      * @param config
@@ -95,7 +103,7 @@ public interface CommonService {
      * @return
      * @throws Exception
      */
-    JSONObject transact3066Business(ActivityConfiguration config, ActivityUserHistory history, String channelId);
+    JSONObject transact3066Business(ActivityConfiguration config, ActivityUserHistory history,String randCode, String channelId);
 
     /**
      * 4147礼包奖励发放
@@ -134,6 +142,6 @@ public interface CommonService {
      * @param actId
      * @return
      */
-    JSONObject getMyReward(String channelId,String actId);
+    JSONObject getMyReward(String secToken,String channelId,String actId);
 
 }

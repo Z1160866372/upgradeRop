@@ -53,10 +53,10 @@ ProMemberController {
     @ApiOperation("获取奖励列表")
     @PostMapping("/getConf")
     public @ResponseBody
-    void getConf(@ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
-        String mobilePhone = redisUtil.get(Constant.KEY_MOBILE) == null ? "" : (String)redisUtil.get(Constant.KEY_MOBILE);
+    void getConf(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动编号", required = true) String actId,@ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws IOException {
         actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
-        List<ActivityConfiguration> config = proMemberService.getConfiguration(mobilePhone, actId);
+        channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
+        List<ActivityConfiguration> config = proMemberService.getConfiguration(secToken, actId,channelId);
         resp.setCharacterEncoding("utf-8");
         resp.getWriter().write(JSON.toJSONString(config));
     }
@@ -64,12 +64,12 @@ ProMemberController {
     @ApiOperation("用户点击领取")
     @PostMapping("/draw")
     public @ResponseBody
-    JSONObject userDraw(@ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked) {
-        String mobilePhone = redisUtil.get(Constant.KEY_MOBILE) == null ? "" : (String)redisUtil.get(Constant.KEY_MOBILE);
+    JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked, @ApiParam(name = "randCode", value = "验证码", required = true) String  randCode) {
         actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
         channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
         unlocked = request.getParameter("unlocked") == null ? 0 : Integer.parseInt(request.getParameter("unlocked"));
-        return this.proMemberService.submit(mobilePhone, actId, unlocked, session, channelId);
+        randCode = request.getParameter("randCode") == null ? "" : request.getParameter("randCode");
+        return this.proMemberService.submit(secToken, actId, unlocked, session, channelId,randCode);
     }
 
 
