@@ -39,6 +39,8 @@ public class ActivityList {
     private int typeId;
     @ApiModelProperty(value = "活动状态0未开始1进行中2已结束")
     private int status;
+    @ApiModelProperty(value = "判断当前活动是按日周月年")
+    private int code;
     @ApiModelProperty(value = "上线时间")
     private String startTime;
     @ApiModelProperty(value = "下线时间")

@@ -55,6 +55,9 @@ public class ActivityUserHistory {
     @ApiModelProperty(value = "奖励名称")
     private String rewardName;
 
+    @ApiModelProperty(value = "奖励值例如50(MB)、0.5(元)、10(元)、1024(MB)")
+    private String value;
+
     @ApiModelProperty(value = "接口响应状态")
     private int status;
 
@@ -71,10 +74,10 @@ public class ActivityUserHistory {
     private String ditch;
 
     @ApiModelProperty(value = "参与日期")
-    private Date createDate;
+    private String createDate;
 
     @ApiModelProperty(value = "参与时间")
-    private Timestamp createTime;
+    private String createTime;
 
     @ApiModelProperty(value = "活动编号")
     private String actId;
