@@ -52,6 +52,7 @@ public class ExteroceptiveController {
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {
+            System.out.println("客户端传输："+secToken);
             String mobile = commonService.getMobile(secToken, channelId);
             if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");

@@ -141,7 +141,12 @@ public class RopServiceManager {
             String xmlRequst = HttpClientTool.EncodeString(xmlReq, "00210");
             log.info("接口[sendPush]url===" + url);
             log.info("接口[sendPush]入参===" + xmlRequst);
-            JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+            JaxWsDynamicClientFactory clientFactory = JaxWsDynamicClientFactory.newInstance();
+	        Client client = clientFactory.createClient(url);
+	        client.getEndpoint().getEndpointInfo().setAddress("http://login.10086.cn:18080/services/AssertionQryUID");
+	        Object[] result = client.invoke("getAssertInfoByUID", xmlRequst);
+	        String outxml = (String)result[0];
+            /*JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
             factory.setServiceClass(AssertionQryUIDWS.class);
             factory.setAddress("http://login.10086.cn:18080/services/AssertionQryUID");
             AssertionQryUIDWS service = (AssertionQryUIDWS) factory.create();
@@ -151,7 +156,7 @@ public class RopServiceManager {
             policy.setConnectionTimeout(20 * 1000);
             policy.setReceiveTimeout(120 * 1000);
             contduit.setClient(policy);
-            String outxml = service.getAssertInfoByUID(xmlRequst);
+            String outxml = service.getAssertInfoByUID(xmlRequst);*/
             log.info("接口[sendPush]出参===" +outxml);
             String c = Security.getDecryptString(outxml);
             log.info("接口[sendPush]解密后的返回报文===" + c);

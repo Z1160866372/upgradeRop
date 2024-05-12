@@ -90,7 +90,7 @@ public class ActivityUser {
     private String actId;
 
     @ApiModelProperty(value = "参与日期")
-    private Date createDate;
+    private String  createDate;
 
     @ApiModelProperty(value = "参与时间")
     private Timestamp createTime;

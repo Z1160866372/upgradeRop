@@ -30,7 +30,7 @@ import javax.jms.Topic;
  */
 @Configuration
 public class ActiveMQConfig{
-
+/*
     @Value("${spring.activemq.broker-url}")
     private String brokerUrl;
 
@@ -72,7 +72,7 @@ public class ActiveMQConfig{
         return factory;
     }
 
-  /*  @Bean
+  *//*  @Bean
     @ConditionalOnMissingBean(
             name = {"queueListener"}
     )
@@ -83,7 +83,7 @@ public class ActiveMQConfig{
         bean.setConnectionFactory(connectionFactory);
         return bean;
     }
-*/
+*//*
 
 
     @Bean(name = "topicListener")
@@ -93,7 +93,7 @@ public class ActiveMQConfig{
         //设置广播模式，这样才能接收到topic 发送的消息
         bean.setPubSubDomain(true);
         return bean;
-    }
+    }*/
 }
 
 

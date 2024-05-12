@@ -47,29 +47,20 @@ ProMemberController {
     private HttpServletRequest request;
     @Resource
     private HttpServletResponse resp;
-    @Resource
-    private RedisUtil redisUtil;
 
     @ApiOperation("获取奖励列表")
     @PostMapping("/getConf")
     public @ResponseBody
     void getConf(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动编号", required = true) String actId,@ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws IOException {
-        actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
-        channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
-        List<ActivityConfiguration> config = proMemberService.getConfiguration(secToken, actId,channelId);
-        resp.setCharacterEncoding("utf-8");
-        resp.getWriter().write(JSON.toJSONString(config));
+        CommonController.getActId(request, proMemberService.getConfiguration(secToken, actId,channelId), resp, secToken);
     }
 
     @ApiOperation("用户点击领取")
     @PostMapping("/draw")
     public @ResponseBody
-    JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked, @ApiParam(name = "randCode", value = "验证码", required = true) String  randCode) {
-        actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
-        channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
-        unlocked = request.getParameter("unlocked") == null ? 0 : Integer.parseInt(request.getParameter("unlocked"));
-        randCode = request.getParameter("randCode") == null ? "" : request.getParameter("randCode");
-        return this.proMemberService.submit(secToken, actId, unlocked, session, channelId,randCode);
+    JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked) {
+        CommonController.getParameter(request, actId, channelId,unlocked);
+        return this.proMemberService.submit(secToken, actId, unlocked, session, channelId);
     }
 
 

@@ -3,24 +3,33 @@
  * Unauthorized use, copying, modification, or distribution of this software
  * is strictly prohibited without the prior written consent of Richeninfo.
  * https://www.richeninfo.com/
+ *
  */
+
 package com.richeninfo.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
-import org.springframework.stereotype.Service;
+import com.richeninfo.entity.mapper.entity.OperationLog;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import javax.servlet.http.HttpSession;
-import java.util.*;
+import java.util.List;
 
 /**
  * @Author : zhouxiaohu
- * @create 2022/11/15 17:16
+ * @create 2024/4/29 14:54
  */
-@Service("proMemberService")
-public interface ProMemberService {
+public interface SchoolBaqService {
+
+    /**
+     * 初始化用户
+     *
+     * @param user
+     * @return
+     */
+    ActivityUser insertUser(@ModelAttribute ActivityUser user);
+
     /**
      * 获取奖励列表
      *
@@ -28,7 +37,7 @@ public interface ProMemberService {
      * @param actId
      * @return
      */
-    List<ActivityConfiguration> getConfiguration(String secToken, String actId,String channelId);
+    List<ActivityConfiguration> getConfiguration(String secToken, String actId, String channelId);
 
     /**
      * 用户点击领取
@@ -36,10 +45,14 @@ public interface ProMemberService {
      * @param secToken
      * @param actId
      * @param unlocked
-     * @param session
      * @return
      * @throws Exception
      */
-    JSONObject submit(String secToken, String actId, int unlocked, HttpSession session, String channelId);
+    JSONObject submit(String secToken, String actId, int unlocked, String channelId,String mobilePhone) throws Exception;
 
+    /**
+     * 保存用户操作记录
+     * @param operationLog
+     */
+    JSONObject insertOperationLog(@ModelAttribute OperationLog operationLog);
 }

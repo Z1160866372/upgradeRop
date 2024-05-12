@@ -6,8 +6,10 @@
  */
 package com.richeninfo.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
 import com.richeninfo.entity.mapper.entity.ActivityShare;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
 import com.richeninfo.entity.mapper.entity.OperationLog;
@@ -39,6 +41,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -163,66 +166,58 @@ public class CommonController {
         return this.commonService.verityActive(secToken,actId, isTestWhite, channelId);
     }
 
-    @ApiOperation(value = "初始化用户", httpMethod = "POST")
-    @PostMapping(value = "/initialize")
+
+    @ApiOperation(value = "二次短信下发", httpMethod = "POST")
+    @PostMapping(value = "/sendSms5956")
     public @ResponseBody
-    void initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
+    Object sendSms5956(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) int unlocked) throws IOException {
+        Object object=  commonObject(secToken,channelId,actId).getString(Constant.MSG);
+        if(object.equals(Constant.SUCCESS)){
+            return  commonService.sendSms5956(commonObject(secToken,channelId,actId).getString(Constant.KEY_MOBILE),actId,unlocked);
+        }
+        return  object;
+    }
+
+    /**
+     * 提取公共内容
+     * @param secToken
+     * @param channelId
+     * @param actId
+     * @return
+     */
+    public  JSONObject commonObject(String secToken, String channelId, String actId){
         JSONObject object = new JSONObject();
-        ActivityUser user = new ActivityUser();
         secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
         channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
-        actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {
             String mobile = commonService.getMobile(secToken, channelId);
             if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
-            } else {
-                user.setUserId(mobile);
-                user.setSecToken(secToken);
-                user.setChannelId(channelId);
-                user.setActId(actId);
-                user = commonService.insertUser(user);
+            }else{
                 object.put(Constant.MSG, Constant.SUCCESS);
-                object.put("user", user);
+                object.put(Constant.KEY_MOBILE, mobile);
             }
         }
-        resp.getWriter().write(object.toJSONString());
+        return object;
     }
 
-    /**
-     * 保存分享记录
-     * @return
-     */
-    @ApiOperation("保存分享记录")
-    @PostMapping(value = "/insertShare")
-    public void insertShare(@RequestBody  ActivityShare share)  {
-         this.commonService.insertShare(share);
+
+    static void getActId(HttpServletRequest request, List<ActivityConfiguration> configuration, HttpServletResponse resp, @ApiParam(name = "secToken", value = "用户标识", required = true) String secToken) throws IOException {
+        String actId;
+        String channelId;
+        actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
+        channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
+        List<ActivityConfiguration> config = configuration;
+        resp.setCharacterEncoding("utf-8");
+        resp.getWriter().write(JSON.toJSONString(config));
     }
 
-    /**
-     * 保存用户操作记录
-     * @return
-     */
-    @ApiOperation("保存用户操作记录")
-    @PostMapping(value = "/insertOperationLog")
-    public
-    void insertOperationLog(@RequestBody OperationLog log) {
-         this.commonService.insertOperationLog(log);
-    }
-
-    /**
-     * 我的奖励
-     * @param actId
-     * @param channelId
-     * @return
-     */
-    @ApiOperation("我的奖励")
-    @PostMapping(value = "/getMyReward")
-    public @ResponseBody
-    Object getMyReward(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId){
-        return this.commonService.getMyReward(secToken,channelId,actId);
+    static void getParameter(HttpServletRequest request,String actId,String channelId,int unlocked){
+        actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
+        channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
+        unlocked = request.getParameter("unlocked") == null ? 0 : Integer.parseInt(request.getParameter("unlocked"));
     }
 
 }

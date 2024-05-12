@@ -29,13 +29,13 @@ spring:
 #能开平台相关配置信息
 #正式地址product
 nengKai:
-  ip: 211.136.111.133
+  ip: 40.40.40.115
   config_context: /openapi/secret
   appCode: A0000479
   apk_new: ZK2KFvG5wn/pXtUEAeUsv7DWks2eXbU+
   apk: KbYv6fJRH4pUruNM+2HvTCm2L+nyUR+K
-  securityUrl: http://211.136.111.133/open/security
-  openapiUrl: http://211.136.111.133/open/service
+  securityUrl: http://40.40.40.115/open/security
+  openapiUrl: http://40.40.40.115/open/service
 
 
 

@@ -10,6 +10,7 @@ import com.richeninfo.service.CommonService;
 import com.richeninfo.service.UniapiTokenValidateService;
 import com.richeninfo.util.RopServiceManager;
 import com.richeninfo.util.*;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,9 @@ import redis.clients.jedis.Jedis;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.security.SecureRandom;
 import java.text.DateFormat;
@@ -52,37 +55,10 @@ public class CommonServiceImpl implements CommonService {
     private HttpServletRequest request;
 
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    DateFormat month = new SimpleDateFormat("yyyy-MM");
+    DateFormat day = new SimpleDateFormat("yyyy-MM-dd");
     Date current_time = new Date();
 
-    /**
-     * 初始化用户
-     *
-     * @param user
-     * @return
-     */
-    public ActivityUser insertUser(ActivityUser user) {
-        String keyword=commonMapper.selectActivityByActId(user.getActId()).getKeyword();
-        ActivityUser select_user = commonMapper.selectUser(user.getUserId(), user.getActId(),keyword);
-        if (select_user == null) {
-            ActivityUser new_user = new ActivityUser();
-            new_user.setSecToken(user.getSecToken());
-            new_user.setUserId(user.getUserId());
-            new_user.setActId(user.getActId());
-            new_user.setChannelId(user.getChannelId());
-            List<ActivityRoster> roster = commonMapper.selectRoster(user.getUserId(), user.getActId(),keyword);
-            if (CollectionUtils.isEmpty(roster)) {
-                new_user.setUserType(0);
-            } else {
-                new_user.setUserType(1);
-            }
-            commonMapper.insertUser(new_user,keyword);
-            user = new_user;
-        } else {
-            user = select_user;
-        }
-        redisUtil.set(Constant.KEY_MOBILE, user.getUserId());
-        return user;
-    }
 
     /**
      * 二次短信下发
@@ -99,24 +75,29 @@ public class CommonServiceImpl implements CommonService {
             return resultObj;
         }
         ActivityConfiguration configuration =commonMapper.selectActivitySomeConfiguration(actId,unlocked);
+        redisUtil.set(userId, "",60);
         try {
-            Packet packet = packetHelper.getCommitPacket5956(userId, configuration.getActivityId());
-            Result result = JSON.parseObject(ropService.execute(packet, userId), Result.class);
-            String code = result.getResponse().getErrorInfo().getCode();
-            String bizCode = result.getResponse().getRetInfo().getString("bizCode");
-            if (Constant.SUCCESS_CODE.equals(code)&&Constant.SUCCESS_CODE.equals(bizCode)) {
+            if(configuration!=null){
+                Packet packet = packetHelper.getCommitPacket5956(userId, configuration.getActivityId());
+               /* Result result = JSON.parseObject(ropService.execute(packet, userId), Result.class);
+                String code = result.getResponse().getErrorInfo().getCode();
+                String bizCode = result.getResponse().getRetInfo().getString("bizCode");
+                if (Constant.SUCCESS_CODE.equals(code)&&Constant.SUCCESS_CODE.equals(bizCode)) {
+                    resultObj.put(Constant.MSG, Constant.SUCCESS);
+                } else {
+                    resultObj.put(Constant.MSG, Constant.ERROR);
+                    resultObj.put(Constant.CODE, code);
+                    return resultObj;
+                }*/
                 resultObj.put(Constant.MSG, Constant.SUCCESS);
-            } else {
-                resultObj.put(Constant.MSG, Constant.ERROR);
-                resultObj.put(Constant.CODE, code);
-                return resultObj;
+            }else{
+                resultObj.put(Constant.MSG, "noConfig");
             }
-            resultObj.put(Constant.MSG, Constant.SUCCESS);
         } catch (Exception e) {
             log.info("Exception message = {}", e);
             resultObj.put(Constant.MSG, Constant.FAILURE);
         }
-        return null;
+        return resultObj;
     }
     /**
      * 短信发送
@@ -310,63 +291,6 @@ public class CommonServiceImpl implements CommonService {
         return object;
     }
 
-
-    /**
-     * 3066业务办理
-     * @param config
-     * @param history
-     * @param channelId
-     * @return
-     * @throws Exception
-     */
-    @Override
-    public JSONObject transact3066Business(ActivityConfiguration config, ActivityUserHistory history, String randCode, String channelId) {
-        JSONObject object = new JSONObject();
-        boolean transact_result = false;
-        Result result = new Result();
-        try {
-            List<VasOfferInfo> offerList = new ArrayList<VasOfferInfo>();
-            if(config.getActivityId().contains(",")){
-                for (int i = 0; i < config.getActivityId().split(",").length; i++) {
-                    VasOfferInfo vasOfferInfo = new VasOfferInfo();
-                    vasOfferInfo.setOfferId(config.getActivityId().split(",")[i]);
-                    vasOfferInfo.setEffectiveType("0");
-                    vasOfferInfo.setOperType("0");
-                    offerList.add(vasOfferInfo);
-                }
-            }else{
-                VasOfferInfo vasOfferInfo = new VasOfferInfo();
-                vasOfferInfo.setOfferId(config.getActivityId());
-                vasOfferInfo.setEffectiveType("0");
-                vasOfferInfo.setOperType("0");
-                offerList.add(vasOfferInfo);
-            }
-            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId);
-            /*String message = ropService.execute(packet,history.getUserId());
-            message = ReqWorker.replaceMessage(message);
-            result = JSON.parseObject(message,Result.class);
-            String res = result.getResponse().getErrorInfo().getCode();
-            if(Constant.SUCCESS_CODE.equals(res)){
-                transact_result = true;
-                history.setStatus(Constant.STATUS_RECEIVED);
-            }else{
-                transact_result = false;
-                history.setStatus(Constant.STATUS_RECEIVED_ERROR);
-            }*/
-            if (true) {
-                transact_result = true;
-                history.setStatus(Constant.STATUS_RECEIVED);
-            }
-            history.setMessage("message");
-            history.setCode(JSON.toJSONString(packet));
-            object.put("update_history", JSON.toJSONString(history));
-            object.put("transact_result", transact_result);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return object;
-    }
-
     /**
      * 4147礼包奖励发放
      *
@@ -399,12 +323,13 @@ public class CommonServiceImpl implements CommonService {
         try {
             log.info("接收内容："+secToken);
             if (!secToken.isEmpty()) {
-                String key = commonMapper.selectTheDayKey().getSecretKey();
                 if (channelId.equals("h5") || channelId.equals("weiting") || channelId.equals("xcx")||channelId.equals("shydhn")) {//中国移动上海｜微信渠道||小程序
+                    String key = commonMapper.selectTheDayKey().getSecretKey();
                     String source[] = Des3SSL.decodeDC(secToken, key);
                     mobile = source[0];
                 } else if (channelId.equals("leadeon")) {//中国移动APP
-                    String UID = URLDecoder.decode(secToken, "utf-8");
+                    //String UID = URLDecoder.decode(secToken, "utf-8");
+                    String UID =secToken;
                     log.info("解码后："+UID);
                     String TransactionId = "12003201205221624261113765372600";
                     WsMessage msg = RopServiceManager.sendPush(TransactionId, UID);
@@ -423,44 +348,9 @@ public class CommonServiceImpl implements CommonService {
         return mobile;
     }
 
-    /**
-     * 保存用户分享记录
-     * @param share
-     */
-    @Override
-    public void insertShare(ActivityShare share) {
-        if (!share.getSecToken().isEmpty()) {
-            share.setUserId(getMobile(share.getSecToken(), share.getChannelId()));
-            commonMapper.insertShareUser(share,commonMapper.selectActivityByActId(share.getActId()).getKeyword());
-        }
-    }
 
-    /**
-     * 保存用户操作记录
-     * @param operationLog
-     */
-    @Override
-    public void insertOperationLog(OperationLog operationLog) {
-        if (!operationLog.getSecToken().isEmpty()) {
-            operationLog.setUserId(getMobile(operationLog.getSecToken(), operationLog.getChannelId()));
-            operationLog.setAddress(IPUtil.getRealRequestIp(request));
-            commonMapper.insertOperationLog(operationLog,commonMapper.selectActivityByActId(operationLog.getActId()).getKeyword());
-        }
-    }
 
-    /**
-     * 我的奖励
-     * @param channelId
-     * @param actId
-     * @return
-     */
-    @Override
-    public JSONObject getMyReward(String secToken,String channelId, String actId) {
-        JSONObject object = new JSONObject();
-        if (!secToken.isEmpty()) {
-            List<ActivityUserHistory> historyList = commonMapper.selectHistory(getMobile(secToken, channelId),actId,commonMapper.selectActivityByActId(actId).getKeyword());
-                object.put(Constant.ObjectList,historyList);
-            }
-        return object;
-    }
+
+
+
 }

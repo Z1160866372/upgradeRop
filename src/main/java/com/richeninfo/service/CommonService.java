@@ -78,13 +78,6 @@ public interface CommonService {
       * @return
      */
     JSONObject verityActive(String secToken,String actId, boolean isTestWhite, String channelId);
-    /**
-     * 初始化用户
-     *
-     * @param user
-     * @return
-     */
-    ActivityUser insertUser(@ModelAttribute ActivityUser user);
 
     /**
      * 二次短信下发
@@ -94,16 +87,6 @@ public interface CommonService {
      * @return
      */
     JSONObject sendSms5956(String userId,String actId, int unlocked);
-    /**
-     * 3066业务办理
-     *
-     * @param config
-     * @param history
-     * @param channelId
-     * @return
-     * @throws Exception
-     */
-    JSONObject transact3066Business(ActivityConfiguration config, ActivityUserHistory history,String randCode, String channelId);
 
     /**
      * 4147礼包奖励发放
@@ -123,25 +106,8 @@ public interface CommonService {
      */
     String getMobile(String secToken, String channelId);
 
-    /**
-     * 保存分享记录
-     *
-     * @param share
-     */
-    void insertShare(@ModelAttribute ActivityShare share);
 
-    /**
-     * 保存用户操作记录
-     * @param operationLog
-     */
-    void insertOperationLog(@ModelAttribute OperationLog operationLog);
 
-    /**
-     * 我的奖励
-     * @param channelId
-     * @param actId
-     * @return
-     */
-    JSONObject getMyReward(String secToken,String channelId,String actId);
+
 
 }

@@ -108,7 +108,7 @@ public class ProMemberServiceImpl implements ProMemberService {
      * @return
      * @throws Exception
      */
-    public JSONObject submit(String secToken, String actId, int unlocked, HttpSession session, String channelId,String randCode) {
+    public JSONObject submit(String secToken, String actId, int unlocked, HttpSession session, String channelId) {
         JSONObject object = new JSONObject();
         try {
             if (commonService.verityActive(actId,secToken, false, channelId).getString(Constant.MSG).equals("success")) {
@@ -127,13 +127,12 @@ public class ProMemberServiceImpl implements ProMemberService {
                         history = proMemberMapper.selectHistoryByUnlocked(mobilePhone, Constant.white_figure, actId);
                         if (history == null) {
                             List<ActivityConfiguration> conf_list = commonMapper.selectActivityConfigurationByActIdAndModule(actId, Constant.wap_figure);
-                            insertHistory(conf_list, user,randCode, channelId);
-                            proMemberMapper.updateUser_type(user.getId());//更新用户办理状态
+                            insertHistory(conf_list, user, channelId);
                         }
                     }
                 }
                 history = proMemberMapper.selectHistoryByUnlocked(mobilePhone, config.getUnlocked(), actId);
-                object = verityHistory(object, config, history, user,randCode, channelId);
+                object = verityHistory(object, config, history, user, channelId);
 
             } else {
                 return commonService.verityActive(actId,secToken, false, channelId);
@@ -144,7 +143,7 @@ public class ProMemberServiceImpl implements ProMemberService {
         return object;
     }
 
-    private JSONObject verityHistory(JSONObject object, ActivityConfiguration config, ActivityUserHistory history, ActivityUser user,String randCode, String channelId) throws Exception {
+    private JSONObject verityHistory(JSONObject object, ActivityConfiguration config, ActivityUserHistory history, ActivityUser user, String channelId) throws Exception {
         String msg = "";
         boolean flog = false;
         if (history == null) {
@@ -154,7 +153,7 @@ public class ProMemberServiceImpl implements ProMemberService {
                     int update_result = commonMapper.updateAmount(config.getId());//更新数量
                     if (update_result > 0) {
                         conf_list.add(config);
-                        flog = insertHistory(conf_list, user,randCode, channelId);
+                        flog = insertHistory(conf_list, user, channelId);
                         if (flog) {
                             msg = "success";
                         } else {
@@ -168,7 +167,7 @@ public class ProMemberServiceImpl implements ProMemberService {
                 }
             } else {
                 conf_list.add(config);
-                flog = insertHistory(conf_list, user,randCode, channelId);
+                flog = insertHistory(conf_list, user, channelId);
                 if (flog) {
                     msg = "success";
                 } else {
@@ -182,9 +181,7 @@ public class ProMemberServiceImpl implements ProMemberService {
         return object;
     }
 
-    private boolean insertHistory(List<ActivityConfiguration> conf_list, ActivityUser user,String randCode, String channelId) throws Exception {
-        boolean insert_result = true;
-        JSONObject object;
+    private boolean insertHistory(List<ActivityConfiguration> conf_list, ActivityUser user, String channelId) throws Exception {
         String mqMsg;
         for (ActivityConfiguration config : conf_list) {
             ActivityUserHistory history = new ActivityUserHistory();
@@ -197,23 +194,12 @@ public class ProMemberServiceImpl implements ProMemberService {
             history.setActId(config.getActId());
             history.setKeyword(commonMapper.selectActivityByActId(config.getActId()).getKeyword());
             proMemberMapper.insertUserHistory(history);
-            if (config.getUnlocked() == 0) {//4147礼包接口
-                if (insert_result) {
-                    mqMsg = commonService.issueReward(config, history);
-                    log.info("4147请求信息：" + mqMsg);
-                    //jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
-                }
-            } else if (config.getUnlocked() == 1) {//3066业务
-                object = commonService.transact3066Business(config, history,randCode, channelId);
-                insert_result = object.getBoolean("transact_result");
-                history = JSON.parseObject(object.getString("update_history"), ActivityUserHistory.class);
-                commonMapper.updateHistory(history);
-            } else if (config.getUnlocked() == 2) {//4147礼包接口
+            if (config.getTypeId() == 0) {//4147礼包接口
                 mqMsg = commonService.issueReward(config, history);
                 log.info("4147请求信息：" + mqMsg);
-               // jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
+                jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
             }
         }
-        return insert_result;
+        return true;
     }
 }

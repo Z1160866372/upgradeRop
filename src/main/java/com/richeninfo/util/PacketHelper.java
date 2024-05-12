@@ -9,6 +9,7 @@ package com.richeninfo.util;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
 import com.richeninfo.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,9 @@ public class PacketHelper {
     private HttpServletRequest request;
     @Autowired
     private HttpSession session;
+    SimpleDateFormat month = new SimpleDateFormat("yyyy-MM");
+    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd");
 
     //云MSM短信验证
     public String sendDSMS(String mobiles, String[] params) {
@@ -1002,40 +1006,40 @@ public class PacketHelper {
 
     /**
      * 业务办理集团上报
-     * @param thirdTradeId
-     * @param channelId
-     * @param uniChannelId
-     * @param purchaseChannelName
-     * @param charge
-     * @param spayCharge
-     * @param billCharge
-     * @param orderType
-     * @param customerId
-     * @param orderSubType
-     * @param createTime
-     * @param payTime
-     * @param closeTime
-     * @param discountType
-     * @param payType
-     * @param busiStatus
-     * @param platformCode
-     * @param orderItemId
-     * @param commodityId
-     * @param commodityName
-     * @param commodityNum
-     * @param commodityType
-     * @param skuId
-     * @param skuName
-     * @param unitPrice
-     * @param bossId
+     * @param config
+     * @param packet
      * @param wtAcId
      * @param wtAc
      * @return
      */
-    public Packet orderReporting(String thirdTradeId,String channelId,String uniChannelId,String purchaseChannelName,String charge,
-                            String spayCharge,String billCharge,String orderType,String customerId,String orderSubType,String createTime,String payTime,
-                            String closeTime,String discountType,String payType,String busiStatus,String platformCode,String orderItemId,String commodityId,
-                            String commodityName,String commodityNum,String commodityType,String skuId,String skuName,String unitPrice,String bossId,String wtAcId,String wtAc){
+    public Packet orderReporting(ActivityConfiguration config, Packet packet, String wtAcId, String wtAc){
+        String packetThirdTradeId=packet.getPost().getPubInfo().getTransactionId();
+        String thirdTradeId="JYRZ"+packetThirdTradeId.substring(packetThirdTradeId.length()-21);//请求渠道原始订单编号JYRZ开头
+        String channelId="102";//受理渠道102上海移动商城H5、007星火店铺、008一级云店H5
+        String uniChannelId="1000000002110700006";//19位全网统一渠道编码 一级APP分省h5:1000000002110700006一级APP分省小程序：1210000002110500001
+        String purchaseChannelName="中国移动APP";//用户购买渠道名称 中国移动APP、企业微信、线上店铺
+        String charge=config.getProb().split(";")[3];//订单金额  单位分
+        String spayCharge=config.getProb().split(";")[3];//应付金额  单位分
+        String billCharge=config.getProb().split(";")[3];//实付金额  单位分
+        String orderType=config.getProb().split(";")[0];//订单类型 业务办理类、商品类、流量类、充值类、权益类、预约类
+        String customerId=packet.getPost().getRequest().getBusiParams().getString("billid");//手机号码或者身份证号
+        String orderSubType=config.getProb().split(";")[1];//订单子类型
+        String createTime=df.format(new Date());//订单创建时间
+        String payTime=df.format(new Date());//订单支付时间
+        String closeTime=df.format(new Date());//订单完成时间
+        String discountType=config.getProb().split(";")[4];//优惠类型1原价订购2优惠购买
+        String payType="5";//支付方式0无需支付1线上支付2货到付款3积分混合支付4代理商支付5话费支付6积分支付7线下支付8外部渠道支付
+        String busiStatus="00";//订单原始状态01未处理02处理中00处理成功04处理失败05推定成功YJ80退货处理中
+        String platformCode="03";//业务上架平台00其他01在线工具02星火平台03中国移动APP
+        String orderItemId=packet.getPost().getPubInfo().getTransactionId();//订单项ID
+        String commodityId="";//商品ID
+        String commodityName=config.getName();//商品名称
+        String commodityNum="1";//商品数量 默认1
+        String commodityType=config.getProb().split(";")[2];//商品类型 移动云盘
+        String skuId="-";
+        String skuName="-";
+        String unitPrice=config.getProb().split(";")[3];//单价 单位分
+        String bossId=config.getActivityId();//业务ID
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("logType","1");//必传 订单类型（1普通 2宽带 3号卡
         JSONObject busiParams = new JSONObject();//
@@ -1130,8 +1134,8 @@ public class PacketHelper {
         newArray.add(new_busiParams);
         busiParams.put("orderItems", newArray);//订单项列表
         jsonObject.put("busInfo",busiParams);
-        Packet packet = getOUTER0001Packet(jsonObject, "addOrder");
-        return packet;
+        Packet NewPacket = getOUTER0001Packet(jsonObject, "addOrder");
+        return NewPacket;
     }
     /**
      * 权益订购

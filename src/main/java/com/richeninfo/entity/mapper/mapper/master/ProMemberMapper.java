@@ -24,21 +24,13 @@ public interface ProMemberMapper {
     @Select("select * from wt_proMember_user where userId = #{userId} and actId =#{actId}")
     ActivityUser selectUser(@Param("userId") String userId, @Param("actId") String actId);//查找用户记录
 
-    @Insert("insert into wt_proMember_user(userId,belongFlag,userType,channelId,secToken,createDate,createTime,actId)values(#{userId},#{belongFlag},#{userType},#{channelId},#{secToken},curdate(),now(),#{actId})")
-    int insertUser(ActivityUser user);//初始化用户
-
     @Insert("insert into wt_proMember_user_history(userId,belongFlag,userType,rewardName,unlocked,channelId,secToken,createDate,createTime,actId)values(#{userId},#{belongFlag},#{userType},#{rewardName},#{unlocked},#{channelId},#{secToken},curdate(),now(),#{actId})")
     int insertUserHistory(ActivityUserHistory history);//保存用户记录
-
-    @Select("select * from wt_proMember_user_history where userId = #{userId} and actId =#{actId}")
-    List<ActivityUserHistory> selectHistory(@Param("userId") String userId, @Param("actId") String actId);//查询用户领取记录
 
     @Select("select * from wt_proMember_user_history where userId = #{userId} and unlocked =#{unlocked} and actId =#{actId}")
     ActivityUserHistory selectHistoryByUnlocked(@Param("userId") String userId, @Param("unlocked") int unlocked, @Param("actId") String actId);//查询用户当前奖励是否已领取
 
     @Update("update wt_proMember_user set userType = 1 where id = #{id}")
     int updateUser_type(int id);//更新用户标识(PRO会员标识 1_yes;0_no)
-
-
 
 }

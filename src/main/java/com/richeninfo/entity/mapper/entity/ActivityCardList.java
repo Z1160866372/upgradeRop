@@ -45,6 +45,8 @@ public class ActivityCardList {
     private String ip;
     @ApiModelProperty(value = "IP段")
     private String ipScanner;
+    @ApiModelProperty(value = "活动编号")
+    private String actId;
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private String createTime;

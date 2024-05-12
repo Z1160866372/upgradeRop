@@ -27,10 +27,10 @@ spring:
 #能开平台相关配置信息
 #测试地址test
 nengKai:
-  ip: 211.136.164.123
+  ip: 10.10.140.76
   config_context: /secret
   appCode: A0001547
   apk_new: znoZXkO1wlsEEOl2VP5Flx9rYc7T0Kuh
   apk: gBPWtWgf4Gvpnu+8xJTEDYAT1rVoH+Br
-  securityUrl: http://211.136.164.123/open/security
-  openapiUrl: http://211.136.164.123/open/service
+  securityUrl: http://10.10.140.76/open/security
+  openapiUrl: http://10.10.140.76/open/service

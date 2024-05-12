@@ -28,8 +28,8 @@ public interface AssertionQryUIDWS {
 	 */
 	@WebMethod(action = "getAssertInfoByUID")
 	@WebResult(name = "response", targetNamespace = "")
-	@RequestWrapper(localName = "getAssertInfoByUID", targetNamespace = "http://login.10086.cn", className = "com.richeninfo.rop.wsdl.GetAssertInfoByUID")
-	@ResponseWrapper(localName = "getAssertInfoByUIDResponse", targetNamespace = "http://login.10086.cn", className = "com.richeninfo.rop.wsdl.GetAssertInfoByUIDResponse")
+	@RequestWrapper(localName = "getAssertInfoByUID", targetNamespace = "http://login.10086.cn", className = "com.richeninfo.wsdl.GetAssertInfoByUID")
+	@ResponseWrapper(localName = "getAssertInfoByUIDResponse", targetNamespace = "http://login.10086.cn", className = "com.richeninfo.wsdl.GetAssertInfoByUIDResponse")
 	public String getAssertInfoByUID(
 			@WebParam(name = "request", targetNamespace = "") String request);
 

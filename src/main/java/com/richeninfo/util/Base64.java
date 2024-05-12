@@ -264,6 +264,121 @@ public class Base64 {
 
         return bytes;
     }
+    public static byte[] newEncode(byte[] data) {
+        int modulus = data.length % 3;
+        byte[] bytes;
+        if (modulus == 0) {
+            bytes = new byte[4 * data.length / 3];
+        }
+        else {
+            bytes = new byte[4 * (data.length / 3 + 1)];
+        }
+
+        int dataLength = data.length - modulus;
+
+        int i = 0;
+        for (int j = 0; i < dataLength; j += 4) {
+            int a1 = data[i] & 0xFF;
+            int a2 = data[(i + 1)] & 0xFF;
+            int a3 = data[(i + 2)] & 0xFF;
+
+            bytes[j] = encodingTable[(a1 >>> 2 & 0x3F)];
+            bytes[(j + 1)] = encodingTable[((a1 << 4 | a2 >>> 4) & 0x3F)];
+            bytes[(j + 2)] = encodingTable[((a2 << 2 | a3 >>> 6) & 0x3F)];
+            bytes[(j + 3)] = encodingTable[(a3 & 0x3F)];
+
+            i += 3;
+        }
+        int d1;
+        int b1;
+        int b2;
+        switch (modulus) {
+            case 0:
+                break;
+            case 1:
+                d1 = data[(data.length - 1)] & 0xFF;
+                b1 = d1 >>> 2 & 0x3F;
+                b2 = d1 << 4 & 0x3F;
+
+                bytes[(bytes.length - 4)] = encodingTable[b1];
+                bytes[(bytes.length - 3)] = encodingTable[b2];
+                bytes[(bytes.length - 2)] = 61;
+                bytes[(bytes.length - 1)] = 61;
+                break;
+            case 2:
+                d1 = data[(data.length - 2)] & 0xFF;
+                int d2 = data[(data.length - 1)] & 0xFF;
+
+                b1 = d1 >>> 2 & 0x3F;
+                b2 = (d1 << 4 | d2 >>> 4) & 0x3F;
+                int b3 = d2 << 2 & 0x3F;
+
+                bytes[(bytes.length - 4)] = encodingTable[b1];
+                bytes[(bytes.length - 3)] = encodingTable[b2];
+                bytes[(bytes.length - 2)] = encodingTable[b3];
+                bytes[(bytes.length - 1)] = 61;
+        }
+
+        return bytes;
+    }
+
+    public static byte[] newDecode(byte[] data) {
+        byte[] bytes;
+        if (data[(data.length - 2)] == 61) {
+            bytes = new byte[(data.length / 4 - 1) * 3 + 1];
+        }
+        else if (data[(data.length - 1)] == 61) {
+            bytes = new byte[(data.length / 4 - 1) * 3 + 2];
+        }
+        else {
+            bytes = new byte[data.length / 4 * 3];
+        }
+
+        int i = 0;
+        byte b1;
+        byte b2;
+        byte b3;
+        byte b4;
+        for (int j = 0; i < data.length - 4; j += 3) {
+            b1 = decodingTable[data[i]];
+            b2 = decodingTable[data[(i + 1)]];
+            b3 = decodingTable[data[(i + 2)]];
+            b4 = decodingTable[data[(i + 3)]];
+
+            bytes[j] = (byte) (b1 << 2 | b2 >> 4);
+            bytes[(j + 1)] = (byte) (b2 << 4 | b3 >> 2);
+            bytes[(j + 2)] = (byte) (b3 << 6 | b4);
+
+            i += 4;
+        }
+
+        if (data[(data.length - 2)] == 61) {
+            b1 = decodingTable[data[(data.length - 4)]];
+            b2 = decodingTable[data[(data.length - 3)]];
+
+            bytes[(bytes.length - 1)] = (byte) (b1 << 2 | b2 >> 4);
+        }
+        else if (data[(data.length - 1)] == 61) {
+            b1 = decodingTable[data[(data.length - 4)]];
+            b2 = decodingTable[data[(data.length - 3)]];
+            b3 = decodingTable[data[(data.length - 2)]];
+
+            bytes[(bytes.length - 2)] = (byte) (b1 << 2 | b2 >> 4);
+            bytes[(bytes.length - 1)] = (byte) (b2 << 4 | b3 >> 2);
+        }
+        else {
+            b1 = decodingTable[data[(data.length - 4)]];
+            b2 = decodingTable[data[(data.length - 3)]];
+            b3 = decodingTable[data[(data.length - 2)]];
+            b4 = decodingTable[data[(data.length - 1)]];
+
+            bytes[(bytes.length - 3)] = (byte) (b1 << 2 | b2 >> 4);
+            bytes[(bytes.length - 2)] = (byte) (b2 << 4 | b3 >> 2);
+            bytes[(bytes.length - 1)] = (byte) (b3 << 6 | b4);
+        }
+
+        return bytes;
+    }
 
 
 }

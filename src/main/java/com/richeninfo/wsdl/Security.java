@@ -19,7 +19,6 @@ public class Security {
     public static String ECSKEY = "8997FB5B40319E9EFBD6F119C152E52CABAB37926419A4AB";
 
     public static final byte[] iv = {1, 2, 3, 4, 5, 6, 7, 8};
-    private static Base64 Bases64;
 
     public static String generalStringFor3DES(String keyValue, String For3DES, String ForDigest, byte[] keyIV,
                                               String linkString) throws Exception {
@@ -35,7 +34,7 @@ public class Security {
             } else {
                 _For3DES = For3DES;
             }
-            byte[] encryptStr = Bases64.encoded(EncryptionForString.encrypt(keyIV, _For3DES, key, "RAW"));
+            byte[] encryptStr = Base64.newEncode(EncryptionForString.encrypt(keyIV, _For3DES, key, "RAW"));
 
             rtn = new String(encryptStr);
         } catch (Exception e) {
@@ -57,7 +56,7 @@ public class Security {
     }
 
     public static byte[] decrypt(byte[] encryptByBases64Str, String keyValue, byte[] keyIV) throws Exception {
-        byte[] encryptStr = Bases64.decode(encryptByBases64Str);
+        byte[] encryptStr = Base64.newDecode(encryptByBases64Str);
         Key key = get3DESKey(keyValue);
 
         byte[] decryptStr = EncryptionForString.decrypt(keyIV, encryptStr, key);

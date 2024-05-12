@@ -28,7 +28,7 @@ import javax.annotation.Resource;
 @Component
 public class ActivityMqListener {
 
-    @Resource
+    /*@Resource
     private CommonMapper commonMapper;
     @Resource
     private RopServiceManager ropServiceManager;
@@ -38,15 +38,17 @@ public class ActivityMqListener {
         log.info("接收信息" + message);
         PacketMq mq = JSON.parseObject(message, PacketMq.class);
         ActivityUserHistory history = null;
+        String keyword ="";
         try {
             if (mq == null) {
                 return;
             }
-            history = commonMapper.selectHistoryByUnlocked(mq.getHistory().getUserId(), mq.getHistory().getUnlocked(), mq.getHistory().getActId(),commonMapper.selectActivityByActId( mq.getHistory().getActId()).getKeyword());
-            if (history == null || history.getStatus() == Constant.STATUS_RECEIVED || mq.getRequest() == null) {
+            keyword = "wt_"+mq.getHistory().getActId()+"_user_history";
+            history = commonMapper.selectHistoryByUnlocked(mq.getHistory().getUserId(), mq.getHistory().getUnlocked(), mq.getHistory().getActId(),keyword);
+            if (history == null || history.getStatus() == Constant.STATUS_RECEIVED || mq.getPacket()== null) {
                 return;
             }
-           /* String response_message = ropServiceManager.execute(mq.getPacket(), history.getUserId());
+           *//* String response_message = ropServiceManager.execute(mq.getPacket(), history.getUserId());
             Result request = JSON.parseObject(response_message, Result.class);
             String code = request.getResponse().getErrorInfo().getCode();
             String resCode = request.getResponse().getRetInfo().getString("resultCode");
@@ -59,13 +61,15 @@ public class ActivityMqListener {
             } else {
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
             }
-            history.setMessage(response_message);*/
+            history.setMessage(response_message);*//*
+            history.setStatus(Constant.STATUS_RECEIVED);
+            history.setMessage("测试数据～");
             history.setCode(JSONObject.toJSONString(mq.getPacket()));
         } catch (Exception e) {
             e.printStackTrace();
             history.setStatus(Constant.STATUS_RECEIVED_ERROR);
             history.setMessage(e.getMessage());
         }
-        commonMapper.updateHistory(history);//更新用户发放状态
-    }
+        commonMapper.updateHistory(history.getStatus(),history.getCode(),history.getMessage(),history.getId(),keyword);//更新用户发放状态
+    }*/
 }
