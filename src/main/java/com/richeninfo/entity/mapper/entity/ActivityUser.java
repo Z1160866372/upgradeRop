@@ -23,6 +23,7 @@ import java.util.Date;
 @ApiModel(value = "用户活动信息")
 public class ActivityUser {
 
+
     @ApiModelProperty(value = "ID")
     private int id;
 

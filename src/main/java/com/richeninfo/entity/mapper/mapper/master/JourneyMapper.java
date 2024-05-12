@@ -23,6 +23,7 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface JourneyMapper {
 
+
     @Select("select * from wt_journey_user where userId = #{userId}")
     ActivityUser selectUserByCreateDate(@Param("userId") String userId);//查找用户记录
 

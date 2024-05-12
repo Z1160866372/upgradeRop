@@ -27,7 +27,6 @@ import javax.annotation.Resource;
 @Log
 @Component
 public class ActivityMqListener {
-
     /*@Resource
     private CommonMapper commonMapper;
     @Resource

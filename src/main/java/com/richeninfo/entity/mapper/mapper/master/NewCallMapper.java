@@ -23,6 +23,7 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface NewCallMapper {
 
+
     @Select("select * from wt_newCall_user where userId = #{userId}")
     ActivityUser selectUserByCreateDate(@Param("userId") String userId);//查找用户记录
 

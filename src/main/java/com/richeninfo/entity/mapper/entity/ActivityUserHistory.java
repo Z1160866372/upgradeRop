@@ -22,6 +22,7 @@ import java.util.Date;
 @NoArgsConstructor
 @ApiModel(value = "用户活动奖励")
 public class ActivityUserHistory {
+
     @ApiModelProperty(value = "ID")
     private int id;
 

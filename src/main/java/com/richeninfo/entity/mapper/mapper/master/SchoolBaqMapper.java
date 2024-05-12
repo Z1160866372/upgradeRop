@@ -22,6 +22,7 @@ import java.util.List;
 @Mapper
 public interface SchoolBaqMapper {
 
+
     @Select("select * from wt_schoolBaq_user where userId = #{userId}")
     ActivityUser selectUserByCreateDate(@Param("userId") String userId);//查找用户记录
 

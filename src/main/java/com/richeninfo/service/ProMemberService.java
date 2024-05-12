@@ -21,6 +21,7 @@ import java.util.*;
  */
 @Service("proMemberService")
 public interface ProMemberService {
+
     /**
      * 获取奖励列表
      *

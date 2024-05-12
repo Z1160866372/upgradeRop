@@ -22,6 +22,7 @@ import java.util.*;
  */
 @Service("commonService")
 public interface CommonService {
+
     /**
      * 短信发送
      *

@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @ApiModel(value = "活动奖励配置")
 public class ActivityConfiguration {
+
     @ApiModelProperty(value = "主键ID")
     private int id;
 

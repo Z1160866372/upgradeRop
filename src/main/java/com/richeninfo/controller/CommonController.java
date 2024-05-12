@@ -54,6 +54,7 @@ import java.util.Objects;
 @RequestMapping("/common")
 @Slf4j
 public class CommonController {
+
     @Resource
     private CommonService commonService;
     @Resource

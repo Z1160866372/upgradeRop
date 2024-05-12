@@ -42,7 +42,6 @@ import java.util.List;
 @RequestMapping("/finance")
 @Slf4j
 public class FinanceController {
-
     @Resource
     private CommonService commonService;
     @Resource

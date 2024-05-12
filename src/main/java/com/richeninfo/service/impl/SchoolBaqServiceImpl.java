@@ -146,7 +146,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
             config = commonMapper.selectActivityConfiguration(actId,unlocked);
             ActivityUserHistory userHistory =schoolBaqMapper.selectActivityUserHistoryByUnlocked(user.getUserId(),unlocked);
             if(userHistory==null){
-                if(saveHistory(actId,channelId,mobile,config)){
+                if(saveHistory(actId,channelId,user.getUserId(),config)){
                     schoolBaqMapper. updateActivityUser(user);
                     object.put(Constant.MSG,Constant.SUCCESS);
                 }else{

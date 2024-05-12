@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @ApiModel(value = "活动名单_黑｜白")
 public class ActivityRoster {
+
     @ApiModelProperty(value = "ID")
     private int id;
     @ApiModelProperty(value = "用户号码")

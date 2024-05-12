@@ -22,6 +22,7 @@ import java.util.List;
 @Mapper
 public interface FinanceMapper {
 
+
     @Select("select * from wt_finance_user where userId = #{userId} and actId =#{actId} and createDate=#{createDate}")
     ActivityUser selectUserByCreateDate(@Param("userId") String userId, @Param("actId") String actId, @Param("createDate") String createDate);//查找用户记录
 

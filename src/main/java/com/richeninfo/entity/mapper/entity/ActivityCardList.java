@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @ApiModel(value = "卡券奖励列表")
 public class ActivityCardList {
+
     @ApiModelProperty(value = "ID")
     private int id;
     @ApiModelProperty(value = "名称")

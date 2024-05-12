@@ -41,7 +41,6 @@ import java.util.Date;
 @RequestMapping("/newCall")
 @Slf4j
 public class NewCallController {
-
     @Resource
     private CommonService commonService;
     @Resource

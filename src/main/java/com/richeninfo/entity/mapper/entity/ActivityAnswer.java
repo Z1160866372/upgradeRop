@@ -15,6 +15,7 @@ import lombok.Data;
  */
 @Data
 public class ActivityAnswer {
+
     private int id;
     @ApiModelProperty(value = "题目")
     private String answerName;

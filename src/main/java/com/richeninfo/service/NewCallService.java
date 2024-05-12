@@ -22,6 +22,7 @@ import java.util.List;
  */
 public interface NewCallService {
 
+
     /**
      * 初始化用户
      *

@@ -30,6 +30,7 @@ import javax.jms.Topic;
  */
 @Configuration
 public class ActiveMQConfig{
+
 /*
     @Value("${spring.activemq.broker-url}")
     private String brokerUrl;

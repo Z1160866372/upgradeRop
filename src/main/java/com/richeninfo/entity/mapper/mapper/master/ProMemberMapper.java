@@ -21,6 +21,7 @@ import java.util.Map;
 @Mapper
 public interface ProMemberMapper {
 
+
     @Select("select * from wt_proMember_user where userId = #{userId} and actId =#{actId}")
     ActivityUser selectUser(@Param("userId") String userId, @Param("actId") String actId);//查找用户记录
 

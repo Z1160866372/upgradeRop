@@ -41,7 +41,6 @@ import java.util.Date;
 @RequestMapping("/schoolBaq")
 @Slf4j
 public class SchoolBaqController {
-
     @Resource
     private CommonService commonService;
     @Resource

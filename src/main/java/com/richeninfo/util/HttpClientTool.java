@@ -232,11 +232,11 @@ public class HttpClientTool {
     }
     public static String EncodeString(String xml, String SrcSysID) throws Exception {
         DefaultCAPSigner dcs = new DefaultCAPSigner("123456", "00210",
-                "/static/ydsc.keystore",
+                "https://rop.richeninfo.com/ydsc.keystore",
                 "");
         DefaultCAPSigner dcsv = new DefaultCAPSigner("123456", "00210",
-                "/static/ydsc.keystore",
-                "/static/00210.cer");
+                "https://rop.richeninfo.com/ydsc.keystore",
+                "https://rop.richeninfo.com/00210.cer");
         String encyptXml = dcs.signatureCAP(xml);
         System.out.println("加密之前的报文：" + encyptXml);
         if (dcsv.verifyCAP(encyptXml))
