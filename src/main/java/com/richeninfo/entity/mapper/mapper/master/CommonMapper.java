@@ -20,7 +20,6 @@ import java.util.List;
 @Repository
 @Mapper
 public interface CommonMapper {
-
     @Select("select * from activity_secretKey where endTime>=now() and startTime<=now()")
     ActivitySecretKey selectTheDayKey();//查找活动当天密钥
 

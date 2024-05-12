@@ -6,7 +6,7 @@
  */
 package com.richeninfo.wsdl;
 
-import com.richeninfo.util.Base64;
+import com.richeninfo.util.Bases64;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.security.Key;
@@ -34,7 +34,7 @@ public class Security {
             } else {
                 _For3DES = For3DES;
             }
-            byte[] encryptStr = Base64.newEncode(EncryptionForString.encrypt(keyIV, _For3DES, key, "RAW"));
+            byte[] encryptStr = Bases64.encode(EncryptionForString.encrypt(keyIV, _For3DES, key, "RAW"));
 
             rtn = new String(encryptStr);
         } catch (Exception e) {
@@ -56,7 +56,7 @@ public class Security {
     }
 
     public static byte[] decrypt(byte[] encryptByBases64Str, String keyValue, byte[] keyIV) throws Exception {
-        byte[] encryptStr = Base64.newDecode(encryptByBases64Str);
+        byte[] encryptStr = Bases64.decode(encryptByBases64Str);
         Key key = get3DESKey(keyValue);
 
         byte[] decryptStr = EncryptionForString.decrypt(keyIV, encryptStr, key);
