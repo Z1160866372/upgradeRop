@@ -40,10 +40,7 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @Author : zhouxiaohu
@@ -83,11 +80,12 @@ public class CommonController {
         //将图片转正base64
         BufferedImage image = (BufferedImage) objs[1];
         //转base64
-        BASE64Encoder encoder = new BASE64Encoder();
+       // BASE64Encoder encoder = new BASE64Encoder();
+        Base64.Encoder encoder = Base64.getEncoder();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();//io流
         ImageIO.write(image, "png", baos);//写入流中
         byte[] bytes = baos.toByteArray();//转换成字节
-        String png_base64 = encoder.encodeBuffer(bytes).trim();//转换成base64串
+        String png_base64 = encoder.encodeToString(bytes).trim();//转换成base64串
         //删除 \r\n
         png_base64 = png_base64.replaceAll("\n", "").replaceAll("\r", "");
         Map map = new HashMap<>();
