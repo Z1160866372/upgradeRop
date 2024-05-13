@@ -28,12 +28,12 @@ public class ErrorPageConfig implements ErrorPageRegistrar {
 //      ParameterMethodNameResolver s;
         /*1、按错误的类型显示错误的网页*/
         /*错误类型为404，找不到网页的，默认显示404.html网页*/
-        ErrorPage e404 = new ErrorPage(HttpStatus.NOT_FOUND, "/404.html");
-        ErrorPage e405 = new ErrorPage(HttpStatus.METHOD_NOT_ALLOWED, "/404.html");
+        ErrorPage e404 = new ErrorPage(HttpStatus.NOT_FOUND, "/static/404.html");
+        ErrorPage e405 = new ErrorPage(HttpStatus.METHOD_NOT_ALLOWED, "/static/404.html");
         /*错误类型为500，表示服务器响应错误，默认显示500.html网页*/
-        ErrorPage e500 = new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/error.html");
-        ErrorPage e400 = new ErrorPage(HttpStatus.BAD_REQUEST, "/404.html");
-        ErrorPage commonPage = new ErrorPage("/404.html");
+        ErrorPage e500 = new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/static/error.html");
+        ErrorPage e400 = new ErrorPage(HttpStatus.BAD_REQUEST, "/static/404.html");
+        ErrorPage commonPage = new ErrorPage("/static/404.html");
         registry.addErrorPages(e400, e404, e500, e405, commonPage);
     }
 }

@@ -3,12 +3,14 @@
  * Unauthorized use, copying, modification, or distribution of this software
  * is strictly prohibited without the prior written consent of Richeninfo.
  * https://www.richeninfo.com/
+ *
  */
 package com.richeninfo.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.*;
+import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.entity.mapper.mapper.master.ExteroceptiveMapper;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.ExteroceptiveService;
@@ -17,7 +19,6 @@ import com.richeninfo.util.RedisUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,8 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
     private JmsMessagingTemplate jmsMessagingTemplate;
     @Resource
     private RedisUtil redisUtil;
+    @Resource
+    private CommonMapper commonMapper;
     @Override
     public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
         JSONObject object = new JSONObject();
@@ -70,7 +73,6 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
         } else {
             object.put("user", users);
         }
-        object.put("actStatus", selectTime(actId));
         return object;
     }
 
@@ -84,7 +86,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
      */
     public void InsertRecord(String caozuo, String userId, int fenshu, String channel_id, int typeId) {
         ActivityRecord record = new ActivityRecord();
-        record.setCaozuo(caozuo);
+        record.setActionName(caozuo);
         record.setStatus(fenshu);
         record.setUserId(userId);
         record.setTypeId(typeId);
@@ -111,17 +113,17 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
         try {
             if (userId != null) {
                 ActivityUser user = exteroceptiveMapper.findUserInfoByUserId(userId);
-                List<ActivityAnswer> answerlist = new ArrayList<ActivityAnswer>();
+                List<VoteTopic> answerlist = new ArrayList<VoteTopic>();
                 if (user.getAnswerNum() > 0) {
-                    ActivityAnswer randAnswer = exteroceptiveMapper.findRandAnswerOne();
-                    ActivityAnswer firstanswer = exteroceptiveMapper.findFirstAnswer();//第一题固定
+                    VoteTopic randAnswer = exteroceptiveMapper.findRandAnswerOne();
+                    VoteTopic firstanswer = exteroceptiveMapper.findFirstAnswer();//第一题固定
                     answerlist.add(firstanswer);
                     answerlist.add(randAnswer);
                 } else {
                     int oneAnswerType = Integer.valueOf(user.getAnswerTitle().split(",")[0]);
                     int twoAnswerType = Integer.valueOf(user.getAnswerTitle().split(",")[1]);
-                    ActivityAnswer randAnswerone = exteroceptiveMapper.findAnswerByType(oneAnswerType);
-                    ActivityAnswer randAnswertwo = exteroceptiveMapper.findAnswerByType(twoAnswerType);
+                    VoteTopic randAnswerone = exteroceptiveMapper.findAnswerByType(oneAnswerType);
+                    VoteTopic randAnswertwo = exteroceptiveMapper.findAnswerByType(twoAnswerType);
                     answerlist.add(randAnswerone);
                     answerlist.add(randAnswertwo);
                 }
@@ -396,7 +398,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             if (status > 0 && Double.valueOf(gift.getValue()) > 0) {
                 String mqMsg = commonService.issueReward(gift, history);
                 log.info("4147请求信息：" + mqMsg);
-                jmsMessagingTemplate.convertAndSend("proemMQ", mqMsg);
+               // jmsMessagingTemplate.convertAndSend("proemMQ", mqMsg);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -525,22 +527,19 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
      * 用户记录操作
      *
      * @param caozuo
-     * @param channel_id
-     * @param type
      * @param userId
      */
     @Override
-    public void changeStatus(String caozuo, String channel_id, int type, String userId) {
+    public void changeStatus(String caozuo,String actId, String userId) {
         log.info("userId:" + userId + ",caozuo" + caozuo);
         Map<String, Object> map = new HashMap<>();
-        ActivityRecord record = new ActivityRecord();
-        record.setCaozuo(caozuo);
-        record.setStatus(0);
+        OperationLog record = new OperationLog();
+        record.setInstructions(caozuo);
         record.setUserId(userId);
-        record.setTypeId(type);
-        record.setChannel_id(channel_id);
+        record.setActId(actId);
+        record.setUserId(userId);
         try {
-            exteroceptiveMapper.saveUserAccess(record);
+            commonMapper.insertOperationLog(record,"wt_proem_operationlog");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -582,9 +581,9 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
                 return user;
             } else {
                 //更新 secToken
-                if (!secToken.equals(user.getSecToken())) {
+              /*  if (!secToken.equals(user.getSecToken())) {
                     exteroceptiveMapper.updateUserSecToken(userId, secToken);
-                }
+                }*/
                 //每天更新吹泡泡 答题游戏机会
                 if (!DateTimeTool.formatDate(user.getCreateTime()).equals(DateTimeTool.formatDate(new Date()))) {
                     //更新机会和时间
@@ -615,36 +614,6 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * 时间控制
-     *
-     * @return
-     */
-    @Override
-    public String selectTime(String actId) {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        ActivityList list = exteroceptiveMapper.selectTime(actId);
-        try {
-            Date dt1 = df.parse(list.getStartTime());
-            Date dt2 = df.parse(list.getEndTime());
-            Date d = new Date();
-            String ds = df.format(d);
-            Date dt3 = df.parse(ds);
-            if (dt3.getTime() >= dt1.getTime() && dt3.getTime() <= dt2.getTime()) {
-                return "success";
-            } else {
-                if (dt3.getTime() < dt1.getTime()) {
-                    return "wks";
-                } else if (dt3.getTime() > dt2.getTime()) {
-                    return "ygq";
-                }
-            }
-        } catch (Exception exception) {
-            exception.printStackTrace();
         }
         return null;
     }

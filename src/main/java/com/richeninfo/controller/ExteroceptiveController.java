@@ -3,11 +3,14 @@
  * Unauthorized use, copying, modification, or distribution of this software
  * is strictly prohibited without the prior written consent of Richeninfo.
  * https://www.richeninfo.com/
+ *
  */
 package com.richeninfo.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
+import com.richeninfo.entity.mapper.entity.OperationLog;
+import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.entity.mapper.mapper.master.ExteroceptiveMapper;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
@@ -36,6 +39,8 @@ public class ExteroceptiveController {
     private ExteroceptiveService exteroceptiveService;
     @Resource
     private ExteroceptiveMapper exteroceptiveMapper;
+
+
     /**
      * 初始化用户数据
      *
@@ -169,7 +174,6 @@ public class ExteroceptiveController {
         return object;
     }
 
-
     /**
      * 抽奖
      *
@@ -242,13 +246,12 @@ public class ExteroceptiveController {
             if (user.getUserId().isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                exteroceptiveService.changeStatus(caozuo, channelId, type, user.getUserId());
+                exteroceptiveService.changeStatus(caozuo, actId, user.getUserId());
                 object.put(Constant.MSG, "success");
             }
         }
         return object;
     }
-
 
     /**
      * 我的奖励
@@ -273,28 +276,6 @@ public class ExteroceptiveController {
                 object = exteroceptiveService.myReceived(channelId, user.getUserId(), actId);
                 object.put(Constant.MSG, "success");
             }
-        }
-        return object;
-    }
-
-    /**
-     * 活动时间
-     *
-     * @param secToken
-     * @param channelId
-     * @param actId
-     * @return
-     * @throws IOException
-     */
-    @PostMapping(value = "/ifActDate")
-    @ResponseBody
-    public JSONObject ifDate(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, String caozuo, int type) throws IOException {
-        JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
-            object.put(Constant.MSG, "login");
-        } else {
-            String msg = exteroceptiveService.selectTime(actId);
-            object.put(Constant.MSG, msg);
         }
         return object;
     }

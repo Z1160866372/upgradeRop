@@ -21,9 +21,9 @@ import java.security.Security;
  * @create 2022/9/19 14:25
  */
 public class EncryptionForString {
-    public static final String ENCODING_Bases64 = "Bases64";
+    public static final String ENCODING_BASE64 = "BASE64";
     public static final String ENCODING_RAW = "RAW";
-    public static final byte[] iv = {1, 2, 3, 4, 5, 6, 7, 8};
+    public static final byte[] iv = { 1, 2, 3, 4, 5, 6, 7, 8 };
 
     static {
         Security.addProvider(new SunJCE());
@@ -36,8 +36,8 @@ public class EncryptionForString {
         IvParameterSpec ips = new IvParameterSpec(keyIV);
         cipher.init(1, key, ips);
         byte[] bOut = cipher.doFinal(strIn.getBytes("UTF-8"));
-        if (encoding.equalsIgnoreCase("Bases64")) {
-            bOut = EncodeUtil.encodeBases64(bOut);
+        if (encoding.equalsIgnoreCase("BASE64")) {
+            bOut = EncodeUtil.encodeBase64(bOut);
         }
 
         return bOut;
@@ -53,7 +53,8 @@ public class EncryptionForString {
         KeyGenerator kGen = KeyGenerator.getInstance(strKeyArithmetic);
         if (strArithmetic.equalsIgnoreCase("desede")) {
             kGen.init(168, sr);
-        } else {
+        }
+        else {
             kGen.init(sr);
         }
         Key key = kGen.generateKey();
@@ -66,8 +67,8 @@ public class EncryptionForString {
         IvParameterSpec ips = new IvParameterSpec(keyIV);
         cipher.init(2, key, ips);
         byte[] bOut = cipher.doFinal(bIn);
-        if (encoding.equalsIgnoreCase("Bases64")) {
-            bOut = EncodeUtil.encodeBases64(bOut);
+        if (encoding.equalsIgnoreCase("BASE64")) {
+            bOut = EncodeUtil.encodeBase64(bOut);
         }
         return bOut;
     }

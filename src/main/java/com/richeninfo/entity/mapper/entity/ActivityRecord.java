@@ -3,6 +3,7 @@
  * Unauthorized use, copying, modification, or distribution of this software
  * is strictly prohibited without the prior written consent of Richeninfo.
  * https://www.richeninfo.com/
+ *
  */
 package com.richeninfo.entity.mapper.entity;
 
@@ -22,7 +23,7 @@ public class ActivityRecord {
 	@ApiModelProperty(value = "手机号")
 	private String userId;
 	@ApiModelProperty(value = "操作步骤")
-	private String caozuo;
+	private String actionName;
 	@ApiModelProperty(value = "唯一标识")
 	private int typeId;
 	@ApiModelProperty(value = "状态")
