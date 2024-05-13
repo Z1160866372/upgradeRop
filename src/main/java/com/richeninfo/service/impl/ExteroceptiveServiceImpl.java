@@ -539,7 +539,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
         record.setActId(actId);
         record.setUserId(userId);
         try {
-            commonMapper.insertOperationLog(record,"wt_proem_operationlog");
+            commonMapper.insertOperationLog(record,"wt_proem_operationLog");
         } catch (Exception e) {
             e.printStackTrace();
         }

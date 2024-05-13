@@ -69,7 +69,7 @@ public interface CommonMapper {
     @Insert("insert into activity_openapiLog(address,userId,code,message,apiCode,appCode,actId,createTime)values(#{address},#{userId},#{code},#{message},#{apiCode},#{appCode},#{actId},now())")
     int insertOpenapiLog(OpenapiLog log);//添加用户业务办理记录
 
-    @Insert("insert into ${keyword}(actId,name,address,userId,instructions,createTime)values(#{actId},#{name},#{address},#{userId},#{instructions},now())")
+    @Insert("insert into ${keyword}(actId,name,address,userId,instructions,createTime)values(#{log.actId},#{log.name},#{log.address},#{log.userId},#{log.instructions},now())")
     int insertOperationLog(OperationLog log, @Param("keyword") String keyword);//添加用户操作记录
 
     @Select("select * from ${keyword} where userId=#{userId} and actId=#{actId}")

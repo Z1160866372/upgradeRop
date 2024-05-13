@@ -13,6 +13,7 @@ import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
 import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
 import com.richeninfo.entity.mapper.entity.OperationLog;
+import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.entity.mapper.mapper.master.MigumonthMapper;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.MigumonthService;
@@ -44,6 +45,9 @@ public class MigumonthServiceImpl implements MigumonthService {
     MigumonthMapper migumonthMapper;
     @Resource
     CommonService commonService;
+
+    @Resource
+    CommonMapper commonMapper;
 
     @Override
     public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
@@ -103,6 +107,12 @@ public class MigumonthServiceImpl implements MigumonthService {
         jsonObject.put("list",list);
         return jsonObject;
     }
+    /**
+     * 用户记录操作
+     *
+     * @param caozuo
+     * @param userId
+     */
     @Override
     public void actRecord(String caozuo,String actId, String userId) {
         log.info("userId:" + userId + ",caozuo" + caozuo);
@@ -113,7 +123,7 @@ public class MigumonthServiceImpl implements MigumonthService {
         record.setActId(actId);
         record.setUserId(userId);
         try {
-            migumonthMapper.insertOperationLog(record);
+            commonMapper.insertOperationLog(record,"wt_migumonth_operationLog");
         } catch (Exception e) {
             e.printStackTrace();
         }
