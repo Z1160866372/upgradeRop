@@ -30,13 +30,13 @@ public interface JourneyMapper {
     @Insert("insert into wt_journey_user(userId,channelId,secToken,createDate,createTime,actId)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId})")
     int insertUser(ActivityUser user);//初始化用户
 
-    @Select("select * from wt_journey_user_history where userId = #{userId} and unlocked =#{unlocked}")
+    @Select("select * from wt_journey_history where userId = #{userId} and unlocked =#{unlocked}")
     ActivityUserHistory selectActivityUserHistoryByUnlocked(@Param("userId")String userId, @Param("unlocked")int unlocked);
 
-    @Insert("insert into wt_journey_user_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId})")
+    @Insert("insert into wt_journey_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
-    @Update("update wt_journey_user_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
+    @Update("update wt_journey_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
     int updateHistory(ActivityUserHistory history);//更新接口状态
 
     @Insert("insert into wt_journey_operationLog(actId,name,address,userId,instructions,createTime)values(#{actId},#{name},#{address},#{userId},#{instructions},now())")

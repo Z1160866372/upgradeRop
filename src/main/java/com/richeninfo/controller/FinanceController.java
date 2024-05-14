@@ -111,19 +111,4 @@ public class FinanceController {
         return this.financeService.getMyReward(secToken,channelId,actId);
     }
 
-    /**
-     * 保存用户操作记录
-     * @return
-     */
-    @ApiOperation("保存用户操作记录")
-    @PostMapping(value = "/insertOperationLog")
-    public @ResponseBody
-    Object insertOperationLog(@ModelAttribute OperationLog log) {
-        return this.financeService.insertOperationLog(log);
-    }
-
-
-
-
-
 }

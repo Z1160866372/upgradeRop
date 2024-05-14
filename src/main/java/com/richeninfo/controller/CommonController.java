@@ -66,6 +66,17 @@ public class CommonController {
     private RSAUtils rsaUtils;
     @Resource
     private RedisUtil redisUtil;
+    @Resource
+    HttpServletResponse response;
+
+
+    @RequestMapping(value = "wtFree")
+    protected String wtFree(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId) throws ServletException, IOException {
+        secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
+        actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
+        String url="https://activity.sh.10086.cn/"+actId+"/index.html?secToken="+secToken;
+        return "redirect:"+url+"";
+    }
 
     @GetMapping("/img-verify-code")
     @ResponseBody
@@ -218,5 +229,18 @@ public class CommonController {
         channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
         unlocked = request.getParameter("unlocked") == null ? 0 : Integer.parseInt(request.getParameter("unlocked"));
     }
+
+    /**
+     * 保存用户操作记录
+     * @return
+     */
+    @ApiOperation("保存用户操作记录")
+    @PostMapping(value = "/insertOperationLog")
+    public @ResponseBody
+    Object insertOperationLog(@ModelAttribute OperationLog log) {
+        return this.commonService.insertOperationLog(log);
+    }
+
+
 
 }

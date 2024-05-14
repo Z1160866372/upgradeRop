@@ -64,10 +64,4 @@ public interface FinanceService {
      * @return
      */
     JSONObject getMyReward(String secToken,String channelId,String actId);
-
-    /**
-     * 保存用户操作记录
-     * @param operationLog
-     */
-    JSONObject insertOperationLog(@ModelAttribute OperationLog operationLog);
 }

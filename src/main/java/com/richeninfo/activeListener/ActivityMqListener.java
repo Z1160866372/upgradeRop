@@ -42,7 +42,7 @@ public class ActivityMqListener {
             if (mq == null) {
                 return;
             }
-            keyword = "wt_"+mq.getHistory().getActId()+"_user_history";
+            keyword = "wt_"+mq.getHistory().getActId()+"_history";
             history = commonMapper.selectHistoryByUnlocked(mq.getHistory().getUserId(), mq.getHistory().getUnlocked(), mq.getHistory().getActId(),keyword);
             if (history == null || history.getStatus() == Constant.STATUS_RECEIVED || mq.getPacket()== null) {
                 return;

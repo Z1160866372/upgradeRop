@@ -98,20 +98,4 @@ public class SchoolBaqController {
         return this.schoolBaqService.submit(secToken, actId, unlocked, channelId,mobilePhone);
     }
 
-
-    /**
-     * 保存用户操作记录
-     * @return
-     */
-    @ApiOperation("保存用户操作记录")
-    @PostMapping(value = "/insertOperationLog")
-    public @ResponseBody
-    Object insertOperationLog(@ModelAttribute OperationLog log) {
-        return this.schoolBaqService.insertOperationLog(log);
-    }
-
-
-
-
-
 }

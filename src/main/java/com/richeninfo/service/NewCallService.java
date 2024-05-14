@@ -51,10 +51,4 @@ public interface NewCallService {
      */
     JSONObject submit(String secToken, String actId, int unlocked, String channelId,String wtAcId, String wtAc,String randCode) throws Exception;
 
-
-    /**
-     * 保存用户操作记录
-     * @param operationLog
-     */
-    JSONObject insertOperationLog(@ModelAttribute OperationLog operationLog);
 }

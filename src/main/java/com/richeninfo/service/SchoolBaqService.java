@@ -51,9 +51,4 @@ public interface SchoolBaqService {
      */
     JSONObject submit(String secToken, String actId, int unlocked, String channelId,String mobilePhone) throws Exception;
 
-    /**
-     * 保存用户操作记录
-     * @param operationLog
-     */
-    JSONObject insertOperationLog(@ModelAttribute OperationLog operationLog);
 }

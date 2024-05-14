@@ -220,23 +220,5 @@ public class NewCallServiceImpl implements NewCallService {
         newCallMapper.insertActivityUserHistory(newHistory);
     }
 
-    /**
-     * 保存用户操作记录
-     * @param operationLog
-     */
-    @Override
-    public JSONObject insertOperationLog(OperationLog operationLog) {
-        JSONObject object = new JSONObject();
-        if (!operationLog.getSecToken().isEmpty()) {
-            operationLog.setUserId(commonService.getMobile(operationLog.getSecToken(), operationLog.getChannelId()));
-            operationLog.setAddress(IPUtil.getRealRequestIp(request));
-            operationLog.setName(commonMapper.selectActivityByActId(operationLog.getActId()).getName());
-            newCallMapper.insertOperationLog(operationLog);
-            object.put("operationLog",operationLog);
-            object.put(Constant.MSG,Constant.SUCCESS);
-        }else{
-            object.put(Constant.MSG,"noMobile");
-        }
-        return object;
-    }
+
 }

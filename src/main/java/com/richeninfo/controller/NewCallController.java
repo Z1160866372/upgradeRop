@@ -98,20 +98,4 @@ public class NewCallController {
         return this.newCallService.submit(secToken, actId, unlocked, channelId,wtAcId,wtAc,randCode);
     }
 
-
-    /**
-     * 保存用户操作记录
-     * @return
-     */
-    @ApiOperation("保存用户操作记录")
-    @PostMapping(value = "/insertOperationLog")
-    public @ResponseBody
-    Object insertOperationLog(@ModelAttribute OperationLog log) {
-        return this.newCallService.insertOperationLog(log);
-    }
-
-
-
-
-
 }

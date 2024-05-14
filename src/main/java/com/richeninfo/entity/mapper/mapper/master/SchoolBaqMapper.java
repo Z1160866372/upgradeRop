@@ -32,10 +32,10 @@ public interface SchoolBaqMapper {
     @Insert("insert into wt_schoolBaq_user(userId,channelId,secToken,createDate,createTime,actId,userType)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{userType})")
     int insertUser(ActivityUser user);//初始化用户
 
-    @Select("select * from wt_schoolBaq_user_history where userId = #{userId} and unlocked =#{unlocked}")
+    @Select("select * from wt_schoolBaq_history where userId = #{userId} and unlocked =#{unlocked}")
     ActivityUserHistory selectActivityUserHistoryByUnlocked(@Param("userId")String userId, @Param("unlocked")int unlocked);
 
-    @Insert("insert into wt_schoolBaq_user_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId})")
+    @Insert("insert into wt_schoolBaq_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
     @Insert("insert into wt_schoolBaq_operationLog(actId,name,address,userId,instructions,createTime)values(#{actId},#{name},#{address},#{userId},#{instructions},now())")
@@ -44,7 +44,7 @@ public interface SchoolBaqMapper {
     @Insert("insert into wt_schoolBaq_share(actId,channelId,userId,createTime)values(#{actId},#{channelId},#{userId},now())")
     int insertShareUser(ActivityShare shareUser);//保存用户分享记录
 
-    @Update("update wt_schoolBaq_user_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
+    @Update("update wt_schoolBaq_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
     int updateHistory(ActivityUserHistory history);//更新接口状态
 
     @Update("update wt_schoolBaq_user set level=1 where id=#{id}")

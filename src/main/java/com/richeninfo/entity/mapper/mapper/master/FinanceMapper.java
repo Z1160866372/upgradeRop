@@ -29,13 +29,13 @@ public interface FinanceMapper {
     @Insert("insert into wt_finance_user(userId,channelId,secToken,createDate,createTime,actId)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId})")
     int insertUser(ActivityUser user);//初始化用户
 
-    @Select("select * from wt_finance_user_history where userId = #{userId} and unlocked =#{unlocked} and createDate =#{createDate}")
+    @Select("select * from wt_finance_history where userId = #{userId} and unlocked =#{unlocked} and createDate =#{createDate}")
     ActivityUserHistory selectActivityUserHistoryByUnlocked(@Param("userId")String userId,@Param("unlocked")int unlocked,@Param("createDate")String createDate);
 
-    @Select("select * from wt_finance_user_history where userId = #{userId} and typeId =#{typeId} and createDate =#{createDate}")
+    @Select("select * from wt_finance_history where userId = #{userId} and typeId =#{typeId} and createDate =#{createDate}")
     ActivityUserHistory selectActivityUserHistoryByTypeId(@Param("userId")String userId,@Param("typeId")int typeId,@Param("createDate")String createDate);
 
-    @Select("select * from wt_finance_user_history where userId = #{userId} and actId =#{actId} and createDate =#{createDate}")
+    @Select("select * from wt_finance_history where userId = #{userId} and actId =#{actId} and createDate =#{createDate}")
     List<ActivityUserHistory> selectHistory(@Param("userId") String userId, @Param("actId") String actId,@Param("createDate")String createDate);//查询用户领取记录
 
     @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked}")
@@ -44,7 +44,7 @@ public interface FinanceMapper {
     @Update("update activity_configuration set Amount= Amount-1 where id = #{id} and Amount > 0")
     int updateActivityConfigurationAmount(int id);
 
-    @Insert("insert into wt_finance_user_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId})")
+    @Insert("insert into wt_finance_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
     @Select("select * from activity_card where actId = #{actId} and unlocked =#{unlocked} and createDate =#{createDate}")

@@ -108,7 +108,11 @@ public interface CommonService {
     String getMobile(String secToken, String channelId);
 
 
-
+    /**
+     * 保存用户操作记录
+     * @param operationLog
+     */
+    JSONObject insertOperationLog(@ModelAttribute OperationLog operationLog);
 
 
 }
