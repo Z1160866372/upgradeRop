@@ -74,6 +74,7 @@ public class CommonController {
     protected String wtFree(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId) throws ServletException, IOException {
         secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
         actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
+        log.info("微厅免登录接收secToken=="+secToken);
         String url="https://activity.sh.10086.cn/"+actId+"/index.html?secToken="+secToken;
         return "redirect:"+url+"";
     }
