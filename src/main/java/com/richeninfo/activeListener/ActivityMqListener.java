@@ -27,7 +27,7 @@ import javax.annotation.Resource;
 @Log
 @Component
 public class ActivityMqListener {
-    /*@Resource
+    @Resource
     private CommonMapper commonMapper;
     @Resource
     private RopServiceManager ropServiceManager;
@@ -47,8 +47,8 @@ public class ActivityMqListener {
             if (history == null || history.getStatus() == Constant.STATUS_RECEIVED || mq.getPacket()== null) {
                 return;
             }
-           *//* String response_message = ropServiceManager.execute(mq.getPacket(), history.getUserId());
-            Result request = JSON.parseObject(response_message, Result.class);
+              /*  String response_message = ropServiceManager.execute(mq.getPacket(), history.getUserId());
+             Result request = JSON.parseObject(response_message, Result.class);
             String code = request.getResponse().getErrorInfo().getCode();
             String resCode = request.getResponse().getRetInfo().getString("resultCode");
             if (Constant.SUCCESS_CODE.equals(code)) {
@@ -60,7 +60,7 @@ public class ActivityMqListener {
             } else {
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
             }
-            history.setMessage(response_message);*//*
+            history.setMessage(response_message);*/
             history.setStatus(Constant.STATUS_RECEIVED);
             history.setMessage("测试数据～");
             history.setCode(JSONObject.toJSONString(mq.getPacket()));
@@ -70,5 +70,5 @@ public class ActivityMqListener {
             history.setMessage(e.getMessage());
         }
         commonMapper.updateHistory(history.getStatus(),history.getCode(),history.getMessage(),history.getId(),keyword);//更新用户发放状态
-    }*/
+    }
 }

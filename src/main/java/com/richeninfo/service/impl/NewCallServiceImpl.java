@@ -120,6 +120,10 @@ public class NewCallServiceImpl implements NewCallService {
         if (!secToken.isEmpty()) {
             mobile= commonService.getMobile(secToken,channelId);
         }
+        if(!commonService.checkUserIsChinaMobile(mobile)){
+            object.put(Constant.MSG,"noShYd");
+            return object;
+        }
         ActivityUserHistory userHistory  =newCallMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
         if(userHistory!=null){
             if(userHistory.getStatus()==3){//已办理

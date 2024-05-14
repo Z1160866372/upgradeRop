@@ -10,19 +10,19 @@ spring:
       username: root
       password: richen123.
   #activemq配置
-#  activemq:
-#    broker-url: tcp://47.111.174.33:61616  #activeMQ的ip和端口号
-#    user: richen   #activeMq账号
-#    password: Richen123info. #activeMq密码
-#    non-blocking-redelivery: false # 是否在回滚回滚消息之前停止消息传递。这意味着当启用此命令时，消息顺序不会被保留。
-#    send-timeout: 0 # 等待消息发送响应的时间。设置为0等待永远。
-#    in-memory: true
-#    queue-name: commonQueue  # queue队列的名称
-#    topic-name: commonTopic  # topic队列的名称
-#    pool:
-#     enabled: true # 启用连接池
-#     max-connections: 100 # 最大连接数
-#     idle-timeout: 30000 # 空闲的连接过期时间，默认为30秒
+  activemq:
+    broker-url: tcp://47.111.174.33:61616  #activeMQ的ip和端口号
+    user: richen   #activeMq账号
+    password: Richen123info. #activeMq密码
+    non-blocking-redelivery: false # 是否在回滚回滚消息之前停止消息传递。这意味着当启用此命令时，消息顺序不会被保留。
+    send-timeout: 0 # 等待消息发送响应的时间。设置为0等待永远。
+    in-memory: true
+    queue-name: commonQueue  # queue队列的名称
+    topic-name: commonTopic  # topic队列的名称
+    pool:
+     enabled: true # 启用连接池
+     max-connections: 100 # 最大连接数
+     idle-timeout: 30000 # 空闲的连接过期时间，默认为30秒
 #能开平台相关配置信息
 #正式地址product
 nengKai:

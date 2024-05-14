@@ -154,6 +154,8 @@ public class FinanceServiceImpl implements FinanceService {
                         object.put(Constant.MSG,"noDate");
                     }
                 }
+            }else{
+                object.put(Constant.MSG,"ylq");
             }
         }else if(unlocked>6&&unlocked<9){//洗车券奖励
             ActivityUserHistory userHistory=financeMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked,month.format(new Date()));
@@ -212,8 +214,8 @@ public class FinanceServiceImpl implements FinanceService {
         newHistory.setValue(activityConfiguration.getValue());
         newHistory.setActId(actId);
         financeMapper.insertActivityUserHistory(newHistory);
-        if(activityConfiguration.getUnlocked()<2){
-            financeMapper.updateActivityConfigurationAmount(financeMapper.selectActivityConfigurationByUnlocked(actId,2).getId());
+        if(activityConfiguration.getUnlocked()==0||activityConfiguration.getUnlocked()==5){
+            financeMapper.updateActivityConfigurationAmount(financeMapper.selectActivityConfigurationByUnlocked(actId,6).getId());
             String mqMsg = commonService.issueReward(activityConfiguration, newHistory);
             log.info("4147请求信息：" + mqMsg);
             jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
