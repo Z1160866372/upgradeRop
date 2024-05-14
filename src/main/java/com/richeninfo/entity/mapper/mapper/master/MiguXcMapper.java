@@ -87,4 +87,8 @@ public interface MiguXcMapper {
     */
    @Select("select * from activity_configuration where typeId=5 and actId=#{actId}")
    List<ActivityConfiguration> findGiftByTypeId(String actId);
+
+
+   @Update("update wt_miguxc_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
+   int updateHistory(ActivityUserHistory history);//更新接口状态
 }

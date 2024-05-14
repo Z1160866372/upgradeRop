@@ -37,19 +37,17 @@ public class PlentifulServiceImpl  implements PlentifulService {
    @Override
    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
       JSONObject jsonObject = new JSONObject();
-      ActivityUser activityUseruser = plentifulMapper.findUserInfo(userId);
-      if (activityUseruser == null) {
-         activityUseruser = new ActivityUser();
-         activityUseruser.setUserId(userId);
-         activityUseruser.setPlayNum(2);
-         activityUseruser.setAward(0);
-         plentifulMapper.saveUser(activityUseruser);
+      ActivityUser activityUser = plentifulMapper.findUserInfo(userId);
+      if (activityUser == null) {
+         activityUser = new ActivityUser();
+         activityUser.setUserId(userId);
+         activityUser.setPlayNum(2);
+         activityUser.setAward(0);
+         plentifulMapper.saveUser(activityUser);
       } else {
-         if (!secToken.equals(activityUseruser.getSecToken())) {
-            plentifulMapper.updateUserSecToken(userId, secToken);
-         }
+         activityUser.setSecToken(secToken);
       }
-      jsonObject.put("user", activityUseruser);
+      jsonObject.put("user", activityUser);
       return jsonObject;
    }
 

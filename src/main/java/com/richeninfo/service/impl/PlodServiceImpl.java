@@ -62,9 +62,7 @@ public class PlodServiceImpl implements PlodService {
             activityUser.setAward(0);
             plodMapper.saveUser(activityUser);
         } else {
-            if (!secToken.equals(activityUser.getSecToken())) {
-                plodMapper.updateUserSecToken(userId, secToken);
-            }
+            activityUser.setSecToken(secToken);
         }
         jsonObject.put("user", activityUser);
         return jsonObject;

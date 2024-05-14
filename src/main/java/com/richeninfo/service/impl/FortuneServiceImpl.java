@@ -12,20 +12,26 @@ import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
 import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
+import com.richeninfo.entity.mapper.entity.OperationLog;
+import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.entity.mapper.mapper.master.FortuneMapper;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.FortuneService;
 import com.richeninfo.util.CommonUtil;
+import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @auth sunxiaolei
  * @date 2024/5/7 16:55
  */
 @Service
+@Log4j
 public class FortuneServiceImpl implements FortuneService {
 
    @Resource
@@ -34,6 +40,8 @@ public class FortuneServiceImpl implements FortuneService {
    CommonService commonService;
    @Resource
    CommonUtil commonUtil;
+   @Resource
+   CommonMapper commonMapper;
    @Override
    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
       JSONObject jsonObject = new JSONObject();
@@ -45,9 +53,7 @@ public class FortuneServiceImpl implements FortuneService {
          activityUseruser.setAward(0);
          FortuneMapper.saveUser(activityUseruser);
       } else {
-         if (!secToken.equals(activityUseruser.getSecToken())) {
-            FortuneMapper.updateUserSecToken(userId, secToken);
-         }
+         activityUseruser.setSecToken(secToken);
       }
       jsonObject.put("user", activityUseruser);
       return jsonObject;
@@ -87,5 +93,27 @@ public class FortuneServiceImpl implements FortuneService {
          jsonObject.put("msg", "error");
       }
       return jsonObject;
+   }
+
+   /**
+    * 用户记录操作
+    *
+    * @param caozuo
+    * @param userId
+    */
+   @Override
+   public void actRecord(String caozuo,String actId, String userId) {
+      log.info("userId:" + userId + ",caozuo" + caozuo);
+      Map<String, Object> map = new HashMap<>();
+      OperationLog record = new OperationLog();
+      record.setInstructions(caozuo);
+      record.setUserId(userId);
+      record.setActId(actId);
+      record.setUserId(userId);
+      try {
+         commonMapper.insertOperationLog(record,"wt_miguflow_operationLog");
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
    }
 }

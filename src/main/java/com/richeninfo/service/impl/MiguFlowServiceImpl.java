@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
 import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
+import com.richeninfo.entity.mapper.entity.OperationLog;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.entity.mapper.mapper.master.MiguFlowMapper;
 import com.richeninfo.pojo.*;
@@ -24,7 +25,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @auth sunxiaolei
@@ -53,6 +56,8 @@ public class MiguFlowServiceImpl implements MiguFlowService {
             activityUser.setUserId(userId);
             activityUser.setAward(0);
             miguFlowMapper.saveUser(activityUser);
+        }else{
+            activityUser.setSecToken(secToken);
         }
         jsonObject.put("user", activityUser);
         return jsonObject;
@@ -188,5 +193,27 @@ public class MiguFlowServiceImpl implements MiguFlowService {
         }
         object.put("transact_result", transact_result);
         return object;
+    }
+
+    /**
+     * 用户记录操作
+     *
+     * @param caozuo
+     * @param userId
+     */
+    @Override
+    public void actRecord(String caozuo,String actId, String userId) {
+        log.info("userId:" + userId + ",caozuo" + caozuo);
+        Map<String, Object> map = new HashMap<>();
+        OperationLog record = new OperationLog();
+        record.setInstructions(caozuo);
+        record.setUserId(userId);
+        record.setActId(actId);
+        record.setUserId(userId);
+        try {
+            commonMapper.insertOperationLog(record,"wt_miguflow_operationLog");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

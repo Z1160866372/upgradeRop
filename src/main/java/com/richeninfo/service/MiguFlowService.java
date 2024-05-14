@@ -56,4 +56,5 @@ public interface MiguFlowService {
      * @return
      */
     JSONObject sendMessage5956(String userId, String secToken, String channelId, String actId);
+    void actRecord(String caozuo,String actId, String userId);
 }

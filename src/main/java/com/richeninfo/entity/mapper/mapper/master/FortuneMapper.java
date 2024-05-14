@@ -27,14 +27,14 @@ public interface FortuneMapper {
      * @param userId
      * @return
      */
-    @Select("select * from wt_plentiful_user where userId = #{userId} ")
+    @Select("select * from wt_fortune_user where userId = #{userId} ")
     ActivityUser findUserInfo(@Param("userId") String userId);
 
     /**
      * 初始化用户信息
      * @param user
      */
-    @Insert("INSERT INTO wt_plentiful_user (userId,level,award,playNum,channelId,grade,answerNum,mark,blowNum,weekTime,createTime,createDate,secToken) value (#{userId},#{level},#{award},#{playNum},#{channelId},#{grade},#{answerNum},#{mark},#{blowNum},now(),now(),curdate(),#{secToken})")
+    @Insert("INSERT INTO wt_fortune_user (userId,level,award,playNum,channelId,grade,answerNum,mark,blowNum,weekTime,createTime,createDate,secToken) value (#{userId},#{level},#{award},#{playNum},#{channelId},#{grade},#{answerNum},#{mark},#{blowNum},now(),now(),curdate(),#{secToken})")
     void saveUser(ActivityUser user);
 
     /**
@@ -42,7 +42,7 @@ public interface FortuneMapper {
      * @param userId
      * @return
      */
-    @Select("select * from wt_plentiful_history where userId = #{userId}")
+    @Select("select * from wt_fortune_history where userId = #{userId}")
     ActivityUserHistory findCurMonthHistory(@Param("userId") String userId);
 
     /**
@@ -68,7 +68,7 @@ public interface FortuneMapper {
      * @param secToken
      * @return
      */
-    @Update("update  wt_plentiful_user set secToken=#{secToken}  where userId=#{userId} ")
+    @Update("update  wt_fortune_user set secToken=#{secToken}  where userId=#{userId} ")
     int updateUserSecToken(@Param("userId") String userId, @Param("secToken") String secToken);
 
 
@@ -77,7 +77,7 @@ public interface FortuneMapper {
      * @param history
      * @return
      */
-    @Insert("INSERT INTO wt_plentiful_history (userId,rewardName,typeId,unlocked,belongFlag,status,code,message,secToken,channelId,createTime,createDate,actId,winSrc,remark) value (#{userId},#{rewardName},#{typeId},#{unlocked},#{belongFlag},#{status},#{code},#{message},#{secToken},#{channelId},now(),curdate(),#{actId},#{winSrc},#{remark})")
+    @Insert("INSERT INTO wt_fortune_history (userId,rewardName,typeId,unlocked,belongFlag,status,code,message,secToken,channelId,createTime,createDate,actId,winSrc,remark) value (#{userId},#{rewardName},#{typeId},#{unlocked},#{belongFlag},#{status},#{code},#{message},#{secToken},#{channelId},now(),curdate(),#{actId},#{winSrc},#{remark})")
     int saveHistory(ActivityUserHistory history);
 
     /**
@@ -85,10 +85,10 @@ public interface FortuneMapper {
      * @param userId
      * @return
      */
-    @Update("update  wt_plentiful_user set award=award+1 where userId=#{userId} ")
+    @Update("update  wt_fortune_user set award=award+1 where userId=#{userId} ")
     int updateUserAward(@Param("userId") String userId);
 
-    @Update("update  wt_plentiful_user set playNum=playNum-1 where userId=#{userId} ")
+    @Update("update  wt_fortune_user set playNum=playNum-1 where userId=#{userId} ")
     int LostUserPlayNum(@Param("userId") String userId);
 
 }

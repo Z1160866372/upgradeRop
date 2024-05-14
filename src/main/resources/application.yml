@@ -9,9 +9,9 @@ spring:
     servlet:
       load-on-startup: 1
 server:
-  port: 8088
+  port: 9999
   servlet:
-    context-path: /newrop
+    context-path: /rop
     session:
       timeout: 30m
   tomcat:

@@ -36,4 +36,6 @@ public interface FortuneService {
      * @return
      */
     JSONObject getActGift(String mobile, String secToken, String channelId, String actId);
+
+    void actRecord(String caozuo,String actId, String userId);
 }

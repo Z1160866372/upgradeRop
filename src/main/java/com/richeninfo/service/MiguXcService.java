@@ -43,7 +43,7 @@ public interface MiguXcService {
      * @param actId
      * @return
      */
-    JSONObject getActGift(String userId, String secToken, String channelId, String actId,String randCode);
+    JSONObject getActGift(String userId, String secToken, String channelId, String actId,String randCode,String wtAcId,String wtAc);
 
     /**
      * 办理业务短信下发
@@ -54,4 +54,5 @@ public interface MiguXcService {
      * @return
      */
     JSONObject sendMessage5956(String userId, String secToken, String channelId, String actId);
+    void actRecord(String caozuo,String actId, String userId);
 }

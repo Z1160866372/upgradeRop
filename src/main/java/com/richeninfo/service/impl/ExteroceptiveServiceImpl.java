@@ -71,6 +71,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             exteroceptiveMapper.saveUser(users);
             object.put("user", users);
         } else {
+            users.setSecToken(secToken);
             object.put("user", users);
         }
         return object;

@@ -73,7 +73,7 @@ public class MiguXcController {
      */
     @PostMapping(value = "/getActGift")
     public @ResponseBody
-    JSONObject getActGift(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String randCode) throws IOException {
+    JSONObject getActGift(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String randCode,String wtAcId,String wtAc) throws IOException {
         JSONObject object = new JSONObject();
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
@@ -82,7 +82,7 @@ public class MiguXcController {
             if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                JSONObject object1 = miguXcService.getActGift(mobile, secToken, channelId, actId,randCode);
+                JSONObject object1 = miguXcService.getActGift(mobile, secToken, channelId, actId,randCode,wtAcId,wtAc);
                 object.put("data", object1);
             }
         }
@@ -139,6 +139,33 @@ public class MiguXcController {
             } else {
                 JSONObject object1 = miguXcService.sendMessage5956(mobile, secToken, channelId, actId);
                 object.put("data", object1);
+            }
+        }
+        return object;
+    }
+
+    /**
+     * 用户操作记录
+     *
+     * @param secToken
+     * @param channelId
+     * @param actId
+     * @return
+     * @throws IOException
+     */
+    @PostMapping(value = "/actRecord")
+    @ResponseBody
+    public JSONObject actRecord(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, String caozuo) throws IOException {
+        JSONObject object = new JSONObject();
+        if (secToken.isEmpty()) {
+            object.put(Constant.MSG, "login");
+        } else {
+            String userId = commonService.getMobile(secToken, channelId);
+            if (userId.isEmpty()) {
+                object.put(Constant.MSG, "channelId_error");
+            } else {
+                miguXcService.actRecord(caozuo, actId, userId);
+                object.put(Constant.MSG, "success");
             }
         }
         return object;

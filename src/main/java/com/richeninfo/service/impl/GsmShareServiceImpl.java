@@ -61,6 +61,8 @@ public class GsmShareServiceImpl implements GsmShareService {
             activityUser.setPlayNum(1);
             activityUser.setUserType(userType(userId));
             gsmShareMapper.saveUser(activityUser);
+        }else{
+            activityUser.setSecToken(secToken);
         }
         jsonObject.put("user", activityUser);
         return jsonObject;

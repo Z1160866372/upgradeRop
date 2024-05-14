@@ -45,11 +45,10 @@ public class ConsultServiceImpl implements ConsultService {
          activityUserUser.setUserId(userId);
          activityUserUser.setPlayNum(1);
          activityUserUser.setAward(0);
+         activityUserUser.setSecToken(secToken);
          cnsultMapper.saveUser(activityUserUser);
       } else {
-         if (!secToken.equals(activityUserUser.getSecToken())) {
-            cnsultMapper.updateUserSecToken(userId, secToken);
-         }
+         activityUserUser.setSecToken(secToken);
       }
       jsonObject.put("user", activityUserUser);
       return jsonObject;
