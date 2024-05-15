@@ -102,18 +102,9 @@ public class MiguXcController {
     public @ResponseBody
     JSONObject videoList(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
-            object.put(Constant.MSG, "login");
-        } else {
-            String mobile = commonService.getMobile(secToken, channelId);
-            if (mobile.isEmpty()) {
-                object.put(Constant.MSG, "channelId_error");
-            } else {
-                JSONObject object1 = miguXcService.selectVideoList(mobile, secToken, channelId, actId);
-                object.put(Constant.MSG, Constant.SUCCESS);
-                object.put("data", object1);
-            }
-        }
+        JSONObject object1 = miguXcService.selectVideoList(secToken, channelId, actId);
+        object.put(Constant.MSG, Constant.SUCCESS);
+        object.put("data", object1);
         return object;
     }
 

@@ -64,7 +64,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
     }
 
     @Override
-    public JSONObject selectVideoList(String mobile, String secToken, String channelId, String actId) {
+    public JSONObject selectVideoList( String secToken, String channelId, String actId) {
         JSONObject jsonObject = new JSONObject();
         List<ActivityConfiguration> list = miguFlowMapper.findGiftByTypeId(actId);
         jsonObject.put("list", list);

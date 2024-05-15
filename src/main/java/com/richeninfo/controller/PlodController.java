@@ -27,7 +27,7 @@ import java.io.*;
  */
 
 @Controller
-@RequestMapping("/Plod")
+@RequestMapping("/plod")
 public class PlodController {
 
     @Resource
@@ -37,7 +37,7 @@ public class PlodController {
 
     private static String basePath = "https://activity.sh.10086.cn";
 
-    private static String filePath = "/opt/";
+    private static String filePath = "/home/weihu";
 
 
     /**
@@ -74,18 +74,14 @@ public class PlodController {
      * @return
      * @throws IOException
      */
-    @PostMapping(value = "/addPicture")
+    @RequestMapping(value = "/addPicture")
     public @ResponseBody
     JSONObject addPicture(@RequestParam("fileType") String fileType,
-                          @RequestBody MultipartFile file) throws IOException {
+                          @RequestBody  @RequestParam("file") MultipartFile file) throws IOException {
         JSONObject object = new JSONObject();
-        if (file.isEmpty()) {
-            object.put(Constant.MSG, "error");
-        } else {
-            JSONObject object1 = plodService.addPicture(fileType, file);
-            object.put(Constant.MSG, Constant.SUCCESS);
-            object.put("data", object1);
-        }
+        JSONObject object1 = plodService.addPicture(fileType, file);
+        object.put(Constant.MSG, Constant.SUCCESS);
+        object.put("data", object1);
         return object;
     }
 
@@ -103,7 +99,8 @@ public class PlodController {
             path = "videos";
             response.setContentType("video/mpeg4");
         }
-        File file = new File(basePath + File.separator + path + File.separator + imgId);
+        System.out.println(basePath + File.separator + filePath + File.separator + imgId);
+        File file = new File(basePath + File.separator + filePath + File.separator + imgId);
         OutputStream outputStream = response.getOutputStream();
         InputStream inputStream = new FileInputStream(file);
         byte[] bs = new byte[1024];
@@ -173,54 +170,32 @@ public class PlodController {
     /**
      * 用户登录
      *
-     * @param secToken  用户sectoken
-     * @param channelId 渠道
      * @return JSONObject
      * @throws IOException ioe异常
      */
     @PostMapping(value = "/checkLogin")
     public @ResponseBody
-    JSONObject checkLogin(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, String channelId,String userName,String password) throws IOException {
+    JSONObject checkLogin(String userName,String password) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
-            object.put(Constant.MSG, "login");
-        } else {
-            String mobile = commonService.getMobile(secToken, channelId);
-            if (mobile.isEmpty()) {
-                object.put(Constant.MSG, "userId_isNULL");
-            } else {
-                object.put(Constant.MSG, "success");
-                JSONObject object1 = plodService.checkLogin(userName,password);
-                object.put("data", object1);
-            }
-        }
+        object.put(Constant.MSG, "success");
+        JSONObject object1 = plodService.checkLogin(userName,password);
+        object.put("data", object1);
         return object;
     }
 
     /**
      * 所有建议
      *
-     * @param secToken  用户sectoken
-     * @param channelId 渠道
      * @return JSONObject
      * @throws IOException ioe异常
      */
     @PostMapping(value = "/AllUserAdvise")
     public @ResponseBody
-    JSONObject AllUserAdvise(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, String channelId) throws IOException {
+    JSONObject AllUserAdvise() throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
-            object.put(Constant.MSG, "login");
-        } else {
-            String mobile = commonService.getMobile(secToken, channelId);
-            if (mobile.isEmpty()) {
-                object.put(Constant.MSG, "userId_isNULL");
-            } else {
-                object.put(Constant.MSG, "success");
-                JSONObject object1 = plodService.AllUserAdvise();
-                object.put("data", object1);
-            }
-        }
+        object.put(Constant.MSG, "success");
+        JSONObject object1 = plodService.AllUserAdvise();
+        object.put("data", object1);
         return object;
     }
 
@@ -235,7 +210,7 @@ public class PlodController {
      */
     @PostMapping(value = "/playAdvise")
     public @ResponseBody
-    JSONObject playAdvise(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, String channelId,String id, String loginUserId, String endRaceType, String endRaceContent,String sort, String message) throws IOException {
+    JSONObject playAdvise(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, String channelId,String id, String endRaceType, String endRaceContent,String sort, String message) throws IOException {
         JSONObject object = new JSONObject();
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
@@ -245,7 +220,7 @@ public class PlodController {
                 object.put(Constant.MSG, "userId_isNULL");
             } else {
                 object.put(Constant.MSG, "success");
-                JSONObject object1 = plodService.playAdvise(id, loginUserId, endRaceType,  endRaceContent, sort,  message);
+                JSONObject object1 = plodService.playAdvise(id, mobile, endRaceType,  endRaceContent, sort,  message);
                 object.put("data", object1);
             }
         }

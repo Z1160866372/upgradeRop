@@ -66,7 +66,7 @@ public class MiguXcServiceImpl implements MiguXcService {
     }
 
     @Override
-    public JSONObject selectVideoList(String mobile, String secToken, String channelId, String actId) {
+    public JSONObject selectVideoList( String secToken, String channelId, String actId) {
         JSONObject jsonObject = new JSONObject();
         List<ActivityConfiguration> list=miguXcMapper.findGiftByTypeId(actId);
         jsonObject.put("list",list);

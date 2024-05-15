@@ -19,6 +19,7 @@ import com.richeninfo.service.CommonService;
 import com.richeninfo.service.FortuneService;
 import com.richeninfo.util.CommonUtil;
 import lombok.extern.log4j.Log4j;
+import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -40,6 +41,9 @@ public class FortuneServiceImpl implements FortuneService {
    CommonService commonService;
    @Resource
    CommonUtil commonUtil;
+
+   @Resource
+   private JmsMessagingTemplate jmsMessagingTemplate;
    @Resource
    CommonMapper commonMapper;
    @Override
@@ -63,7 +67,7 @@ public class FortuneServiceImpl implements FortuneService {
    public JSONObject getActGift(String userId, String secToken, String channelId, String actId) {
       JSONObject jsonObject = new JSONObject();
       ActivityUser user = FortuneMapper.findUserInfo(userId);
-      if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 2&&user.getPlayNum()>0) {
+      if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1) {
          ActivityUserHistory history = new ActivityUserHistory();
             //查询活动配置礼包
             List<ActivityConfiguration> giftList = FortuneMapper.findGiftList(actId);
@@ -79,8 +83,12 @@ public class FortuneServiceImpl implements FortuneService {
                history.setChannelId(channelId);
                int status = FortuneMapper.saveHistory(history);
                try {
+                  log.info("status=======" + status);
                   if (status > 0) {//异步mq发放礼包
                      FortuneMapper.updateUserAward(userId);
+                     String mqMsg = commonService.issueReward(gift, history);
+                     log.info("4147请求信息：" + mqMsg);
+                     jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
                      jsonObject.put("msg", "success");
                   }
                } catch (Exception e) {

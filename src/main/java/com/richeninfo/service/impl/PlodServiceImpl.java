@@ -47,9 +47,9 @@ public class PlodServiceImpl implements PlodService {
     @Resource
     CommonUtil commonUtil;
 
-    private static String basePath = "https://activity.sh.10086.cn";
+    private static String basePath = "/home/weihu/";
 
-    private static String filePath = "/opt/";
+    private static String filePath = "/home/weihu/";
 
     @Override
     public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
@@ -60,6 +60,7 @@ public class PlodServiceImpl implements PlodService {
             activityUser.setUserId(userId);
             activityUser.setPlayNum(2);
             activityUser.setAward(0);
+            activityUser.setChannelId(channelId);
             plodMapper.saveUser(activityUser);
         } else {
             activityUser.setSecToken(secToken);
@@ -81,7 +82,7 @@ public class PlodServiceImpl implements PlodService {
         log.info("上传文件类型===" + fileType);
         JSONObject result = new JSONObject();
         try {
-            String path = "imgs";
+            String path = "home/weihu";
             if ("videos".equals(fileType)) {
                 path = "videos";
             }
@@ -103,14 +104,16 @@ public class PlodServiceImpl implements PlodService {
                 String dateStr = DateUtil.convertDateToString(new Date(), "yyyyMMddHHmmsszzz");
                 String fileAdd = dateStr + "_" + 1;
                 // 获取文件夹路径
-                File file1 = new File(basePath + File.separator + path + File.separator);
+                File file1 = new File(basePath + File.separator);
                 // 如果文件夹不存在则创建
                 if (!file1.exists() && !file1.isDirectory()) {
                     file1.mkdir();
                 }
-                log.info(basePath + File.separator + path + File.separator);
+                log.info(basePath + File.separator );
                 // 将图片存入文件夹
                 fileName = fileAdd + fileF;
+                log.info("file1==="+file1);
+                log.info("fileName==="+fileName);
                 File targetFile = new File(file1, fileName);
                 try {
                     // 将上传的文件写到服务器上指定的文件。

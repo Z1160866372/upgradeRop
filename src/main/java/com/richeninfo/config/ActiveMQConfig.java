@@ -31,6 +31,7 @@ import javax.jms.Topic;
 @Configuration
 public class ActiveMQConfig{
 
+
     @Value("${spring.activemq.broker-url}")
     private String brokerUrl;
 
@@ -72,7 +73,7 @@ public class ActiveMQConfig{
         return factory;
     }
 
-    @Bean
+  /*  @Bean
     @ConditionalOnMissingBean(
             name = {"queueListener"}
     )
@@ -83,7 +84,7 @@ public class ActiveMQConfig{
         bean.setConnectionFactory(connectionFactory);
         return bean;
     }
-
+*/
 
 
     @Bean(name = "topicListener")

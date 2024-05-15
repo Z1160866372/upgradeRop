@@ -33,7 +33,7 @@ public interface MiguFlowService {
      * @param actId
      * @return
      */
-    JSONObject selectVideoList(String userId, String secToken, String channelId, String actId);
+    JSONObject selectVideoList( String secToken, String channelId, String actId);
 
     /**
      * 领取礼包
