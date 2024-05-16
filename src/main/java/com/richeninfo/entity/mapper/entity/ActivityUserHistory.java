@@ -89,6 +89,9 @@ public class ActivityUserHistory {
     @ApiModelProperty(value = "跳转地址")
     private String winSrc;
 
+    @ApiModelProperty(value = "图片地址")
+    private String imgSrc;
+
     @ApiModelProperty(value = "活动关键字")
     private String keyword;
 

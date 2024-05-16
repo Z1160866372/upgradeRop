@@ -76,6 +76,7 @@ public class FinanceServiceImpl implements FinanceService {
             new_user.setUserId(user.getUserId());
             new_user.setActId(user.getActId());
             new_user.setChannelId(user.getChannelId());
+            new_user.setCreateDate(month.format(new Date()));
             financeMapper.insertUser(new_user);
             user = new_user;
         } else {
@@ -102,7 +103,7 @@ public class FinanceServiceImpl implements FinanceService {
                         userHistory=financeMapper.selectActivityUserHistoryByTypeId(mobile,config.getTypeId(),month.format(new Date()));
                     }
                     if(userHistory==null){
-                        if(config.getAllAmount()>0){//马上抢
+                        if(config.getAmount()>0){//马上抢
                             config.setStatus(0);
                         }else{//已抢光
                             config.setStatus(1);
@@ -129,6 +130,9 @@ public class FinanceServiceImpl implements FinanceService {
         String mobile="";
         if (!secToken.isEmpty()) {
             mobile= commonService.getMobile(secToken,channelId);
+        }else{
+            object.put(Constant.MSG,"login");
+            return object;
         }
         if(unlocked==6){//盲盒奖励 流量/话费
             ActivityUserHistory userHistory  = financeMapper.selectActivityUserHistoryByTypeId(mobile,0,month.format(new Date()));
@@ -177,7 +181,7 @@ public class FinanceServiceImpl implements FinanceService {
                                 content="尊敬的客户，您好！恭喜您在“移动云盘周三财运日”活动中获赠标准10元洗车代金券一张，券码为"+activityCardList.getCouponCode()+"，请您尽快登陆车点点微信公众号或APP-“个人中心”-“兑换码”激活使用，激活后券码有效期为激活之日起1个月有效，请尽快使用。【中国移动】";
                             }
                             Packet packet = packetHelper.getCommitPacket1638(mobile, content);
-                            JSON.parseObject(ropService.execute(packet, mobile), Result.class);
+                           /* JSON.parseObject(ropService.execute(packet, mobile), Result.class);*/
                         }else{
                             object.put(Constant.MSG,"noDate");
                         }
@@ -213,6 +217,7 @@ public class FinanceServiceImpl implements FinanceService {
         newHistory.setCreateTime(df.format(new Date()));
         newHistory.setValue(activityConfiguration.getValue());
         newHistory.setActId(actId);
+        newHistory.setImgSrc(activityConfiguration.getImgSrc());
         financeMapper.insertActivityUserHistory(newHistory);
         if(activityConfiguration.getUnlocked()==0||activityConfiguration.getUnlocked()==5){
             financeMapper.updateActivityConfigurationAmount(financeMapper.selectActivityConfigurationByUnlocked(actId,6).getId());
