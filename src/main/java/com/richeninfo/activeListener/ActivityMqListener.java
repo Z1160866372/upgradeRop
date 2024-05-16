@@ -32,7 +32,7 @@ public class ActivityMqListener {
     @Resource
     private RopServiceManager ropServiceManager;
 
-    @JmsListener(destination="commonQueue", containerFactory="queueListener")
+    @JmsListener(destination="commonQueue" , containerFactory="queueListener")
     public void readActiveQueue(String message) {
         log.info("接收信息" + message);
         PacketMq mq = JSON.parseObject(message, PacketMq.class);

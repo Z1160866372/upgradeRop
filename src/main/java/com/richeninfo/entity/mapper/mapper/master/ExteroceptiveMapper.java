@@ -26,13 +26,6 @@ public interface ExteroceptiveMapper {
     @Select("select * from wt_proem_user where userId = #{userId}")
     ActivityUser findUserInfoByUserId(String userId);
 
-    /**
-     * 根据secToken查询用户信息
-     * @param secToken
-     * @return
-     */
-    @Select("select * from wt_proem_user where secToken = #{secToken}")
-    ActivityUser findUserInfoByUserSecToken(String secToken);
 
     /**
      * 查询一期用户信息
@@ -185,7 +178,7 @@ public interface ExteroceptiveMapper {
      * @param actId
      * @return
      */
-    @Select(" select * from activity_configuration where unlocked >0 and value >0 or(value =0 and module =#{month} and actId=#{actId} )")
+    @Select(" select * from activity_configuration where unlocked >0 and value >0 and actId=#{actId} or(value =0 and module =#{month} and actId=#{actId} )")
     List<ActivityConfiguration> findGiftList(int month, String actId);
 
     /**
