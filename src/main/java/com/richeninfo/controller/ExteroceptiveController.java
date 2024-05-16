@@ -86,11 +86,11 @@ public class ExteroceptiveController {
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {
-            ActivityUser user = exteroceptiveMapper.findUserInfoByUserSecToken(secToken);
-            if (user.getUserId().isEmpty()) {
+            String mobile = commonService.getMobile(secToken, channelId);
+            if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object = exteroceptiveService.toAnswer(channelId, user.getUserId());
+                object = exteroceptiveService.toAnswer(channelId,mobile);
             }
         }
         return object;
@@ -112,11 +112,11 @@ public class ExteroceptiveController {
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {
-            ActivityUser user = exteroceptiveMapper.findUserInfoByUserSecToken(secToken);
-            if (user.getUserId().isEmpty()) {
+            String mobile = commonService.getMobile(secToken, channelId);
+            if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object = exteroceptiveService.answer(channelId, answer, answerTitle, user.getUserId());
+                object = exteroceptiveService.answer(channelId, answer, answerTitle, mobile);
             }
         }
         return object;
@@ -138,11 +138,11 @@ public class ExteroceptiveController {
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {
-            ActivityUser user = exteroceptiveMapper.findUserInfoByUserSecToken(secToken);
-            if (user.getUserId().isEmpty()) {
+            String mobile = commonService.getMobile(secToken, channelId);
+            if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object = exteroceptiveService.play(channelId, paopao, user.getUserId());
+                object = exteroceptiveService.play(channelId, paopao, mobile);
             }
         }
         return object;
@@ -164,11 +164,11 @@ public class ExteroceptiveController {
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {
-            ActivityUser user = exteroceptiveMapper.findUserInfoByUserSecToken(secToken);
-            if (user.getUserId().isEmpty()) {
+            String mobile = commonService.getMobile(secToken, channelId);
+            if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object = exteroceptiveService.tochoujiang(channelId, user.getUserId());
+                object = exteroceptiveService.tochoujiang(channelId, mobile);
             }
         }
         return object;
@@ -190,11 +190,11 @@ public class ExteroceptiveController {
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {
-            ActivityUser user = exteroceptiveMapper.findUserInfoByUserSecToken(secToken);
-            if (user.getUserId().isEmpty()) {
+            String mobile = commonService.getMobile(secToken, channelId);
+            if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object = exteroceptiveService.choujiang(channelId, user.getUserId(), actId);
+                object = exteroceptiveService.choujiang(channelId, mobile, actId);
             }
         }
         return object;
@@ -216,11 +216,11 @@ public class ExteroceptiveController {
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {
-            ActivityUser user = exteroceptiveMapper.findUserInfoByUserSecToken(secToken);
-            if (user.getUserId().isEmpty()) {
+            String mobile = commonService.getMobile(secToken, channelId);
+            if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object = exteroceptiveService.todetail(channelId, user.getUserId());
+                object = exteroceptiveService.todetail(channelId, mobile);
             }
         }
         return object;
@@ -242,11 +242,11 @@ public class ExteroceptiveController {
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {
-            ActivityUser user = exteroceptiveMapper.findUserInfoByUserSecToken(secToken);
-            if (user.getUserId().isEmpty()) {
+            String mobile = commonService.getMobile(secToken, channelId);
+            if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                exteroceptiveService.changeStatus(caozuo, actId, user.getUserId());
+                exteroceptiveService.changeStatus(caozuo, actId, mobile);
                 object.put(Constant.MSG, "success");
             }
         }
@@ -269,11 +269,11 @@ public class ExteroceptiveController {
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {
-            ActivityUser user = exteroceptiveMapper.findUserInfoByUserSecToken(secToken);
-            if (user.getUserId().isEmpty()) {
+            String mobile = commonService.getMobile(secToken, channelId);
+            if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object = exteroceptiveService.myReceived(channelId, user.getUserId(), actId);
+                object = exteroceptiveService.myReceived(channelId, mobile, actId);
                 object.put(Constant.MSG, "success");
             }
         }
