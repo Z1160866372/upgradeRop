@@ -46,7 +46,7 @@ public interface ExteroceptiveMapper {
      * 新增用户经验值
      * @param record
      */
-    @Insert("INSERT INTO wt_proem_record (userId,status,caozuo,typeId,channel_id,createTime,createDate) value (#{userId},#{status},#{caozuo},#{typeId},#{channel_id},now(),curdate())")
+    @Insert("INSERT INTO wt_proem_record (userId,status,actionName,typeId,channel_id,createTime,createDate) value (#{userId},#{status},#{actionName},#{typeId},#{channel_id},now(),curdate())")
     void saveUserRecord(ActivityRecord record);
 
     /**
@@ -219,7 +219,7 @@ public interface ExteroceptiveMapper {
      * @param ActivityRecord
      * @return
      */
-    @Insert(" INSERT INTO wt_proem_access (userId,status,caozuo,typeId,channel_id,createTime,createDate) value (#{userId},#{status},#{caozuo},#{typeId},#{channel_id},now(),curdate())")
+    @Insert(" INSERT INTO wt_proem_access (userId,status,actionName,typeId,channel_id,createTime,createDate) value (#{userId},#{status},#{actionName},#{typeId},#{channel_id},now(),curdate())")
     int saveUserAccess(ActivityRecord ActivityRecord);
 
     /**

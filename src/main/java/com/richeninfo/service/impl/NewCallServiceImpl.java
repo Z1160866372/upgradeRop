@@ -178,9 +178,9 @@ public class NewCallServiceImpl implements NewCallService {
                 object.put(Constant.MSG, Constant.FAILURE);
             }*/
             if (true) {
-                transact_result = false;
-                history.setStatus(Constant.STATUS_RECEIVED_ERROR);
-                object.put(Constant.MSG, Constant.FAILURE);
+                transact_result = true;
+                history.setStatus(Constant.STATUS_RECEIVED);
+                object.put(Constant.MSG, Constant.SUCCESS);
             }
             history.setMessage("");
             history.setCode(JSON.toJSONString(packet));

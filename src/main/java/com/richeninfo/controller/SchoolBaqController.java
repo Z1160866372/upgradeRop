@@ -72,7 +72,6 @@ public class SchoolBaqController {
                 user.setSecToken(secToken);
                 user.setChannelId(channelId);
                 user.setActId(actId);
-                user.setCreateDate(month.format(new Date()));
                 user = schoolBaqService.insertUser(user);
                 object.put(Constant.MSG, Constant.SUCCESS);
                 object.put("user", user);
