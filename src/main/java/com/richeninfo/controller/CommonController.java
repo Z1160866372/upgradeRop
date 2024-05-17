@@ -190,6 +190,20 @@ public class CommonController {
     }
 
     /**
+     * 活动校验
+     *
+     * @param secToken
+     * @return
+     * @throws Exception
+     */
+    @ApiOperation("活动校验(OA用户)")
+    @PostMapping(value = "/verityOa")
+    public @ResponseBody
+    Object verityOa(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId) throws Exception {
+        return this.commonService.verityOa(secToken, channelId);
+    }
+
+    /**
      * 提取公共内容
      * @param secToken
      * @param channelId

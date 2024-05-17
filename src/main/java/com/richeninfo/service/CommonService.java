@@ -115,4 +115,13 @@ public interface CommonService {
     JSONObject insertOperationLog(@ModelAttribute OperationLog operationLog);
 
 
+    /**
+     * 验证OA
+     * @param secToken
+     * @param channelId
+     * @return
+     */
+    JSONObject verityOa(String secToken, String channelId);
+
+
 }

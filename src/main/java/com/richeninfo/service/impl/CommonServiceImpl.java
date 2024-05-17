@@ -370,6 +370,22 @@ public class CommonServiceImpl implements CommonService {
         return object;
     }
 
+    @Override
+    public JSONObject verityOa(String secToken, String channelId) {
+        JSONObject object = new JSONObject();
+        if (secToken.isEmpty()) {
+            object.put(Constant.MSG, "login");
+        } else {
+            String mobilePhone =getMobile(secToken,channelId);
+           ActivityRoll activityRoll =  commonMapper.selectRoll(mobilePhone,3);
+           if(activityRoll!=null){
+               object.put(Constant.MSG, "isOa");
+           }else{
+               object.put(Constant.MSG, "noOa");
+           }
+        }
+        return object;
+    }
 
 
 }
