@@ -75,7 +75,7 @@ public class CommonServiceImpl implements CommonService {
             return resultObj;
         }
         ActivityConfiguration configuration =commonMapper.selectActivitySomeConfiguration(actId,unlocked);
-        redisUtil.set(userId, "",60);
+        redisUtil.set(userId,  configuration.getActivityId(),60);
         try {
             if(configuration!=null){
                 OpenapiLog log = new OpenapiLog();
@@ -134,7 +134,7 @@ public class CommonServiceImpl implements CommonService {
             log.setAddress(request.getLocalAddr() + ":" + request.getLocalPort());
             log.setUserId(userId);
             log.setActId(actId);
-            log.setApiCode("CRM5956");
+            log.setApiCode("CRM1638");
             int smsLog = commonMapper.insertSMSLog(log);
             if(smsLog>0){
                 Packet packet = packetHelper.getCommitPacket1638(userId, content);
