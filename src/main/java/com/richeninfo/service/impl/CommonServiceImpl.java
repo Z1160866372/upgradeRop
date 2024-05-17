@@ -79,7 +79,7 @@ public class CommonServiceImpl implements CommonService {
         try {
             if(configuration!=null){
                 Packet packet = packetHelper.getCommitPacket5956(userId, configuration.getActivityId());
-               /* Result result = JSON.parseObject(ropService.execute(packet, userId), Result.class);
+                Result result = JSON.parseObject(ropService.execute(packet, userId), Result.class);
                 String code = result.getResponse().getErrorInfo().getCode();
                 String bizCode = result.getResponse().getRetInfo().getString("bizCode");
                 if (Constant.SUCCESS_CODE.equals(code)&&Constant.SUCCESS_CODE.equals(bizCode)) {
@@ -88,8 +88,8 @@ public class CommonServiceImpl implements CommonService {
                     resultObj.put(Constant.MSG, Constant.ERROR);
                     resultObj.put(Constant.CODE, code);
                     return resultObj;
-                }*/
-                resultObj.put(Constant.MSG, Constant.SUCCESS);
+                }
+                //resultObj.put(Constant.MSG, Constant.SUCCESS);
             }else{
                 resultObj.put(Constant.MSG, "noConfig");
             }
@@ -162,13 +162,13 @@ public class CommonServiceImpl implements CommonService {
     public boolean checkUserIsChinaMobile(String userId) {
         Packet packet = packetHelper.getCommitPacket2329(userId);
         try {
-           /* Result result = JSON.parseObject(ropService.execute(packet,userId), Result.class);
+            Result result = JSON.parseObject(ropService.execute(packet,userId), Result.class);
             // 1是中国移动  0不是
             Integer flag = Integer.parseInt(result.getResponse().getRetInfo().getString("flag"));
             if(flag == 1){
                 return true;
-            }*/
-            return true;
+            }
+            //return true;
         } catch (Exception e) {
             log.error("验证失败：===" + e.getMessage());
         }
