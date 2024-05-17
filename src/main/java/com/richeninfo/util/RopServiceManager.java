@@ -81,10 +81,11 @@ public class RopServiceManager {
         return JSON.parseObject(response).getString("result");
     }
 
-    public JSONObject executes(Packet reqPack, String userId) throws Exception {
+    public String  executes(Packet reqPack, String userId) throws Exception {
         String response = "";
         try {
-            String message = reqPack.getPost().getRequest().getBusiParams().toString();
+            //String message = reqPack.getPost().getRequest().getBusiParams().toString();
+            String message = reqPack.getObject().toString();
             log.info("card Request:" + message);
             // OpenapiHttpCilent client = new OpenapiHttpCilent(appCode, apk_new);
             response = openapiHttpCilent.call(reqPack.getApiCode(), null, message);
@@ -94,7 +95,7 @@ public class RopServiceManager {
             log.error("Exception : " + e.getMessage());
             throw e;
         }
-        return JSON.parseObject(response);
+        return JSON.parseObject(response).getString("result");
     }
 
     //接口调用日志

@@ -178,7 +178,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
         schoolBaqMapper.insertActivityUserHistory(newHistory);
         ActivityUserHistory oldHistory = schoolBaqMapper.selectActivityUserHistoryByUnlocked(mobile, newHistory.getUnlocked());
         Packet packet = packetHelper.CardVoucherIssued("CH5",activityConfiguration.getActivityId(),mobile);
-      /*  String result = ropService.execute(packet,mobile);
+      /*  String result = ropService.executes(packet,mobile);
         String code = JSONObject.parseObject(result).getString("code");*/
         String code="200";
         if(code.equals("200")){
