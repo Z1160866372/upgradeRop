@@ -82,7 +82,7 @@ public class PlodServiceImpl implements PlodService {
         log.info("上传文件类型===" + fileType);
         JSONObject result = new JSONObject();
         try {
-            String path = "home/weihu";
+            String path = "imgs";
             if ("videos".equals(fileType)) {
                 path = "videos";
             }
@@ -104,12 +104,12 @@ public class PlodServiceImpl implements PlodService {
                 String dateStr = DateUtil.convertDateToString(new Date(), "yyyyMMddHHmmsszzz");
                 String fileAdd = dateStr + "_" + 1;
                 // 获取文件夹路径
-                File file1 = new File(basePath + File.separator);
+                File file1 = new File(basePath + File.separator + path + File.separator);
                 // 如果文件夹不存在则创建
                 if (!file1.exists() && !file1.isDirectory()) {
                     file1.mkdir();
                 }
-                log.info(basePath + File.separator );
+                log.info(basePath + File.separator + path + File.separator);
                 // 将图片存入文件夹
                 fileName = fileAdd + fileF;
                 log.info("file1==="+file1);
