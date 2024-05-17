@@ -48,7 +48,9 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
     public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
         JSONObject object = new JSONObject();
         ActivityUser users = findEveryDayUser(userId, secToken);
+
         if (users == null) {
+            users= new ActivityUser();
             //查询第一期的分数和对应等级 导入第二期
             ActivityUser olduser = exteroceptiveMapper.findOldUserInfoByUserId(userId);
             if (olduser == null) {
@@ -389,6 +391,8 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
         ActivityUserHistory history = new ActivityUserHistory();
         history.setUserId(userId);
         history.setChannelId(channel_id);
+        history.setValue(gift.getValue());
+        history.setActId(gift.getActId());
         history.setRewardName(gift.getName());
         history.setTypeId(gift.getTypeId());
         history.setUnlocked(gift.getUnlocked());
@@ -399,7 +403,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             if (status > 0 && Double.valueOf(gift.getValue()) > 0) {
                 String mqMsg = commonService.issueReward(gift, history);
                 log.info("4147请求信息：" + mqMsg);
-               // jmsMessagingTemplate.convertAndSend("proemMQ", mqMsg);
+                jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
             }
         } catch (Exception e) {
             e.printStackTrace();

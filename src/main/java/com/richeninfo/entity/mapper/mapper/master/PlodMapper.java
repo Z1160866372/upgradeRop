@@ -149,7 +149,7 @@ public interface PlodMapper {
      * 更新用户成绩
      * @return
      */
-    @Update("update  wt_plod_pubuser set totalScore=#{score} where userId=#{userId}")
+    @Update("update  wt_plod_pubUser set totalScore=#{score} where userId=#{userId}")
     int updatePubUserScore(@Param("userId")String userId,@Param("score")int score);
 
 }

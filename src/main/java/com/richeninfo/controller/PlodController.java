@@ -203,27 +203,18 @@ public class PlodController {
     /**
      * 所有建议
      *
-     * @param secToken  用户sectoken
      * @param channelId 渠道
      * @return JSONObject
      * @throws IOException ioe异常
      */
     @PostMapping(value = "/playAdvise")
     public @ResponseBody
-    JSONObject playAdvise(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, String channelId,String id, String endRaceType, String endRaceContent,String sort, String message) throws IOException {
+    JSONObject playAdvise(@ApiParam(name = "loginUserId", value = "用户标识", required = true) String loginUserId, String channelId,String id, String endRaceType, String endRaceContent,String sort, String message) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
-            object.put(Constant.MSG, "login");
-        } else {
-            String mobile = commonService.getMobile(secToken, channelId);
-            if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "userId_isNULL");
-            } else {
                 object.put(Constant.MSG, "success");
-                JSONObject object1 = plodService.playAdvise(id, mobile, endRaceType,  endRaceContent, sort,  message);
+                JSONObject object1 = plodService.playAdvise(id, loginUserId, endRaceType,  endRaceContent, sort,  message);
                 object.put("data", object1);
-            }
-        }
         return object;
     }
 

@@ -10,10 +10,7 @@ package com.richeninfo.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
-import com.richeninfo.entity.mapper.entity.ActivityUser;
-import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
-import com.richeninfo.entity.mapper.entity.OperationLog;
+import com.richeninfo.entity.mapper.entity.*;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.entity.mapper.mapper.master.MiguXcMapper;
 import com.richeninfo.pojo.Constant;
@@ -23,7 +20,10 @@ import com.richeninfo.pojo.VasOfferInfo;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.MiguXcService;
 import com.richeninfo.util.PacketHelper;
+import com.richeninfo.util.ReqWorker;
+import com.richeninfo.util.RopServiceManager;
 import lombok.extern.log4j.Log4j;
+import net.sf.json.JSONArray;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -41,7 +41,7 @@ import java.util.Map;
 public class MiguXcServiceImpl implements MiguXcService {
 
     @Resource
-   private  MiguXcMapper miguXcMapper;
+    private MiguXcMapper miguXcMapper;
     @Resource
     private CommonService commonService;
 
@@ -49,16 +49,20 @@ public class MiguXcServiceImpl implements MiguXcService {
     private CommonMapper commonMapper;
     @Resource
     private PacketHelper packetHelper;
+
+    @Resource
+    private RopServiceManager ropServiceManager;
+
     @Override
     public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser activityUser = miguXcMapper.findCurMonthUserInfo(userId);
         if (activityUser == null) {
-            activityUser=new ActivityUser();
+            activityUser = new ActivityUser();
             activityUser.setUserId(userId);
             activityUser.setAward(0);
             miguXcMapper.saveUser(activityUser);
-        }else{
+        } else {
             activityUser.setSecToken(secToken);
         }
         jsonObject.put("user", activityUser);
@@ -66,15 +70,15 @@ public class MiguXcServiceImpl implements MiguXcService {
     }
 
     @Override
-    public JSONObject selectVideoList( String secToken, String channelId, String actId) {
+    public JSONObject selectVideoList(String secToken, String channelId, String actId) {
         JSONObject jsonObject = new JSONObject();
-        List<ActivityConfiguration> list=miguXcMapper.findGiftByTypeId(actId);
-        jsonObject.put("list",list);
+        List<ActivityConfiguration> list = miguXcMapper.findGiftByTypeId(actId);
+        jsonObject.put("list", list);
         return jsonObject;
     }
 
     @Override
-    public JSONObject getActGift(String userId, String secToken, String channelId, String actId,String randCode,String wtAcId,String wtAc) {
+    public JSONObject getActGift(String userId, String secToken, String channelId, String actId, String randCode, String wtAcId, String wtAc) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser user = miguXcMapper.findCurMonthUserInfo(userId);
         JSONObject newJsonObject = new JSONObject();
@@ -96,7 +100,7 @@ public class MiguXcServiceImpl implements MiguXcService {
                 int status = miguXcMapper.saveHistory(history);
                 try {
                     if (status > 0) {//业务发放
-                        newJsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc);
+                        newJsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
                         Boolean ywStatus = newJsonObject.getBoolean("transact_result");
                         jsonObject.put("msg", ywStatus);
                         jsonObject.put("newJsonObject", newJsonObject);
@@ -108,7 +112,7 @@ public class MiguXcServiceImpl implements MiguXcService {
                 if (history.getStatus() == 3) {
                     jsonObject.put("msg", "ybl");
                 } else {
-                    newJsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc);
+                    newJsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
                     Boolean ywStatus = newJsonObject.getBoolean("transact_result");
                     jsonObject.put("msg", ywStatus);
                     jsonObject.put("newJsonObject", newJsonObject);
@@ -123,8 +127,8 @@ public class MiguXcServiceImpl implements MiguXcService {
 
     @Override
     public JSONObject sendMessage5956(String userId, String secToken, String channelId, String actId) {
-        JSONObject jsonObject=new JSONObject();
-        jsonObject= commonService.sendSms5956(userId,actId,0);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject = commonService.sendSms5956(userId, actId, 0);
         return jsonObject;
     }
 
@@ -135,7 +139,7 @@ public class MiguXcServiceImpl implements MiguXcService {
      * @param userId
      */
     @Override
-    public void actRecord(String caozuo,String actId, String userId) {
+    public void actRecord(String caozuo, String actId, String userId) {
         log.info("userId:" + userId + ",caozuo" + caozuo);
         Map<String, Object> map = new HashMap<>();
         OperationLog record = new OperationLog();
@@ -144,13 +148,13 @@ public class MiguXcServiceImpl implements MiguXcService {
         record.setActId(actId);
         record.setUserId(userId);
         try {
-            commonMapper.insertOperationLog(record,"wt_miguxc_operationLog");
+            commonMapper.insertOperationLog(record, "wt_miguxc_operationLog");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public JSONObject transact3066Business(ActivityUserHistory history, ActivityConfiguration config, String randCode, String channelId, String wtAcId, String wtAc) {
+    public JSONObject transact3066Business(ActivityUserHistory history, ActivityConfiguration config, String randCode, String channelId, String wtAcId, String wtAc, String actId) {
         JSONObject object = new JSONObject();
         boolean transact_result = false;
         Result result = new Result();
@@ -172,47 +176,49 @@ public class MiguXcServiceImpl implements MiguXcService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId);
-           /* String message = ropService.execute(packet,history.getUserId());
+            String message = ropServiceManager.execute(packet, history.getUserId(),actId);
             message = ReqWorker.replaceMessage(message);
-            result = JSON.parseObject(message,Result.class);
+            result = JSON.parseObject(message, Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
             String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");
-            if(Constant.SUCCESS_CODE.equals(res)){
+            if (Constant.SUCCESS_CODE.equals(res)) {
                 transact_result = true;
                 history.setStatus(Constant.STATUS_RECEIVED);
                 object.put(Constant.MSG, Constant.SUCCESS);
-            }else{
-                transact_result = false;
-                history.setStatus(Constant.STATUS_RECEIVED_ERROR);
-                object.put(Constant.MSG, Constant.FAILURE);
-            }*/
-            if (true) {
-                miguXcMapper.updateUserAward(history.getUserId());
+                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
+                System.out.println(new_packet.toString());
+                String result_String =ropServiceManager.execute(new_packet, history.getUserId(),actId);
+                ActivityOrder order = new ActivityOrder();
+                order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
+                String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();
+                order.setThirdTradeId(packetThirdTradeId);
+                order.setOrderItemId("JYRZ"+packetThirdTradeId.substring(packetThirdTradeId.length()-21));
+                order.setBossId(config.getActivityId());
+                order.setCommodityName(config.getName());
+                order.setUserId(history.getUserId());
+                order.setCode(JSONArray.fromObject(new_packet).toString());
+                order.setMessage(result_String);
+                order.setChannelId(channelId);
+                commonMapper.insertActivityOrder(order);
+            } else {
                 transact_result = false;
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
             }
+           /* if (true) {
+                miguXcMapper.updateUserAward(history.getUserId());
+                transact_result = false;
+                history.setStatus(Constant.STATUS_RECEIVED_ERROR);
+                object.put(Constant.MSG, Constant.FAILURE);
+            }*/
             history.setMessage("");
             history.setCode(JSON.toJSONString(packet));
             object.put("res", "0000");
             object.put("DoneCode", "12343242343A");
             object.put("update_history", JSON.toJSONString(history));
             miguXcMapper.updateHistory(history);
-            //Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
-            // System.out.println(new_packet.toString());
-            /*  String result_String =ropService.execute(new_packet, history.getUserId());*/
-           /* ActivityOrder order = new ActivityOrder();
-            order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
-            String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();
-            order.setThirdTradeId(packetThirdTradeId);
-            order.setOrderItemId("JYRZ"+packetThirdTradeId.substring(packetThirdTradeId.length()-21));
-            order.setBossId(config.getActivityId());
-            order.setCommodityName(config.getName());
-            order.setUserId(history.getUserId());
-            order.setCode(JSONArray.fromObject(new_packet).toString());
-            *//* order.setMessage(result_String);*//*
-            order.setChannelId(channelId);
-            commonMapper.insertActivityOrder(order);*/
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
