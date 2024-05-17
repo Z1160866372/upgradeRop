@@ -111,7 +111,7 @@ public class CommonController {
     @PostMapping(value = "/newSendMsg")
     @ApiOperation("获取短信验证码")
     public @ResponseBody
-    Object sendMsg(@ApiParam(name = "smsRandom", value = "图形验证码", required = true) String smsRandom, @ApiParam(name = "mobilePhone", value = "用户号码", required = true) String mobilePhone) throws Exception {
+    Object sendMsg(@ApiParam(name = "smsRandom", value = "图形验证码", required = true) String smsRandom, @ApiParam(name = "mobilePhone", value = "用户号码", required = true) String mobilePhone,@ApiParam(name = "actId", value = "活动标识", required = true) String actId) throws Exception {
         log.info("获取：" + redisUtil.get(smsRandom));
         Cookie[] cookies = request.getCookies();
         smsRandom = request.getParameter(Constant.SMS_RANDOM) == null ? "" : request.getParameter(Constant.SMS_RANDOM);
@@ -126,11 +126,11 @@ public class CommonController {
         if (!mobilePhone.isEmpty()) {
             mobilePhone = rsaUtils.decryptByPriKey(mobilePhone).trim();
         }
-        if (!commonService.checkUserIsChinaMobile(mobilePhone)) {
+        if (!commonService.checkUserIsChinaMobile(mobilePhone,actId)) {
             resultObj.put(Constant.MSG, Constant.ERROR);
             return resultObj;
         }
-        return this.commonService.sendMsgCode(mobilePhone);
+        return this.commonService.sendMsgCode(mobilePhone,actId);
     }
 
     @PostMapping(value = "/login_check")

@@ -120,7 +120,7 @@ public class NewCallServiceImpl implements NewCallService {
         if (!secToken.isEmpty()) {
             mobile= commonService.getMobile(secToken,channelId);
         }
-        if(!commonService.checkUserIsChinaMobile(mobile)){
+        if(!commonService.checkUserIsChinaMobile(mobile,actId)){
             object.put(Constant.MSG,"noShYd");
             return object;
         }
@@ -163,7 +163,7 @@ public class NewCallServiceImpl implements NewCallService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId);
-            String message = ropService.execute(packet,history.getUserId());
+            String message = ropService.execute(packet,history.getUserId(),history.getActId());
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message,Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
@@ -175,7 +175,7 @@ public class NewCallServiceImpl implements NewCallService {
                 //业务办理成功 接口上报
                 Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
                 System.out.println(new_packet.toString());
-                String result_String =ropService.execute(new_packet, history.getUserId());
+                String result_String =ropService.execute(new_packet, history.getUserId(),history.getActId());
                 ActivityOrder order = new ActivityOrder();
                 order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
                 String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();

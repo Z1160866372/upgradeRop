@@ -78,15 +78,26 @@ public class CommonServiceImpl implements CommonService {
         redisUtil.set(userId, "",60);
         try {
             if(configuration!=null){
-                Packet packet = packetHelper.getCommitPacket5956(userId, configuration.getActivityId());
-                Result result = JSON.parseObject(ropService.execute(packet, userId), Result.class);
-                String code = result.getResponse().getErrorInfo().getCode();
-                String bizCode = result.getResponse().getRetInfo().getString("bizCode");
-                if (Constant.SUCCESS_CODE.equals(code)&&Constant.SUCCESS_CODE.equals(bizCode)) {
-                    resultObj.put(Constant.MSG, Constant.SUCCESS);
-                } else {
+                OpenapiLog log = new OpenapiLog();
+                log.setAddress(request.getLocalAddr() + ":" + request.getLocalPort());
+                log.setUserId(userId);
+                log.setActId(actId);
+                log.setApiCode("CRM5956");
+                int smsLog = commonMapper.insertSMSLog(log);
+                if(smsLog>0){
+                    Packet packet = packetHelper.getCommitPacket5956(userId, configuration.getActivityId());
+                    Result result = JSON.parseObject(ropService.execute(packet, userId,actId), Result.class);
+                    String code = result.getResponse().getErrorInfo().getCode();
+                    String bizCode = result.getResponse().getRetInfo().getString("bizCode");
+                    if (Constant.SUCCESS_CODE.equals(code)&&Constant.SUCCESS_CODE.equals(bizCode)) {
+                        resultObj.put(Constant.MSG, Constant.SUCCESS);
+                    } else {
+                        resultObj.put(Constant.MSG, Constant.ERROR);
+                        resultObj.put(Constant.CODE, code);
+                        return resultObj;
+                    }
+                }else{
                     resultObj.put(Constant.MSG, Constant.ERROR);
-                    resultObj.put(Constant.CODE, code);
                     return resultObj;
                 }
                 //resultObj.put(Constant.MSG, Constant.SUCCESS);
@@ -106,7 +117,7 @@ public class CommonServiceImpl implements CommonService {
      * @return
      */
     @Override
-    public JSONObject sendMsgCode(String userId) {
+    public JSONObject sendMsgCode(String userId,String actId) {
         JSONObject resultObj = new JSONObject();
         String content = Constant.USER_SEND_MSG_TEXT;
         Object tmpCode = redisUtil.get(userId);
@@ -119,17 +130,29 @@ public class CommonServiceImpl implements CommonService {
         content = content.replace("${code}", smsCode);
         redisUtil.set(userId, smsCode,60);
         try {
-            Packet packet = packetHelper.getCommitPacket1638(userId, content);
-            Result result = JSON.parseObject(ropService.execute(packet, userId), Result.class);
-            String code = result.getResponse().getErrorInfo().getCode();
-            if (Constant.SUCCESS_CODE.equals(code)) {
+            OpenapiLog log = new OpenapiLog();
+            log.setAddress(request.getLocalAddr() + ":" + request.getLocalPort());
+            log.setUserId(userId);
+            log.setActId(actId);
+            log.setApiCode("CRM5956");
+            int smsLog = commonMapper.insertSMSLog(log);
+            if(smsLog>0){
+                Packet packet = packetHelper.getCommitPacket1638(userId, content);
+                Result result = JSON.parseObject(ropService.execute(packet, userId,actId), Result.class);
+                String code = result.getResponse().getErrorInfo().getCode();
+                if (Constant.SUCCESS_CODE.equals(code)) {
+                    resultObj.put(Constant.MSG, Constant.SUCCESS);
+                } else {
+                    resultObj.put(Constant.MSG, Constant.ERROR);
+                    resultObj.put(Constant.CODE, code);
+                    return resultObj;
+                }
                 resultObj.put(Constant.MSG, Constant.SUCCESS);
-            } else {
+            }else{
                 resultObj.put(Constant.MSG, Constant.ERROR);
-                resultObj.put(Constant.CODE, code);
                 return resultObj;
             }
-            resultObj.put(Constant.MSG, Constant.SUCCESS);
+
         } catch (Exception e) {
             log.info("Exception message = {}", e);
             resultObj.put(Constant.MSG, Constant.FAILURE);
@@ -159,10 +182,10 @@ public class CommonServiceImpl implements CommonService {
      * @return
      */
     @Override
-    public boolean checkUserIsChinaMobile(String userId) {
+    public boolean checkUserIsChinaMobile(String userId,String actId) {
         Packet packet = packetHelper.getCommitPacket2329(userId);
         try {
-            Result result = JSON.parseObject(ropService.execute(packet,userId), Result.class);
+            Result result = JSON.parseObject(ropService.execute(packet,userId,actId), Result.class);
             // 1是中国移动  0不是
             Integer flag = Integer.parseInt(result.getResponse().getRetInfo().getString("flag"));
             if(flag == 1){
@@ -182,13 +205,13 @@ public class CommonServiceImpl implements CommonService {
      * @return 返回true 代表是 否则不是 如果是 则用户无法进行游戏
      */
     @Override
-    public boolean isWap20User(String mobile) {
+    public boolean isWap20User(String mobile,String actId) {
         boolean isWap20User = false;
         ActivityRoll wap = commonMapper.selectRoll(mobile, Constant.wap_figure);
         try {
             if (wap != null) {
                 Packet packet = packetHelper.getCommitPacket0808(mobile);
-                Result result = JSON.parseObject(ropService.execute(packet, mobile), Result.class);
+                Result result = JSON.parseObject(ropService.execute(packet, mobile,actId), Result.class);
                 Integer res = result.getResponse().getRetInfo().getInteger("nFlag");
                 if (res == 1) {
                     log.info("接口调用结果 = {}", res);
@@ -276,7 +299,7 @@ public class CommonServiceImpl implements CommonService {
                             return object;
                         }
                     }
-                    if (isWap20User(mobilePhone)) {
+                    if (isWap20User(mobilePhone,actId)) {
                         object.put(Constant.MSG, "isWap20");
                         return object;
                     }

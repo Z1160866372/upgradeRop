@@ -51,7 +51,7 @@ public class RopServiceManager {
     @Resource
     private OpenapiHttpCilent openapiHttpCilent;
 
-    public String execute(Packet reqPack, String userId) throws Exception {
+    public String execute(Packet reqPack, String userId,String actId) throws Exception {
         String response = "";
         try {
             log.info("appCode:" + appCode);
@@ -62,7 +62,7 @@ public class RopServiceManager {
             response = openapiHttpCilent.call(reqPack.getApiCode(), reqPack.getPost().getPubInfo().getTransactionId(), message);
             log.info("Response(" + reqPack.getPost().getRequest().getBusiCode() + "|" + reqPack.getPost().getRequest().getBusiParams().getString("billId") + "):\n" + response);
             String status = JSON.parseObject(response).getString("status");
-            saveOpenapiLog(reqPack, message, response, userId);//保存用户调用记录
+            saveOpenapiLog(reqPack, message, response, userId,actId);//保存用户调用记录
             if (!"SUCCESS".equals(status)) {
                 throw new RuntimeException(JSON.parseObject(response).getString("result"));
             }
@@ -81,7 +81,7 @@ public class RopServiceManager {
         return JSON.parseObject(response).getString("result");
     }
 
-    public String  executes(Packet reqPack, String userId) throws Exception {
+    public String  executes(Packet reqPack, String userId,String actId) throws Exception {
         String response = "";
         try {
             //String message = reqPack.getPost().getRequest().getBusiParams().toString();
@@ -90,7 +90,7 @@ public class RopServiceManager {
             // OpenapiHttpCilent client = new OpenapiHttpCilent(appCode, apk_new);
             response = openapiHttpCilent.call(reqPack.getApiCode(), null, message);
             log.info("card Response " + response);
-            saveOpenapiLog(reqPack, message, response, userId);//保存用户调用记录
+            saveOpenapiLog(reqPack, message, response, userId,actId);//保存用户调用记录
         } catch (Exception e) {
             log.error("Exception : " + e.getMessage());
             throw e;
@@ -99,7 +99,7 @@ public class RopServiceManager {
     }
 
     //接口调用日志
-    public void saveOpenapiLog(Packet reqPack, String message, String response, String userId) {
+    public void saveOpenapiLog(Packet reqPack, String message, String response, String userId,String actId) {
         OpenapiLog log = new OpenapiLog();
         log.setAddress(request.getLocalAddr() + ":" + request.getLocalPort());
         log.setAppCode(appCode);
@@ -107,6 +107,7 @@ public class RopServiceManager {
         log.setCode(message);
         log.setMessage(response);
         log.setUserId(userId);
+        log.setActId(actId);
         commonMapper.insertOpenapiLog(log);
     }
 

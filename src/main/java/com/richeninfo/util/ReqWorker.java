@@ -40,7 +40,7 @@ public class ReqWorker implements Runnable {
                 String message = "";
                 String openapi = "y";
                 if ("y".equals(openapi)) {
-                    message = ropServiceManager.execute(packetQueue.getPacket(), "");
+                    message = ropServiceManager.execute(packetQueue.getPacket(), "","");
                 } else {
                     message = "{\"Response\":{\"ErrorInfo\":{\"Message\":\"成功\",\"Hint\":\"成功\",\"Code\":\"0000\"},\"RetInfo\":{\"CheckResultInfo\":[{\"Result\":\"1\",\"OfferId\":\"380000187851\",\"Code\":\"0000\",\"Reason\":\"成功\"}]}}}";
                 }

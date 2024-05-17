@@ -29,7 +29,7 @@ public interface CommonService {
      * @param userId
      * @return
      */
-    JSONObject sendMsgCode(String userId);
+    JSONObject sendMsgCode(String userId,String actId);
 
     /**
      * 短信校验
@@ -45,7 +45,7 @@ public interface CommonService {
      * @param userId
      * @return
      */
-    boolean checkUserIsChinaMobile(String userId);
+    boolean checkUserIsChinaMobile(String userId,String actId);
 
     /**
      * 判断用户是否是 wap20卡用户
@@ -53,7 +53,7 @@ public interface CommonService {
      * @param mobile
      * @return 返回true 代表是 否则不是 如果是 则用户无法进行游戏
      */
-    boolean isWap20User(String mobile);
+    boolean isWap20User(String mobile,String actId);
 
     /**
      * 判断用户是否有测试权限

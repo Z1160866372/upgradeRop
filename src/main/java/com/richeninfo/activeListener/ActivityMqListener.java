@@ -47,7 +47,7 @@ public class ActivityMqListener {
             if (history == null || history.getStatus() == Constant.STATUS_RECEIVED || mq.getPacket()== null) {
                 return;
             }
-              /*  String response_message = ropServiceManager.execute(mq.getPacket(), history.getUserId());
+               /* String response_message = ropServiceManager.execute(mq.getPacket(), history.getUserId(),history.getActId());
              Result request = JSON.parseObject(response_message, Result.class);
             String code = request.getResponse().getErrorInfo().getCode();
             String resCode = request.getResponse().getRetInfo().getString("resultCode");
