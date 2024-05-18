@@ -66,7 +66,7 @@ public class FinanceController {
             object.put(Constant.MSG, "login");
         } else {
             String mobile = commonService.getMobile(secToken, channelId);
-            if (mobile.isEmpty()) {
+            if (mobile==null||mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             }else{
                 user.setUserId(mobile);

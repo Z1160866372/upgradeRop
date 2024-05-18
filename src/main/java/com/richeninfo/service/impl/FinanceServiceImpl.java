@@ -92,7 +92,7 @@ public class FinanceServiceImpl implements FinanceService {
         String mobile="";
         ActivityUserHistory userHistory = null;
         if(pro_config.size()>0){
-            if (!secToken.isEmpty()) {
+            if (secToken!=null||!secToken.isEmpty()) {
                 mobile= commonService.getMobile(secToken,channelId);
             }
             for (ActivityConfiguration config : pro_config) {
@@ -128,7 +128,7 @@ public class FinanceServiceImpl implements FinanceService {
     public JSONObject submit(String secToken, String actId, int unlocked, String channelId) throws Exception {
         JSONObject object = new JSONObject();
         String mobile="";
-        if (!secToken.isEmpty()) {
+        if (secToken!=null||!secToken.isEmpty()) {
             mobile= commonService.getMobile(secToken,channelId);
         }else{
             object.put(Constant.MSG,"login");
@@ -181,7 +181,7 @@ public class FinanceServiceImpl implements FinanceService {
                                 content="尊敬的客户，您好！恭喜您在“移动云盘周三财运日”活动中获赠标准10元洗车代金券一张，券码为"+activityCardList.getCouponCode()+"，请您尽快登陆车点点微信公众号或APP-“个人中心”-“兑换码”激活使用，激活后券码有效期为激活之日起1个月有效，请尽快使用。【中国移动】";
                             }
                             Packet packet = packetHelper.getCommitPacket1638(mobile, content);
-                            JSON.parseObject(ropService.execute(packet, mobile,actId), Result.class);
+                           /* JSON.parseObject(ropService.execute(packet, mobile,actId), Result.class);*/
                         }else{
                             object.put(Constant.MSG,"noDate");
                         }
@@ -241,7 +241,7 @@ public class FinanceServiceImpl implements FinanceService {
     public JSONObject getMyReward(String secToken,String channelId, String actId) {
         JSONObject object = new JSONObject();
         String mobile="";
-        if (!secToken.isEmpty()) {
+        if (secToken!=null||!secToken.isEmpty()) {
             mobile= commonService.getMobile(secToken,channelId);
         }
         List<ActivityUserHistory> historyList = financeMapper.selectHistory(mobile,actId,month.format(new Date()));

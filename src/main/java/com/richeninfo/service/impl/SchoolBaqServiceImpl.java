@@ -110,7 +110,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
         String mobile="";
         ActivityUserHistory userHistory = null;
         if(pro_config.size()>0){
-            if (!secToken.isEmpty()) {
+            if (secToken!=null||!secToken.isEmpty()) {
                 mobile= commonService.getMobile(secToken,channelId);
             }
             for (ActivityConfiguration config : pro_config) {
@@ -131,10 +131,10 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
         String mobile="";
         ActivityConfiguration config =null;
         ActivityUser user = new ActivityUser();
-        if (!secToken.isEmpty()) {
+        if (secToken!=null||!secToken.isEmpty()) {
             mobile= commonService.getMobile(secToken,channelId);
         }
-        if (!mobilePhone.isEmpty()) {//代领取
+        if (mobilePhone!=null||!mobilePhone.isEmpty()) {//代领取
             mobilePhone = rsaUtils.decryptByPriKey(mobilePhone).trim();
             user.setUserId(mobilePhone);
         }else{//自领取
@@ -148,7 +148,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
             ActivityUserHistory userHistory =schoolBaqMapper.selectActivityUserHistoryByUnlocked(user.getUserId(),unlocked);
             if(userHistory==null){
                 if(saveHistory(actId,channelId,user.getUserId(),config)){
-                    schoolBaqMapper. updateActivityUser(user);
+                    schoolBaqMapper.updateActivityUser(user);
                     object.put(Constant.MSG,Constant.SUCCESS);
                 }else{
                     object.put(Constant.MSG,Constant.FAILURE);
@@ -178,9 +178,9 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
         schoolBaqMapper.insertActivityUserHistory(newHistory);
         ActivityUserHistory oldHistory = schoolBaqMapper.selectActivityUserHistoryByUnlocked(mobile, newHistory.getUnlocked());
         Packet packet = packetHelper.CardVoucherIssued("CH5",activityConfiguration.getActivityId(),mobile);
-        String result = ropService.executes(packet,mobile,actId);
-        String code = JSONObject.parseObject(result).getString("code");
-       // String code="200";
+      /*  String result = ropService.executes(packet,mobile,actId);
+        String code = JSONObject.parseObject(result).getString("code");*/
+       String code="200";
         if(code.equals("200")){
             oldHistory.setStatus(Constant.STATUS_RECEIVED);
             result_status=true;
@@ -189,8 +189,8 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
             result_status=false;
         }
         oldHistory.setCode(JSONArray.fromObject(packet).toString());
-        oldHistory.setMessage(result);
-        //oldHistory.setMessage("");
+        //oldHistory.setMessage(result);
+        oldHistory.setMessage("测试数据～");
         schoolBaqMapper.updateHistory(oldHistory);
         return result_status;
     }

@@ -123,5 +123,11 @@ public interface CommonService {
      */
     JSONObject verityOa(String secToken, String channelId);
 
+    /**
+     * 保存用户分享记录
+     * @param activityShare
+     */
+    JSONObject insertActivityShare(@ModelAttribute ActivityShare activityShare);
+
 
 }
