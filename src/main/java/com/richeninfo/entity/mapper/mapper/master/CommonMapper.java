@@ -36,7 +36,6 @@ public interface CommonMapper {
     @Select("select * from activity_configuration where actId = #{actId} and module=#{module}")
     List<ActivityConfiguration> selectActivityConfigurationByActIdAndModule(@Param("actId") String actId, @Param("module") Integer module);//查询活动奖励配置
 
-
     @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked}")
     ActivityConfiguration selectActivityConfiguration(@Param("actId") String actId, @Param("unlocked") Integer unlocked);//查询当前奖励配置
 
@@ -81,5 +80,8 @@ public interface CommonMapper {
 
     @Insert("insert into activity_smsLog(address,userId,code,message,apiCode,appCode,actId,createTime)values(#{address},#{userId},#{code},#{message},#{apiCode},#{appCode},#{actId},now())")
     int insertSMSLog(OpenapiLog log);//添加用户业务办理记录
+
+    @Insert("insert into ${keyword}(actId,userId,secToken,channelId,createTime)values(#{log.actId},#{log.userId},#{log.secToken},#{log.channelId},now())")
+    int insertActivityShare(ActivityShare log, @Param("keyword") String keyword);//添加用户操作记录
 
 }

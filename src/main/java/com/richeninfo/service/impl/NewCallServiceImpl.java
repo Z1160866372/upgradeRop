@@ -93,7 +93,7 @@ public class NewCallServiceImpl implements NewCallService {
         String mobile="";
         ActivityUserHistory userHistory = null;
         if(pro_config.size()>0){
-            if (!secToken.isEmpty()) {
+            if (secToken!=null||!secToken.isEmpty()) {
                 mobile= commonService.getMobile(secToken,channelId);
             }
             for (ActivityConfiguration config : pro_config) {
@@ -117,7 +117,7 @@ public class NewCallServiceImpl implements NewCallService {
         JSONObject object = new JSONObject();
         String mobile="";
         ActivityConfiguration config =null;
-        if (!secToken.isEmpty()) {
+        if (secToken!=null||!secToken.isEmpty()) {
             mobile= commonService.getMobile(secToken,channelId);
         }
         if(!commonService.checkUserIsChinaMobile(mobile,actId)){

@@ -92,7 +92,7 @@ public class FinanceServiceImpl implements FinanceService {
         String mobile="";
         ActivityUserHistory userHistory = null;
         if(pro_config.size()>0){
-            if (!secToken.isEmpty()) {
+            if (secToken!=null||!secToken.isEmpty()) {
                 mobile= commonService.getMobile(secToken,channelId);
             }
             for (ActivityConfiguration config : pro_config) {
@@ -128,7 +128,7 @@ public class FinanceServiceImpl implements FinanceService {
     public JSONObject submit(String secToken, String actId, int unlocked, String channelId) throws Exception {
         JSONObject object = new JSONObject();
         String mobile="";
-        if (!secToken.isEmpty()) {
+        if (secToken!=null||!secToken.isEmpty()) {
             mobile= commonService.getMobile(secToken,channelId);
         }else{
             object.put(Constant.MSG,"login");
@@ -241,7 +241,7 @@ public class FinanceServiceImpl implements FinanceService {
     public JSONObject getMyReward(String secToken,String channelId, String actId) {
         JSONObject object = new JSONObject();
         String mobile="";
-        if (!secToken.isEmpty()) {
+        if (secToken!=null||!secToken.isEmpty()) {
             mobile= commonService.getMobile(secToken,channelId);
         }
         List<ActivityUserHistory> historyList = financeMapper.selectHistory(mobile,actId,month.format(new Date()));

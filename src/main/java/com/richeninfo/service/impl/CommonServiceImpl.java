@@ -62,46 +62,47 @@ public class CommonServiceImpl implements CommonService {
 
     /**
      * 二次短信下发
+     *
      * @param actId
      * @param unlocked
      * @return
      */
     @Override
-    public JSONObject sendSms5956(String userId,String actId, int unlocked) {
+    public JSONObject sendSms5956(String userId, String actId, int unlocked) {
         JSONObject resultObj = new JSONObject();
         Object tmpCode = redisUtil.get(userId);
-        if(!Objects.isNull(tmpCode)){
+        if (!Objects.isNull(tmpCode)) {
             resultObj.put(Constant.MSG, Constant.SEND_MSG_SEPARATION_NOT_ENOUGH);
             return resultObj;
         }
-        ActivityConfiguration configuration =commonMapper.selectActivitySomeConfiguration(actId,unlocked);
-        redisUtil.set(userId,  configuration.getActivityId(),60);
+        ActivityConfiguration configuration = commonMapper.selectActivitySomeConfiguration(actId, unlocked);
+        redisUtil.set(userId, configuration.getActivityId(), 60);
         try {
-            if(configuration!=null){
+            if (configuration != null) {
                 OpenapiLog log = new OpenapiLog();
                 log.setAddress(request.getLocalAddr() + ":" + request.getLocalPort());
                 log.setUserId(userId);
                 log.setActId(actId);
                 log.setApiCode("CRM5956");
                 int smsLog = commonMapper.insertSMSLog(log);
-                if(smsLog>0){
+                if (smsLog > 0) {
                     Packet packet = packetHelper.getCommitPacket5956(userId, configuration.getActivityId());
-                    Result result = JSON.parseObject(ropService.execute(packet, userId,actId), Result.class);
+                    Result result = JSON.parseObject(ropService.execute(packet, userId, actId), Result.class);
                     String code = result.getResponse().getErrorInfo().getCode();
                     String bizCode = result.getResponse().getRetInfo().getString("bizCode");
-                    if (Constant.SUCCESS_CODE.equals(code)&&Constant.SUCCESS_CODE.equals(bizCode)) {
+                    if (Constant.SUCCESS_CODE.equals(code) && Constant.SUCCESS_CODE.equals(bizCode)) {
                         resultObj.put(Constant.MSG, Constant.SUCCESS);
                     } else {
                         resultObj.put(Constant.MSG, Constant.ERROR);
                         resultObj.put(Constant.CODE, code);
                         return resultObj;
                     }
-                }else{
+                } else {
                     resultObj.put(Constant.MSG, Constant.ERROR);
                     return resultObj;
                 }
                 //resultObj.put(Constant.MSG, Constant.SUCCESS);
-            }else{
+            } else {
                 resultObj.put(Constant.MSG, "noConfig");
             }
         } catch (Exception e) {
@@ -110,6 +111,7 @@ public class CommonServiceImpl implements CommonService {
         }
         return resultObj;
     }
+
     /**
      * 短信发送
      *
@@ -117,18 +119,18 @@ public class CommonServiceImpl implements CommonService {
      * @return
      */
     @Override
-    public JSONObject sendMsgCode(String userId,String actId) {
+    public JSONObject sendMsgCode(String userId, String actId) {
         JSONObject resultObj = new JSONObject();
         String content = Constant.USER_SEND_MSG_TEXT;
         Object tmpCode = redisUtil.get(userId);
-        if(!Objects.isNull(tmpCode)){
+        if (!Objects.isNull(tmpCode)) {
             resultObj.put(Constant.MSG, Constant.SEND_MSG_SEPARATION_NOT_ENOUGH);
             return resultObj;
         }
         String smsCode = commonUtil.generateSmsCode();
         log.info("start sendMsg ==== {},content = {}", smsCode, content.replace("${code}", smsCode));
         content = content.replace("${code}", smsCode);
-        redisUtil.set(userId, smsCode,60);
+        redisUtil.set(userId, smsCode, 60);
         try {
             OpenapiLog log = new OpenapiLog();
             log.setAddress(request.getLocalAddr() + ":" + request.getLocalPort());
@@ -136,9 +138,9 @@ public class CommonServiceImpl implements CommonService {
             log.setActId(actId);
             log.setApiCode("CRM1638");
             int smsLog = commonMapper.insertSMSLog(log);
-            if(smsLog>0){
+            if (smsLog > 0) {
                 Packet packet = packetHelper.getCommitPacket1638(userId, content);
-                Result result = JSON.parseObject(ropService.execute(packet, userId,actId), Result.class);
+                Result result = JSON.parseObject(ropService.execute(packet, userId, actId), Result.class);
                 String code = result.getResponse().getErrorInfo().getCode();
                 if (Constant.SUCCESS_CODE.equals(code)) {
                     resultObj.put(Constant.MSG, Constant.SUCCESS);
@@ -148,7 +150,7 @@ public class CommonServiceImpl implements CommonService {
                     return resultObj;
                 }
                 resultObj.put(Constant.MSG, Constant.SUCCESS);
-            }else{
+            } else {
                 resultObj.put(Constant.MSG, Constant.ERROR);
                 return resultObj;
             }
@@ -169,7 +171,7 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public boolean valSendMsgCode(String userId, String smsCode) {
         Object tmpCode = redisUtil.get(userId);
-        if(!Objects.isNull(tmpCode)){
+        if (!Objects.isNull(tmpCode)) {
             return true;
         }
         return false;
@@ -182,13 +184,13 @@ public class CommonServiceImpl implements CommonService {
      * @return
      */
     @Override
-    public boolean checkUserIsChinaMobile(String userId,String actId) {
+    public boolean checkUserIsChinaMobile(String userId, String actId) {
         Packet packet = packetHelper.getCommitPacket2329(userId);
         try {
-            Result result = JSON.parseObject(ropService.execute(packet,userId,actId), Result.class);
+            Result result = JSON.parseObject(ropService.execute(packet, userId, actId), Result.class);
             // 1是中国移动  0不是
             Integer flag = Integer.parseInt(result.getResponse().getRetInfo().getString("flag"));
-            if(flag == 1){
+            if (flag == 1) {
                 return true;
             }
             //return true;
@@ -205,13 +207,13 @@ public class CommonServiceImpl implements CommonService {
      * @return 返回true 代表是 否则不是 如果是 则用户无法进行游戏
      */
     @Override
-    public boolean isWap20User(String mobile,String actId) {
+    public boolean isWap20User(String mobile, String actId) {
         boolean isWap20User = false;
         ActivityRoll wap = commonMapper.selectRoll(mobile, Constant.wap_figure);
         try {
             if (wap != null) {
                 Packet packet = packetHelper.getCommitPacket0808(mobile);
-                Result result = JSON.parseObject(ropService.execute(packet, mobile,actId), Result.class);
+                Result result = JSON.parseObject(ropService.execute(packet, mobile, actId), Result.class);
                 Integer res = result.getResponse().getRetInfo().getInteger("nFlag");
                 if (res == 1) {
                     log.info("接口调用结果 = {}", res);
@@ -279,27 +281,27 @@ public class CommonServiceImpl implements CommonService {
      * @return
      */
     @Override
-    public JSONObject verityActive(String secToken,String actId, boolean isTestWhite, String channelId) {
+    public JSONObject verityActive(String secToken, String actId, boolean isTestWhite, String channelId) {
         JSONObject object = new JSONObject();
         try {
             if (verityTime(actId).equals("underway")) {
                 ActivityList activity = commonMapper.selectActivityByActId(actId);
-                object.put(Constant.RulesText,activity.getRulesText());
+                object.put(Constant.RulesText, activity.getRulesText());
                 if (activity.getIsWhiteList() == 3) {
                     object.put(Constant.MSG, verityTime(actId));
                     return object;
                 }
-                if (secToken.isEmpty()) {
+                if (secToken == null || secToken.isEmpty()) {
                     object.put(Constant.MSG, "login");
                 } else {
-                    String mobilePhone =getMobile(secToken,channelId);
+                    String mobilePhone = getMobile(secToken, channelId);
                     if (isTestWhite) {
                         if (!isTestWhite(mobilePhone)) {
                             object.put(Constant.MSG, "noTestWhite");
                             return object;
                         }
                     }
-                    if (isWap20User(mobilePhone,actId)) {
+                    if (isWap20User(mobilePhone, actId)) {
                         object.put(Constant.MSG, "isWap20");
                         return object;
                     }
@@ -344,16 +346,16 @@ public class CommonServiceImpl implements CommonService {
     public String getMobile(String secToken, String channelId) {
         String mobile = "";
         try {
-            log.info("接收内容："+secToken);
-            if (!secToken.isEmpty()) {
-                if (channelId.equals("h5") || channelId.equals("weiting") || channelId.equals("xcx")||channelId.equals("shydhn")) {//中国移动上海｜微信渠道||小程序
+            log.info("接收内容：" + secToken);
+            if (secToken != null || !secToken.isEmpty()) {
+                if (channelId.equals("h5") || channelId.equals("weiting") || channelId.equals("xcx") || channelId.equals("shydhn")) {//中国移动上海｜微信渠道||小程序
                     String key = commonMapper.selectTheDayKey().getSecretKey();
                     String source[] = Des3SSL.decodeDC(secToken, key);
                     mobile = source[0];
                 } else if (channelId.equals("leadeon")) {//中国移动APP
-                    //String UID = URLDecoder.decode(secToken, "utf-8");
-                    String UID =secToken;
-                    log.info("解码后："+UID);
+                    String UID = URLDecoder.decode(secToken, "utf-8");
+                    // String UID =secToken;
+                    log.info("解码后：" + UID);
                     String TransactionId = "12003201205221624261113765372600";
                     WsMessage msg = RopServiceManager.sendPush(TransactionId, UID);
                     mobile = msg.getUserId();
@@ -374,21 +376,26 @@ public class CommonServiceImpl implements CommonService {
 
     /**
      * 保存用户操作记录
+     *
      * @param operationLog
      */
     @Override
     public JSONObject insertOperationLog(OperationLog operationLog) {
         JSONObject object = new JSONObject();
-        if (!operationLog.getSecToken().isEmpty()) {
-            operationLog.setUserId(getMobile(operationLog.getSecToken(), operationLog.getChannelId()));
-            operationLog.setAddress(IPUtil.getRealRequestIp(request));
-            operationLog.setName(commonMapper.selectActivityByActId(operationLog.getActId()).getName());
-            String keyword = "wt_"+operationLog.getActId()+"_operationLog";
-            commonMapper.insertOperationLog(operationLog,keyword);
-            object.put("operationLog",operationLog);
-            object.put(Constant.MSG,Constant.SUCCESS);
-        }else{
-            object.put(Constant.MSG,"noMobile");
+        try {
+            if (operationLog.getSecToken() != null || !operationLog.getSecToken().isEmpty()) {
+                operationLog.setUserId(getMobile(operationLog.getSecToken(), operationLog.getChannelId()));
+                operationLog.setAddress(IPUtil.getRealRequestIp(request));
+                operationLog.setName(commonMapper.selectActivityByActId(operationLog.getActId()).getName());
+                String keyword = "wt_" + operationLog.getActId() + "_operationLog";
+                commonMapper.insertOperationLog(operationLog, keyword);
+                object.put("operationLog", operationLog);
+                object.put(Constant.MSG, Constant.SUCCESS);
+            } else {
+                object.put(Constant.MSG, "noMobile");
+            }
+        } catch (Exception exception) {
+            object.put(Constant.MSG, "error");
         }
         return object;
     }
@@ -396,19 +403,38 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public JSONObject verityOa(String secToken, String channelId) {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
+        if (secToken == null || secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {
-            String mobilePhone =getMobile(secToken,channelId);
-           ActivityRoll activityRoll =  commonMapper.selectRoll(mobilePhone,3);
-           if(activityRoll!=null){
-               object.put(Constant.MSG, "isOa");
-           }else{
-               object.put(Constant.MSG, "noOa");
-           }
+            String mobilePhone = getMobile(secToken, channelId);
+            ActivityRoll activityRoll = commonMapper.selectRoll(mobilePhone, 3);
+            if (activityRoll != null) {
+                object.put(Constant.MSG, "isOa");
+            } else {
+                object.put(Constant.MSG, "noOa");
+            }
         }
         return object;
     }
 
+    @Override
+    public JSONObject insertActivityShare(ActivityShare activityShare) {
+        JSONObject object = new JSONObject();
+        try {
+            if (activityShare.getSecToken() != null || !activityShare.getSecToken().isEmpty()) {
+                activityShare.setUserId(getMobile(activityShare.getSecToken(), activityShare.getChannelId()));
+                String keyword = "wt_" + activityShare.getActId() + "_share";
+                commonMapper.insertActivityShare(activityShare, keyword);
+                object.put("activityShare", activityShare);
+                object.put(Constant.MSG, Constant.SUCCESS);
+            } else {
+                object.put(Constant.MSG, "noMobile");
+            }
+        } catch (Exception exception) {
+            object.put(Constant.MSG, "error");
+            exception.printStackTrace();
+        }
+        return object;
+    }
 
 }

@@ -256,6 +256,15 @@ public class CommonController {
         return this.commonService.insertOperationLog(log);
     }
 
-
+    /**
+     * 保存用户分享记录
+     * @return
+     */
+    @ApiOperation("保存用户分享记录")
+    @PostMapping(value = "/insertActivityShare")
+    public @ResponseBody
+    Object insertActivityShare(@ModelAttribute ActivityShare activityShare) {
+        return this.commonService.insertActivityShare(activityShare);
+    }
 
 }
