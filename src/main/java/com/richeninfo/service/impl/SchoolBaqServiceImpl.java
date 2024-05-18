@@ -178,20 +178,25 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
         schoolBaqMapper.insertActivityUserHistory(newHistory);
         ActivityUserHistory oldHistory = schoolBaqMapper.selectActivityUserHistoryByUnlocked(mobile, newHistory.getUnlocked());
         Packet packet = packetHelper.CardVoucherIssued("CH5",activityConfiguration.getActivityId(),mobile);
-      /*  String result = ropService.executes(packet,mobile,actId);
-        String code = JSONObject.parseObject(result).getString("code");*/
-       String code="200";
-        if(code.equals("200")){
-            oldHistory.setStatus(Constant.STATUS_RECEIVED);
-            result_status=true;
-        }else{
-            oldHistory.setStatus(Constant.STATUS_RECEIVED_ERROR);
+        try {
+            String result = ropService.executes(packet,mobile,actId);
+            String code = JSONObject.parseObject(result).getString("code");
+            //String code="200";
+            if(code.equals("200")){
+                oldHistory.setStatus(Constant.STATUS_RECEIVED);
+                result_status=true;
+            }else{
+                oldHistory.setStatus(Constant.STATUS_RECEIVED_ERROR);
+                result_status=false;
+            }
+            oldHistory.setCode(JSONArray.fromObject(packet).toString());
+            oldHistory.setMessage(result);
+            //oldHistory.setMessage("测试数据～");
+            schoolBaqMapper.updateHistory(oldHistory);
+        }catch (Exception exception){
             result_status=false;
+            exception.printStackTrace();
         }
-        oldHistory.setCode(JSONArray.fromObject(packet).toString());
-        //oldHistory.setMessage(result);
-        oldHistory.setMessage("测试数据～");
-        schoolBaqMapper.updateHistory(oldHistory);
         return result_status;
     }
 }
