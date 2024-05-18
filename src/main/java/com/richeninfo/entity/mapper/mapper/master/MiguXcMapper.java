@@ -42,7 +42,7 @@ public interface MiguXcMapper {
     * @param userId
     * @return
     */
-   @Select("select * from wt_miguxc_history where userId = #{userId} and unlocked=0 and status=3 ")
+   @Select("select * from wt_miguxc_history where userId = #{userId} and unlocked=0")
    ActivityUserHistory findCurYwHistory(@Param("userId") String userId);
 
    /**

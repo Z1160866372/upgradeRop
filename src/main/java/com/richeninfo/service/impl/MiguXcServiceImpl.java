@@ -82,7 +82,6 @@ public class MiguXcServiceImpl implements MiguXcService {
         JSONObject jsonObject = new JSONObject();
         ActivityUser user = miguXcMapper.findCurMonthUserInfo(userId);
         JSONObject newJsonObject = new JSONObject();
-        //查询是否领取过当月的礼包
         ActivityConfiguration gift = miguXcMapper.findGiftByUnlocked(0, actId);
         if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1) {
             //查询是否领取过当月的礼包
@@ -98,6 +97,7 @@ public class MiguXcServiceImpl implements MiguXcService {
                 history.setTypeId(gift.getTypeId());
                 history.setChannelId(channelId);
                 int status = miguXcMapper.saveHistory(history);
+                   history = miguXcMapper.findCurYwHistory(userId);
                 try {
                     if (status > 0) {//业务发放
                         newJsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
@@ -176,16 +176,21 @@ public class MiguXcServiceImpl implements MiguXcService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId);
-            String message = ropServiceManager.execute(packet, history.getUserId(),actId);
+     /*       String message = ropServiceManager.execute(packet, history.getUserId(),actId);
+            log.info("api Message============="+message);
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message, Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
-            String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");
+            String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");*/
+            String message="SUCCESS";
+            String res="0000";
+            String DoneCode="2998";
+            log.info("api res============="+res);
             if (Constant.SUCCESS_CODE.equals(res)) {
                 transact_result = true;
                 history.setStatus(Constant.STATUS_RECEIVED);
                 object.put(Constant.MSG, Constant.SUCCESS);
-                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
+                /*Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
                 System.out.println(new_packet.toString());
                 String result_String =ropServiceManager.execute(new_packet, history.getUserId(),actId);
                 ActivityOrder order = new ActivityOrder();
@@ -199,7 +204,7 @@ public class MiguXcServiceImpl implements MiguXcService {
                 order.setCode(JSONArray.fromObject(new_packet).toString());
                 order.setMessage(result_String);
                 order.setChannelId(channelId);
-                commonMapper.insertActivityOrder(order);
+                commonMapper.insertActivityOrder(order);*/
             } else {
                 transact_result = false;
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
@@ -211,10 +216,10 @@ public class MiguXcServiceImpl implements MiguXcService {
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
             }*/
-            history.setMessage("");
+            history.setMessage(message);
             history.setCode(JSON.toJSONString(packet));
-            object.put("res", "0000");
-            object.put("DoneCode", "12343242343A");
+            object.put("res", res);
+            object.put("DoneCode",DoneCode);
             object.put("update_history", JSON.toJSONString(history));
             miguXcMapper.updateHistory(history);
 

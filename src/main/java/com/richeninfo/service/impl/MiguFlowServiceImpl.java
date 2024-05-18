@@ -94,6 +94,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 history.setTypeId(gift.getTypeId());
                 history.setChannelId(channelId);
                 int status = miguFlowMapper.saveHistory(history);
+                history = miguFlowMapper.findCurYwHistory(userId);
                 try {
                     if (status > 0) {//业务发放
                         newJsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc,actId);
@@ -159,6 +160,21 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 transact_result = true;
                 history.setStatus(Constant.STATUS_RECEIVED);
                 object.put(Constant.MSG, Constant.SUCCESS);
+                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
+                System.out.println(new_packet.toString());
+                String result_String =ropServiceManager.execute(new_packet, history.getUserId(),actId);
+                ActivityOrder order = new ActivityOrder();
+                order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
+                String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();
+                order.setThirdTradeId(packetThirdTradeId);
+                order.setOrderItemId("JYRZ"+packetThirdTradeId.substring(packetThirdTradeId.length()-21));
+                order.setBossId(config.getActivityId());
+                order.setCommodityName(config.getName());
+                order.setUserId(history.getUserId());
+                order.setCode(JSONArray.fromObject(new_packet).toString());
+                order.setMessage(result_String);
+                order.setChannelId(channelId);
+                commonMapper.insertActivityOrder(order);
             } else {
                 transact_result = false;
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
@@ -170,27 +186,13 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
             }
-            history.setMessage("");
+            history.setMessage(message);
             history.setCode(JSON.toJSONString(packet));
-            object.put("res", "0000");
-            object.put("DoneCode", "12343242343A");
+            object.put("res", res);
+            object.put("DoneCode",DoneCode);
             object.put("update_history", JSON.toJSONString(history));
             miguFlowMapper.updateHistory(history);
-            Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
-             System.out.println(new_packet.toString());
-             String result_String =ropServiceManager.execute(new_packet, history.getUserId(),actId);
-            ActivityOrder order = new ActivityOrder();
-            order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
-            String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();
-            order.setThirdTradeId(packetThirdTradeId);
-            order.setOrderItemId("JYRZ"+packetThirdTradeId.substring(packetThirdTradeId.length()-21));
-            order.setBossId(config.getActivityId());
-            order.setCommodityName(config.getName());
-            order.setUserId(history.getUserId());
-            order.setCode(JSONArray.fromObject(new_packet).toString());
-             order.setMessage(result_String);
-            order.setChannelId(channelId);
-            commonMapper.insertActivityOrder(order);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

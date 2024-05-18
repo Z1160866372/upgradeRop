@@ -89,11 +89,11 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
                         new_user.setUserType(1);
                         break;
                     }else{
-                        new_user.setUserType(2);
+                        new_user.setUserType(0);
                     }
                 }
             }else{//既不是营业厅白名单成员 也不是黑名单成员 可直接领取
-                new_user.setUserType(0);
+                new_user.setUserType(2);
             }
             schoolBaqMapper.insertUser(new_user);
             user = new_user;
@@ -176,7 +176,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
         newHistory.setValue(activityConfiguration.getValue());
         newHistory.setActId(actId);
         schoolBaqMapper.insertActivityUserHistory(newHistory);
-        ActivityUserHistory oldHistory = schoolBaqMapper.selectActivityUserHistoryByUnlocked(mobile, newHistory.getUnlocked());
+        ActivityUserHistory oldHistory = schoolBaqMapper.selectActivityUserHistoryByUnlocked(mobile, activityConfiguration.getUnlocked());
         Packet packet = packetHelper.CardVoucherIssued("CH5",activityConfiguration.getActivityId(),mobile);
         try {
             String result = ropService.executes(packet,mobile,actId);

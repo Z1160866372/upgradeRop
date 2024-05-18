@@ -16,6 +16,7 @@ import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.ExteroceptiveService;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,7 +55,7 @@ public class ExteroceptiveController {
     public @ResponseBody
     JSONObject initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
+        if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
         } else {
             System.out.println("客户端传输："+secToken);
@@ -83,7 +84,7 @@ public class ExteroceptiveController {
     @ResponseBody
     public JSONObject toanswer(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
+        if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
         } else {
             String mobile = commonService.getMobile(secToken, channelId);
@@ -109,7 +110,7 @@ public class ExteroceptiveController {
     @ResponseBody
     public JSONObject answer(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, String answer, String answerTitle) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
+        if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
         } else {
             String mobile = commonService.getMobile(secToken, channelId);
@@ -135,7 +136,7 @@ public class ExteroceptiveController {
     @ResponseBody
     public JSONObject play(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, String paopao) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
+        if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
         } else {
             String mobile = commonService.getMobile(secToken, channelId);
@@ -161,7 +162,7 @@ public class ExteroceptiveController {
     @ResponseBody
     public JSONObject tochoujiang(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
+        if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
         } else {
             String mobile = commonService.getMobile(secToken, channelId);
@@ -187,7 +188,7 @@ public class ExteroceptiveController {
     @ResponseBody
     public JSONObject choujiang(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
+        if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
         } else {
             String mobile = commonService.getMobile(secToken, channelId);
@@ -213,7 +214,7 @@ public class ExteroceptiveController {
     @ResponseBody
     public JSONObject todetail(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
+        if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
         } else {
             String mobile = commonService.getMobile(secToken, channelId);
@@ -239,7 +240,7 @@ public class ExteroceptiveController {
     @ResponseBody
     public JSONObject actRecord(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, String caozuo, int type) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
+        if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
         } else {
             String mobile = commonService.getMobile(secToken, channelId);
@@ -266,7 +267,7 @@ public class ExteroceptiveController {
     @ResponseBody
     public JSONObject received(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
+        if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
         } else {
             String mobile = commonService.getMobile(secToken, channelId);

@@ -19,6 +19,7 @@ import com.richeninfo.service.CommonService;
 import com.richeninfo.service.MigumonthService;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -48,6 +49,9 @@ public class MigumonthServiceImpl implements MigumonthService {
 
     @Resource
     CommonMapper commonMapper;
+
+    @Resource
+    private JmsMessagingTemplate jmsMessagingTemplate;
 
     @Override
     public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
@@ -87,6 +91,9 @@ public class MigumonthServiceImpl implements MigumonthService {
                     if (status > 0) {//异步mq发放礼包
                         migumonthMapper.updateUserAward(userId);
                         jsonObject.put("msg", "success");
+                        String mqMsg = commonService.issueReward(gift, history);
+                        log.info("4147请求信息：" + mqMsg);
+                        jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

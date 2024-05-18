@@ -3,7 +3,8 @@
  * Unauthorized use, copying, modification, or distribution of this software
  * is strictly prohibited without the prior written consent of Richeninfo.
  * https://www.richeninfo.com/
- */
+ *//*
+
 package com.richeninfo.config;
 
 import org.springframework.context.annotation.Bean;
@@ -23,26 +24,32 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
+*/
 /**
  * @Author : zhouxiaohu
  * @create 2022/9/22 14:18
- */
+ *//*
+
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
-    /**
+    */
+/**
      * 接口文档地址和测试调用试例
      * swagger2原生UI：http://localhost:8080/swagger-ui.html
      * swagger2优化版UI：http://localhost:8080/doc.html
      * 【IP和端口按照实际情况修改】
-     */
+     *//*
+
     @Bean
     public Docket createRestApi() {
         //添加head参数start
-      /*  List<Parameter> params = new ArrayList();
+      */
+/*  List<Parameter> params = new ArrayList();
         ParameterBuilder tokenParam = new ParameterBuilder();
         tokenParam.name("x-auth-token").description("用户令牌").modelRef(new ModelRef("string")).parameterType("header").required(false).build();
-        params.add(tokenParam.build());*/
+        params.add(tokenParam.build());*//*
+
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
@@ -100,3 +107,4 @@ public class SwaggerConfig {
                 .build();
     }
 }
+*/

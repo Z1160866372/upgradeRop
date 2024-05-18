@@ -13,6 +13,7 @@ import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.FortuneService;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,7 +49,7 @@ public class FortuneController {
     public @ResponseBody
     JSONObject initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
+        if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
         } else {
             String mobile = commonService.getMobile(secToken, channelId);
@@ -75,7 +76,7 @@ public class FortuneController {
     public @ResponseBody
     JSONObject getActGift(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
+        if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
         } else {
             String mobile = commonService.getMobile(secToken, channelId);
@@ -102,7 +103,7 @@ public class FortuneController {
     @ResponseBody
     public JSONObject actRecord(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, String caozuo) throws IOException {
         JSONObject object = new JSONObject();
-        if (secToken.isEmpty()) {
+        if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
         } else {
             String userId = commonService.getMobile(secToken, channelId);
