@@ -175,15 +175,12 @@ public class MiguXcServiceImpl implements MiguXcService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId);
-           String message = ropServiceManager.execute(packet, history.getUserId(),actId);
+         /*  String message = ropServiceManager.execute(packet, history.getUserId(),actId);
             log.info("api Message============="+message);
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message, Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
             String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");
-            /*String message="SUCCESS";
-            String res="0000";
-            String DoneCode="2998";*/
             log.info("api res============="+res);
             if (Constant.SUCCESS_CODE.equals(res)) {
                 transact_result = true;
@@ -209,17 +206,19 @@ public class MiguXcServiceImpl implements MiguXcService {
                 transact_result = false;
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
-            }
-           /* if (true) {
+            }*/
+           if (true) {
                 miguXcMapper.updateUserAward(history.getUserId());
                 transact_result = false;
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
-            }*/
-            history.setMessage(message);
-            history.setCode(JSONObject.toJSONString(packet));
+               object.put("res", "0000");
+               object.put("DoneCode", "9999");
+            }
+           /* history.setMessage(message);
             object.put("res", res);
-            object.put("DoneCode",DoneCode);
+            object.put("DoneCode",DoneCode);*/
+            history.setCode(JSONObject.toJSONString(packet));
             object.put("update_history",JSONObject.toJSONString(history));
             miguXcMapper.updateHistory(history);
 

@@ -105,7 +105,6 @@ public class CommonController {
         map.put("validateCode", objs[0]);
         jsonRESTResult.put("map", map);
         return jsonRESTResult;
-
     }
 
     @PostMapping(value = "/newSendMsg")
