@@ -138,7 +138,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
         if (!StringUtils.isEmpty(mobilePhone)) {//代领取
             mobilePhone = rsaUtils.decryptByPriKey(mobilePhone).trim();
             if(!commonService.checkUserIsChinaMobile(mobilePhone,actId)){
-                object.put(Constant.MSG,"noShyd");
+                object.put(Constant.MSG,"noShYd");
                 return object;
             }
             user.setUserId(mobilePhone);
