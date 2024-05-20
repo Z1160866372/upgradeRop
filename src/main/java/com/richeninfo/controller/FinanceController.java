@@ -85,7 +85,7 @@ public class FinanceController {
     @ApiOperation("获取奖励列表")
     @PostMapping("/getConf")
     public @ResponseBody
-    void getConf(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws IOException {
+    void getConf(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws Exception {
         CommonController.getActId(request, financeService.getConfiguration(secToken, actId, channelId), resp, secToken);
     }
 
