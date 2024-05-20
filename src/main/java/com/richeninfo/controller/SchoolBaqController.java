@@ -56,7 +56,7 @@ public class SchoolBaqController {
     @ApiOperation(value = "初始化用户", httpMethod = "POST")
     @PostMapping(value = "/initialize")
     public @ResponseBody
-    void initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
+    void initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws IOException {
         ActivityUser user = new ActivityUser();
         JSONObject object = new JSONObject();
         secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
@@ -72,6 +72,7 @@ public class SchoolBaqController {
                 user.setSecToken(secToken);
                 user.setChannelId(channelId);
                 user.setActId(actId);
+                user.setDitch(ditch);
                 user = schoolBaqService.insertUser(user);
                 object.put(Constant.MSG, Constant.SUCCESS);
                 object.put("user", user);
@@ -92,9 +93,9 @@ public class SchoolBaqController {
     @PostMapping("/draw")
     public @ResponseBody
     JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked
-    ,@ApiParam(name = "mobilePhone", value = "mobilePhone", required = true) String mobilePhone) throws Exception {
-        CommonController.getParameter(request, actId, channelId,unlocked);
-        return this.schoolBaqService.submit(secToken, actId, unlocked, channelId,mobilePhone);
+    ,@ApiParam(name = "mobilePhone", value = "mobilePhone", required = true) String mobilePhone, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
+        CommonController.getParameter(request, actId, channelId,unlocked,ditch);
+        return this.schoolBaqService.submit(secToken, actId, unlocked, channelId,mobilePhone,ditch);
     }
 
 }

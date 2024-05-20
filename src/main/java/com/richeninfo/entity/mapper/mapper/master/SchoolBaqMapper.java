@@ -29,7 +29,7 @@ public interface SchoolBaqMapper {
     @Select("select * from wt_schoolBaq_roster where userId=#{userId}")
     List<ActivityRoster> selectRoster(@Param("userId") String userId);//查询用户名单列表
 
-    @Insert("insert into wt_schoolBaq_user(userId,channelId,secToken,createDate,createTime,actId,userType)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{userType})")
+    @Insert("insert into wt_schoolBaq_user(userId,channelId,secToken,createDate,createTime,actId,userType,ditch)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{userType},#{ditch})")
     int insertUser(ActivityUser user);//初始化用户
 
     @Select("select * from wt_schoolBaq_history where userId = #{userId} and unlocked =#{unlocked}")
@@ -37,7 +37,7 @@ public interface SchoolBaqMapper {
     @Select("select * from wt_schoolBaq_history where userId = #{userId} and unlocked =#{unlocked} and status=3")
     ActivityUserHistory selectActivityUserHistoryByUnlockedAnStatus(@Param("userId")String userId, @Param("unlocked")int unlocked);
 
-    @Insert("insert into wt_schoolBaq_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId})")
+    @Insert("insert into wt_schoolBaq_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
     @Insert("insert into wt_schoolBaq_operationLog(actId,name,address,userId,instructions,createTime)values(#{actId},#{name},#{address},#{userId},#{instructions},now())")

@@ -49,6 +49,6 @@ public interface SchoolBaqService {
      * @return
      * @throws Exception
      */
-    JSONObject submit(String secToken, String actId, int unlocked, String channelId,String mobilePhone) throws Exception;
+    JSONObject submit(String secToken, String actId, int unlocked, String channelId,String mobilePhone,String ditch) throws Exception;
 
 }

@@ -238,10 +238,11 @@ public class CommonController {
         resp.getWriter().write(JSON.toJSONString(config));
     }
 
-    static void getParameter(HttpServletRequest request,String actId,String channelId,int unlocked){
+    static void getParameter(HttpServletRequest request,String actId,String channelId,int unlocked,String ditch){
         actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
         channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
         unlocked = request.getParameter("unlocked") == null ? 0 : Integer.parseInt(request.getParameter("unlocked"));
+        actId = request.getParameter("ditch") == null ? "" : request.getParameter("ditch");
     }
 
     /**

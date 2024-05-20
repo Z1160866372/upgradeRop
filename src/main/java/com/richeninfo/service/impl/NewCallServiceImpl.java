@@ -79,6 +79,7 @@ public class NewCallServiceImpl implements NewCallService {
             new_user.setUserId(user.getUserId());
             new_user.setActId(user.getActId());
             new_user.setChannelId(user.getChannelId());
+            new_user.setDitch(user.getDitch());
             newCallMapper.insertUser(new_user);
             user = new_user;
         } else {
@@ -114,7 +115,7 @@ public class NewCallServiceImpl implements NewCallService {
     }
 
     @Override
-    public JSONObject submit(String secToken, String actId, int unlocked, String channelId,String wtAcId, String wtAc,String randCode) throws Exception {
+    public JSONObject submit(String secToken, String actId, int unlocked, String channelId,String wtAcId, String wtAc,String randCode,String ditch) throws Exception {
         JSONObject object = new JSONObject();
         String mobile="";
         ActivityConfiguration config =null;
@@ -131,18 +132,18 @@ public class NewCallServiceImpl implements NewCallService {
                 object.put(Constant.MSG,"ybl");
             }else{
                 config = commonMapper.selectActivityConfiguration(actId,unlocked);
-                object = transact3066Business(userHistory,config,randCode,channelId,wtAcId,wtAc);
+                object = transact3066Business(userHistory,config,randCode,channelId,wtAcId,wtAc,ditch);
             }
         }else{
             config = commonMapper.selectActivityConfiguration(actId,unlocked);
-            saveHistory(actId,channelId,mobile,config);
+            saveHistory(actId,channelId,mobile,config,ditch);
             userHistory  =newCallMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
-            object = transact3066Business(userHistory,config,randCode,channelId,wtAcId,wtAc);
+            object = transact3066Business(userHistory,config,randCode,channelId,wtAcId,wtAc,ditch);
         }
         return object;
     }
 
-    public JSONObject transact3066Business(ActivityUserHistory history,ActivityConfiguration config,String randCode,String channelId,String wtAcId, String wtAc) {
+    public JSONObject transact3066Business(ActivityUserHistory history,ActivityConfiguration config,String randCode,String channelId,String wtAcId, String wtAc,String ditch) {
         JSONObject object = new JSONObject();
         boolean transact_result = false;
         Result result = new Result();
@@ -163,8 +164,8 @@ public class NewCallServiceImpl implements NewCallService {
                 vasOfferInfo.setOperType("0");
                 offerList.add(vasOfferInfo);
             }
-            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId);
-            /*String message = ropService.execute(packet,history.getUserId(),history.getActId());
+            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
+           /* String message = ropService.execute(packet,history.getUserId(),history.getActId());
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message,Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
@@ -215,7 +216,7 @@ public class NewCallServiceImpl implements NewCallService {
         return object;
     }
 
-    private void saveHistory(String actId, String channelId, String mobile, ActivityConfiguration activityConfiguration) {
+    private void saveHistory(String actId, String channelId, String mobile, ActivityConfiguration activityConfiguration,String ditch) {
         ActivityUserHistory newHistory = new ActivityUserHistory();
         newHistory.setUserId(mobile);
         newHistory.setChannelId(channelId);
@@ -226,6 +227,7 @@ public class NewCallServiceImpl implements NewCallService {
         newHistory.setCreateTime(df.format(new Date()));
         newHistory.setValue(activityConfiguration.getValue());
         newHistory.setActId(actId);
+        newHistory.setDitch(ditch);
         newCallMapper.insertActivityUserHistory(newHistory);
     }
 

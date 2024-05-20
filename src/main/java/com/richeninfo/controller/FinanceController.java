@@ -57,7 +57,7 @@ public class FinanceController {
     @ApiOperation(value = "初始化用户", httpMethod = "POST")
     @PostMapping(value = "/initialize")
     public @ResponseBody
-    void initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
+    void initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws IOException {
         ActivityUser user = new ActivityUser();
         JSONObject object = new JSONObject();
         secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
@@ -74,6 +74,7 @@ public class FinanceController {
                 user.setChannelId(channelId);
                 user.setActId(actId);
                 user.setCreateDate(month.format(new Date()));
+                user.setDitch(ditch);
                 user = financeService.insertUser(user);
                 object.put(Constant.MSG, Constant.SUCCESS);
                 object.put("user", user);
@@ -93,9 +94,9 @@ public class FinanceController {
     @ApiOperation("用户点击领取")
     @PostMapping("/draw")
     public @ResponseBody
-    JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked) throws Exception {
-        CommonController.getParameter(request, actId, channelId,unlocked);
-        return this.financeService.submit(secToken, actId, unlocked, channelId);
+    JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
+        CommonController.getParameter(request, actId, channelId,unlocked,ditch);
+        return this.financeService.submit(secToken, actId, unlocked, channelId,ditch);
     }
 
     /**

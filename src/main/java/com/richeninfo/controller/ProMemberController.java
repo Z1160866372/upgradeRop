@@ -58,8 +58,8 @@ ProMemberController {
     @ApiOperation("用户点击领取")
     @PostMapping("/draw")
     public @ResponseBody
-    JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked) {
-        CommonController.getParameter(request, actId, channelId,unlocked);
+    JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) {
+        CommonController.getParameter(request, actId, channelId,unlocked,ditch);
         return this.proMemberService.submit(secToken, actId, unlocked, session, channelId);
     }
 

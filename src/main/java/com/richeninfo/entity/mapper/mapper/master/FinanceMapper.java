@@ -26,7 +26,7 @@ public interface FinanceMapper {
     @Select("select * from wt_finance_user where userId = #{userId} and actId =#{actId} and createDate=#{createDate}")
     ActivityUser selectUserByCreateDate(@Param("userId") String userId, @Param("actId") String actId, @Param("createDate") String createDate);//查找用户记录
 
-    @Insert("insert into wt_finance_user(userId,channelId,secToken,createDate,createTime,actId)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId})")
+    @Insert("insert into wt_finance_user(userId,channelId,secToken,createDate,createTime,actId,ditch)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{ditch})")
     int insertUser(ActivityUser user);//初始化用户
 
     @Select("select * from wt_finance_history where userId = #{userId} and unlocked =#{unlocked} and createDate =#{createDate}")
@@ -44,7 +44,7 @@ public interface FinanceMapper {
     @Update("update activity_configuration set Amount= Amount-1 where id = #{id} and Amount > 0")
     int updateActivityConfigurationAmount(int id);
 
-    @Insert("insert into wt_finance_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,imgSrc)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{imgSrc})")
+    @Insert("insert into wt_finance_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,imgSrc,ditch)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{imgSrc},#{ditch})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
     @Select("select * from activity_card where actId = #{actId} and unlocked =#{unlocked} and createDate =#{createDate} and status = 0")

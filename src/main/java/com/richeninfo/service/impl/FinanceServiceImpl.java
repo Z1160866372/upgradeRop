@@ -81,6 +81,7 @@ public class FinanceServiceImpl implements FinanceService {
             new_user.setActId(user.getActId());
             new_user.setChannelId(user.getChannelId());
             new_user.setCreateDate(month.format(new Date()));
+            new_user.setDitch(user.getDitch());
             financeMapper.insertUser(new_user);
             user = new_user;
         } else {
@@ -130,7 +131,7 @@ public class FinanceServiceImpl implements FinanceService {
     }
 
     @Override
-    public JSONObject submit(String secToken, String actId, int unlocked, String channelId) throws Exception {
+    public JSONObject submit(String secToken, String actId, int unlocked, String channelId,String ditch) throws Exception {
         JSONObject object = new JSONObject();
         String mobile="";
         if (!StringUtils.isEmpty(secToken)) {
@@ -152,11 +153,11 @@ public class FinanceServiceImpl implements FinanceService {
                 if(activityConfiguration.getAmount()>0){
                     int mash = financeMapper.updateActivityConfigurationAmount(activityConfiguration.getId());
                     if(mash>0){
-                        saveHistory(actId, channelId, object, mobile, activityConfiguration);
+                        saveHistory(actId, channelId, object, mobile, activityConfiguration,ditch);
                     }else{
                         activityConfiguration =  financeMapper.selectActivityConfigurationByUnlocked(actId,0);
                         if(activityConfiguration.getAmount()>0){
-                            saveHistory(actId, channelId, object, mobile, activityConfiguration);
+                            saveHistory(actId, channelId, object, mobile, activityConfiguration,ditch);
                         }else{//您来晚了
                             object.put(Constant.MSG,"noDate");
                         }
@@ -164,7 +165,7 @@ public class FinanceServiceImpl implements FinanceService {
                 }else{
                     activityConfiguration =  financeMapper.selectActivityConfigurationByUnlocked(actId,0);
                     if(activityConfiguration.getAmount()>0){
-                        saveHistory(actId, channelId, object, mobile, activityConfiguration);
+                        saveHistory(actId, channelId, object, mobile, activityConfiguration,ditch);
                     }else{//您来晚了
                         object.put(Constant.MSG,"noDate");
                     }
@@ -185,7 +186,7 @@ public class FinanceServiceImpl implements FinanceService {
                         log.info("result=="+result);
                         if(result>0){
                             activityConfiguration.setValue(activityCardList.getCouponCode());
-                            saveHistory(actId, channelId, object, mobile, activityConfiguration);
+                            saveHistory(actId, channelId, object, mobile, activityConfiguration,ditch);
                             String content="";
                             if(activityConfiguration.getUnlocked()==7){
                                 content="尊敬的客户，您好！恭喜您在“移动云盘周三财运日”活动中获赠标准小车洗车券一张，券码为"+activityCardList.getCouponCode()+"，请您尽快登陆车点点微信公众号或APP-“个人中心”-“兑换码”激活使用，激活后券码有效期为激活之日起1个月有效，请尽快使用。【中国移动】";
@@ -211,7 +212,7 @@ public class FinanceServiceImpl implements FinanceService {
             ActivityUserHistory userHistory=financeMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked,month.format(new Date()));
             if(userHistory==null) {
                 ActivityConfiguration activityConfiguration = financeMapper.selectActivityConfigurationByUnlocked(actId, unlocked);
-                saveHistory(actId, channelId, object, mobile, activityConfiguration);
+                saveHistory(actId, channelId, object, mobile, activityConfiguration,ditch);
             }else{
                 object.put(Constant.MSG,"ylq");
             }
@@ -219,7 +220,7 @@ public class FinanceServiceImpl implements FinanceService {
         return object;
     }
 
-    private void saveHistory(String actId, String channelId, JSONObject object, String mobile, ActivityConfiguration activityConfiguration) {
+    private void saveHistory(String actId, String channelId, JSONObject object, String mobile, ActivityConfiguration activityConfiguration,String ditch) {
         ActivityUserHistory newHistory = new ActivityUserHistory();
         newHistory.setUserId(mobile);
         newHistory.setChannelId(channelId);
@@ -230,6 +231,7 @@ public class FinanceServiceImpl implements FinanceService {
         newHistory.setCreateTime(df.format(new Date()));
         newHistory.setValue(activityConfiguration.getValue());
         newHistory.setActId(actId);
+        newHistory.setDitch(ditch);
         newHistory.setImgSrc(activityConfiguration.getImgSrc());
         financeMapper.insertActivityUserHistory(newHistory);
         if(activityConfiguration.getUnlocked()==0||activityConfiguration.getUnlocked()==5){

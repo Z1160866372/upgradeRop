@@ -56,7 +56,8 @@ public class NewCallController {
     @ApiOperation(value = "初始化用户", httpMethod = "POST")
     @PostMapping(value = "/initialize")
     public @ResponseBody
-    void initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
+    void initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId
+            , @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws IOException {
         ActivityUser user = new ActivityUser();
         JSONObject object = new JSONObject();
         secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
@@ -72,6 +73,7 @@ public class NewCallController {
                 user.setSecToken(secToken);
                 user.setChannelId(channelId);
                 user.setActId(actId);
+                user.setDitch(ditch);
                 user.setCreateDate(month.format(new Date()));
                 user = newCallService.insertUser(user);
                 object.put(Constant.MSG, Constant.SUCCESS);
@@ -93,9 +95,9 @@ public class NewCallController {
     @PostMapping("/draw")
     public @ResponseBody
     JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked
-    ,@ApiParam(name = "wtAcId", value = "wtAcId", required = true) String wtAcId, @ApiParam(name = "wtAc", value = "wtAc", required = true) String wtAc, @ApiParam(name = "randCode", value = "二次短信验证码", required = true) String randCode) throws Exception {
-        CommonController.getParameter(request, actId, channelId,unlocked);
-        return this.newCallService.submit(secToken, actId, unlocked, channelId,wtAcId,wtAc,randCode);
+    ,@ApiParam(name = "wtAcId", value = "wtAcId", required = true) String wtAcId, @ApiParam(name = "wtAc", value = "wtAc", required = true) String wtAc, @ApiParam(name = "randCode", value = "二次短信验证码", required = true) String randCode, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
+        CommonController.getParameter(request, actId, channelId,unlocked,ditch);
+        return this.newCallService.submit(secToken, actId, unlocked, channelId,wtAcId,wtAc,randCode,ditch);
     }
 
 }

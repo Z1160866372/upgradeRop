@@ -83,6 +83,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
             new_user.setActId(user.getActId());
             new_user.setChannelId(user.getChannelId());
             new_user.setCreateDate(month.format(new Date()));
+            new_user.setDitch(user.getDitch());
             List<ActivityRoster> selectRoster = schoolBaqMapper.selectRoster(user.getUserId());
             if(!CollectionUtils.isEmpty(selectRoster)){
                 for (ActivityRoster roster:selectRoster) {
@@ -127,7 +128,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
     }
 
     @Override
-    public JSONObject submit(String secToken, String actId, int unlocked, String channelId,String mobilePhone) throws Exception {
+    public JSONObject submit(String secToken, String actId, int unlocked, String channelId,String mobilePhone,String ditch) throws Exception {
         JSONObject object = new JSONObject();
         String mobile="";
         ActivityConfiguration config =null;
@@ -152,7 +153,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
             config = commonMapper.selectActivityConfiguration(actId,unlocked);
             ActivityUserHistory userHistory =schoolBaqMapper.selectActivityUserHistoryByUnlockedAnStatus(user.getUserId(),unlocked);
             if(userHistory==null){
-                if(saveHistory(actId,channelId,user.getUserId(),config)){
+                if(saveHistory(actId,channelId,user.getUserId(),config,ditch)){
                     schoolBaqMapper.updateActivityUser(user);
                     object.put(Constant.MSG,Constant.SUCCESS);
                 }else{
@@ -168,7 +169,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
     }
 
 
-    private boolean saveHistory(String actId, String channelId, String mobile, ActivityConfiguration activityConfiguration) throws Exception {
+    private boolean saveHistory(String actId, String channelId, String mobile, ActivityConfiguration activityConfiguration,String ditch) throws Exception {
         boolean result_status=false;
         ActivityUserHistory oldHistory = schoolBaqMapper.selectActivityUserHistoryByUnlocked(mobile, activityConfiguration.getUnlocked());
         if(oldHistory==null){
@@ -182,6 +183,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
             newHistory.setCreateTime(df.format(new Date()));
             newHistory.setValue(activityConfiguration.getValue());
             newHistory.setActId(actId);
+            newHistory.setDitch(ditch);
             schoolBaqMapper.insertActivityUserHistory(newHistory);
             oldHistory = schoolBaqMapper.selectActivityUserHistoryByUnlocked(mobile, activityConfiguration.getUnlocked());
         }
