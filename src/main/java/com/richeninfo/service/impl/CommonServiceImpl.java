@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 /**
  * @Author : zhouxiaohu
  * @create 2022/11/17 13:22
@@ -51,6 +52,8 @@ public class CommonServiceImpl implements CommonService {
     private CommonUtil commonUtil;
     @Resource
     private RedisUtil redisUtil;
+    @Resource
+    private RSAUtils rsaUtils;
     @Resource
     private HttpServletRequest request;
 
@@ -294,7 +297,12 @@ public class CommonServiceImpl implements CommonService {
                 if (StringUtils.isEmpty(secToken)) {
                     object.put(Constant.MSG, "login");
                 } else {
-                    String mobilePhone = getMobile(secToken, channelId);
+                    String mobilePhone ="";
+                    if(actId.equals("finance")){
+                        mobilePhone = rsaUtils.decryptByPriKey(secToken).trim();
+                    }else{
+                        mobilePhone = getMobile(secToken, channelId);
+                    }
                     if (isTestWhite) {
                         if (!isTestWhite(mobilePhone)) {
                             object.put(Constant.MSG, "noTestWhite");
@@ -312,6 +320,7 @@ public class CommonServiceImpl implements CommonService {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            object.put(Constant.MSG, "noError");
         }
         return object;
     }
@@ -384,7 +393,11 @@ public class CommonServiceImpl implements CommonService {
         JSONObject object = new JSONObject();
         try {
             if (!StringUtils.isEmpty(operationLog.getSecToken())) {
-                operationLog.setUserId(getMobile(operationLog.getSecToken(), operationLog.getChannelId()));
+                if(operationLog.getActId().equals("finance")){
+                    operationLog.setUserId(rsaUtils.decryptByPriKey(operationLog.getSecToken()).trim());
+                }else{
+                    operationLog.setUserId(getMobile(operationLog.getSecToken(), operationLog.getChannelId()));
+                }
                 operationLog.setAddress(IPUtil.getRealRequestIp(request));
                 operationLog.setName(commonMapper.selectActivityByActId(operationLog.getActId()).getName());
                 String keyword = "wt_" + operationLog.getActId() + "_operationLog";
