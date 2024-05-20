@@ -44,7 +44,7 @@ public interface FinanceService {
      * @param actId
      * @return
      */
-    List<ActivityConfiguration> getConfiguration(String secToken, String actId, String channelId);
+    List<ActivityConfiguration> getConfiguration(String secToken, String actId, String channelId) throws Exception;
 
     /**
      * 用户点击领取

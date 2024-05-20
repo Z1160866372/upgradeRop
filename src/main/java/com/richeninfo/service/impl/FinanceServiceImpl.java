@@ -20,6 +20,7 @@ import com.richeninfo.service.CommonService;
 import com.richeninfo.service.FinanceService;
 import com.richeninfo.util.IPUtil;
 import com.richeninfo.util.PacketHelper;
+import com.richeninfo.util.RSAUtils;
 import com.richeninfo.util.RopServiceManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -57,6 +58,8 @@ public class FinanceServiceImpl implements FinanceService {
     @Resource
     private CommonService commonService;
     @Resource
+    private RSAUtils rsaUtils;
+    @Resource
     private HttpServletRequest request;
     SimpleDateFormat month = new SimpleDateFormat("yyyy-MM");
     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -88,13 +91,14 @@ public class FinanceServiceImpl implements FinanceService {
     }
 
     @Override
-    public List<ActivityConfiguration>  getConfiguration(String secToken, String actId, String channelId) {
+    public List<ActivityConfiguration>  getConfiguration(String secToken, String actId, String channelId) throws Exception {
         List<ActivityConfiguration> pro_config = commonMapper.selectActivityConfigurationByActId(actId);
         String mobile="";
         ActivityUserHistory userHistory = null;
         if(pro_config.size()>0){
             if (!StringUtils.isEmpty(secToken)) {
-                mobile= commonService.getMobile(secToken,channelId);
+                mobile = rsaUtils.decryptByPriKey(secToken).trim();
+                //mobile= commonService.getMobile(secToken,channelId);
             }
             for (ActivityConfiguration config : pro_config) {
                 if(config.getTypeId()==0||config.getTypeId()==1){
@@ -130,7 +134,13 @@ public class FinanceServiceImpl implements FinanceService {
         JSONObject object = new JSONObject();
         String mobile="";
         if (!StringUtils.isEmpty(secToken)) {
-            mobile= commonService.getMobile(secToken,channelId);
+            try {
+                mobile = rsaUtils.decryptByPriKey(secToken).trim();
+                //mobile= commonService.getMobile(secToken,channelId);
+            }catch (Exception e){
+                object.put(Constant.MSG,"loginError");
+                return object;
+            }
         }else{
             object.put(Constant.MSG,"login");
             return object;
@@ -245,7 +255,12 @@ public class FinanceServiceImpl implements FinanceService {
         JSONObject object = new JSONObject();
         String mobile="";
         if (!StringUtils.isEmpty(secToken)) {
-            mobile= commonService.getMobile(secToken,channelId);
+            try {
+                mobile = rsaUtils.decryptByPriKey(secToken).trim();
+                //mobile= commonService.getMobile(secToken,channelId);
+            }catch (Exception e){
+                object.put(Constant.MSG,"loginError");
+            }
         }
         List<ActivityUserHistory> historyList = financeMapper.selectHistory(mobile,actId,month.format(new Date()));
         object.put(Constant.ObjectList,historyList);
