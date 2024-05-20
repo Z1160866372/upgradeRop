@@ -27,6 +27,7 @@ import com.richeninfo.util.ReqWorker;
 import com.richeninfo.util.RopServiceManager;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -93,7 +94,7 @@ public class NewCallServiceImpl implements NewCallService {
         String mobile="";
         ActivityUserHistory userHistory = null;
         if(pro_config.size()>0){
-            if (secToken!=null||!secToken.isEmpty()) {
+            if (!StringUtils.isEmpty(secToken)) {
                 mobile= commonService.getMobile(secToken,channelId);
             }
             for (ActivityConfiguration config : pro_config) {
@@ -117,7 +118,7 @@ public class NewCallServiceImpl implements NewCallService {
         JSONObject object = new JSONObject();
         String mobile="";
         ActivityConfiguration config =null;
-        if (secToken!=null||!secToken.isEmpty()) {
+        if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }
         if(!commonService.checkUserIsChinaMobile(mobile,actId)){

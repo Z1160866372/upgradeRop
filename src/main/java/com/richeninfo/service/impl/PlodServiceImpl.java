@@ -62,11 +62,10 @@ public class PlodServiceImpl implements PlodService {
             activityUser.setAward(0);
             activityUser.setChannelId(channelId);
             plodMapper.saveUser(activityUser);
-        } else {
-            activityUser.setSecToken(secToken);
         }
-        jsonObject.put("user", activityUser);
-        return jsonObject;
+            activityUser.setSecToken(secToken);
+            jsonObject.put("user", activityUser);
+            return jsonObject;
     }
 
     /**

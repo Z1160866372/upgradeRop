@@ -62,9 +62,8 @@ public class MiguXcServiceImpl implements MiguXcService {
             activityUser.setUserId(userId);
             activityUser.setAward(0);
             miguXcMapper.saveUser(activityUser);
-        } else {
-            activityUser.setSecToken(secToken);
         }
+        activityUser.setSecToken(secToken);
         jsonObject.put("user", activityUser);
         return jsonObject;
     }
@@ -176,21 +175,22 @@ public class MiguXcServiceImpl implements MiguXcService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId);
-     /*       String message = ropServiceManager.execute(packet, history.getUserId(),actId);
+           String message = ropServiceManager.execute(packet, history.getUserId(),actId);
             log.info("api Message============="+message);
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message, Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
-            String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");*/
-            String message="SUCCESS";
+            String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");
+            /*String message="SUCCESS";
             String res="0000";
-            String DoneCode="2998";
+            String DoneCode="2998";*/
             log.info("api res============="+res);
             if (Constant.SUCCESS_CODE.equals(res)) {
                 transact_result = true;
+                miguXcMapper.updateUserAward(history.getUserId());
                 history.setStatus(Constant.STATUS_RECEIVED);
                 object.put(Constant.MSG, Constant.SUCCESS);
-                /*Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
+                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
                 System.out.println(new_packet.toString());
                 String result_String =ropServiceManager.execute(new_packet, history.getUserId(),actId);
                 ActivityOrder order = new ActivityOrder();
@@ -204,7 +204,7 @@ public class MiguXcServiceImpl implements MiguXcService {
                 order.setCode(JSONArray.fromObject(new_packet).toString());
                 order.setMessage(result_String);
                 order.setChannelId(channelId);
-                commonMapper.insertActivityOrder(order);*/
+                commonMapper.insertActivityOrder(order);
             } else {
                 transact_result = false;
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
@@ -217,10 +217,10 @@ public class MiguXcServiceImpl implements MiguXcService {
                 object.put(Constant.MSG, Constant.FAILURE);
             }*/
             history.setMessage(message);
-            history.setCode(JSON.toJSONString(packet));
+            history.setCode(JSONObject.toJSONString(packet));
             object.put("res", res);
             object.put("DoneCode",DoneCode);
-            object.put("update_history", JSON.toJSONString(history));
+            object.put("update_history",JSONObject.toJSONString(history));
             miguXcMapper.updateHistory(history);
 
 

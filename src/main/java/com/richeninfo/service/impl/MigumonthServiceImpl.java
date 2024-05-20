@@ -62,11 +62,10 @@ public class MigumonthServiceImpl implements MigumonthService {
             activityUser.setUserId(userId);
             activityUser.setAward(0);
             migumonthMapper.saveUser(activityUser);
-        } else {
-            activityUser.setSecToken(secToken);
         }
-        jsonObject.put("user", activityUser);
-        return jsonObject;
+            activityUser.setSecToken(secToken);
+            jsonObject.put("user", activityUser);
+            return jsonObject;
     }
 
     @Override

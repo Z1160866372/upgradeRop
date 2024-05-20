@@ -27,6 +27,7 @@ import com.richeninfo.util.RSAUtils;
 import com.richeninfo.util.RopServiceManager;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -110,7 +111,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
         String mobile="";
         ActivityUserHistory userHistory = null;
         if(pro_config.size()>0){
-            if (secToken!=null||!secToken.isEmpty()) {
+            if (!StringUtils.isEmpty(secToken)) {
                 mobile= commonService.getMobile(secToken,channelId);
             }
             for (ActivityConfiguration config : pro_config) {
@@ -131,11 +132,15 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
         String mobile="";
         ActivityConfiguration config =null;
         ActivityUser user = new ActivityUser();
-        if (secToken!=null||!secToken.isEmpty()) {
+        if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }
-        if (mobilePhone!=null||!mobilePhone.isEmpty()) {//代领取
+        if (!StringUtils.isEmpty(mobilePhone)) {//代领取
             mobilePhone = rsaUtils.decryptByPriKey(mobilePhone).trim();
+            if(!commonService.checkUserIsChinaMobile(mobilePhone,actId)){
+                object.put(Constant.MSG,"noShyd");
+                return object;
+            }
             user.setUserId(mobilePhone);
         }else{//自领取
             user.setUserId(mobile);
@@ -145,7 +150,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
         user=insertUser(user);
         if(user.getUserType()==0||user.getUserType()==1){//可领取
             config = commonMapper.selectActivityConfiguration(actId,unlocked);
-            ActivityUserHistory userHistory =schoolBaqMapper.selectActivityUserHistoryByUnlocked(user.getUserId(),unlocked);
+            ActivityUserHistory userHistory =schoolBaqMapper.selectActivityUserHistoryByUnlockedAnStatus(user.getUserId(),unlocked);
             if(userHistory==null){
                 if(saveHistory(actId,channelId,user.getUserId(),config)){
                     schoolBaqMapper.updateActivityUser(user);
@@ -165,23 +170,29 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
 
     private boolean saveHistory(String actId, String channelId, String mobile, ActivityConfiguration activityConfiguration) throws Exception {
         boolean result_status=false;
-        ActivityUserHistory newHistory = new ActivityUserHistory();
-        newHistory.setUserId(mobile);
-        newHistory.setChannelId(channelId);
-        newHistory.setRewardName(activityConfiguration.getName());
-        newHistory.setTypeId(activityConfiguration.getTypeId());
-        newHistory.setUnlocked(activityConfiguration.getUnlocked());
-        newHistory.setCreateDate(day.format(new Date()));
-        newHistory.setCreateTime(df.format(new Date()));
-        newHistory.setValue(activityConfiguration.getValue());
-        newHistory.setActId(actId);
-        schoolBaqMapper.insertActivityUserHistory(newHistory);
         ActivityUserHistory oldHistory = schoolBaqMapper.selectActivityUserHistoryByUnlocked(mobile, activityConfiguration.getUnlocked());
+        if(oldHistory==null){
+            ActivityUserHistory newHistory = new ActivityUserHistory();
+            newHistory.setUserId(mobile);
+            newHistory.setChannelId(channelId);
+            newHistory.setRewardName(activityConfiguration.getName());
+            newHistory.setTypeId(activityConfiguration.getTypeId());
+            newHistory.setUnlocked(activityConfiguration.getUnlocked());
+            newHistory.setCreateDate(day.format(new Date()));
+            newHistory.setCreateTime(df.format(new Date()));
+            newHistory.setValue(activityConfiguration.getValue());
+            newHistory.setActId(actId);
+            schoolBaqMapper.insertActivityUserHistory(newHistory);
+            oldHistory = schoolBaqMapper.selectActivityUserHistoryByUnlocked(mobile, activityConfiguration.getUnlocked());
+        }
+        log.info("oldHistory==="+oldHistory.toString());
         Packet packet = packetHelper.CardVoucherIssued("CH5",activityConfiguration.getActivityId(),mobile);
         try {
-            String result = ropService.executes(packet,mobile,actId);
+            /*String result = ropService.executes(packet,mobile,actId);
+            log.info("result==="+result);
             String code = JSONObject.parseObject(result).getString("code");
-            //String code="200";
+            log.info("code==="+code);*/
+            String code="200";
             if(code.equals("200")){
                 oldHistory.setStatus(Constant.STATUS_RECEIVED);
                 result_status=true;
@@ -189,9 +200,9 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
                 oldHistory.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 result_status=false;
             }
-            oldHistory.setCode(JSONArray.fromObject(packet).toString());
-            oldHistory.setMessage(result);
-            //oldHistory.setMessage("测试数据～");
+            oldHistory.setCode(JSONObject.toJSONString(packet));
+            //oldHistory.setMessage(result);
+            oldHistory.setMessage("测试数据～");
             schoolBaqMapper.updateHistory(oldHistory);
         }catch (Exception exception){
             result_status=false;

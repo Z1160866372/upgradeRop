@@ -2,7 +2,6 @@ package com.richeninfo.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.richeninfo.entity.mapper.entity.*;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.pojo.*;
@@ -12,6 +11,7 @@ import com.richeninfo.util.RopServiceManager;
 import com.richeninfo.util.*;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -291,7 +291,7 @@ public class CommonServiceImpl implements CommonService {
                     object.put(Constant.MSG, verityTime(actId));
                     return object;
                 }
-                if (secToken == null || secToken.isEmpty()) {
+                if (StringUtils.isEmpty(secToken)) {
                     object.put(Constant.MSG, "login");
                 } else {
                     String mobilePhone = getMobile(secToken, channelId);
@@ -347,7 +347,7 @@ public class CommonServiceImpl implements CommonService {
         String mobile = "";
         try {
             log.info("接收内容：" + secToken);
-            if (secToken != null || !secToken.isEmpty()) {
+            if (!StringUtils.isEmpty(secToken)) {
                 if (channelId.equals("h5") || channelId.equals("weiting") || channelId.equals("xcx") || channelId.equals("shydhn")) {//中国移动上海｜微信渠道||小程序
                     String key = commonMapper.selectTheDayKey().getSecretKey();
                     String source[] = Des3SSL.decodeDC(secToken, key);
@@ -383,7 +383,7 @@ public class CommonServiceImpl implements CommonService {
     public JSONObject insertOperationLog(OperationLog operationLog) {
         JSONObject object = new JSONObject();
         try {
-            if (operationLog.getSecToken() != null || !operationLog.getSecToken().isEmpty()) {
+            if (!StringUtils.isEmpty(operationLog.getSecToken())) {
                 operationLog.setUserId(getMobile(operationLog.getSecToken(), operationLog.getChannelId()));
                 operationLog.setAddress(IPUtil.getRealRequestIp(request));
                 operationLog.setName(commonMapper.selectActivityByActId(operationLog.getActId()).getName());
@@ -403,7 +403,7 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public JSONObject verityOa(String secToken, String channelId) {
         JSONObject object = new JSONObject();
-        if (secToken == null || secToken.isEmpty()) {
+        if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
         } else {
             String mobilePhone = getMobile(secToken, channelId);
@@ -421,7 +421,7 @@ public class CommonServiceImpl implements CommonService {
     public JSONObject insertActivityShare(ActivityShare activityShare) {
         JSONObject object = new JSONObject();
         try {
-            if (activityShare.getSecToken() != null || !activityShare.getSecToken().isEmpty()) {
+            if (!StringUtils.isEmpty(activityShare.getSecToken())) {
                 activityShare.setUserId(getMobile(activityShare.getSecToken(), activityShare.getChannelId()));
                 String keyword = "wt_" + activityShare.getActId() + "_share";
                 commonMapper.insertActivityShare(activityShare, keyword);

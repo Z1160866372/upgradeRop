@@ -47,10 +47,10 @@ public interface FinanceMapper {
     @Insert("insert into wt_finance_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,imgSrc)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{imgSrc})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
-    @Select("select * from activity_card where actId = #{actId} and unlocked =#{unlocked} and createDate =#{createDate}")
+    @Select("select * from activity_card where actId = #{actId} and unlocked =#{unlocked} and createDate =#{createDate} and status = 0")
     List<ActivityCardList> selectActivityCardList(@Param("actId")String actId,@Param("unlocked")int unlocked,@Param("createDate")String createDate);
 
-    @Select("select * from activity_card where actId = #{actId} and unlocked =#{unlocked} and createDate =#{createDate} limit 1")
+    @Select("select * from activity_card where actId = #{actId} and unlocked =#{unlocked} and createDate =#{createDate} and status = 0 limit 1")
     ActivityCardList selectActivityCardListByUnlocked(@Param("actId")String actId,@Param("unlocked")int unlocked,@Param("createDate")String createDate);
 
     @Update("update activity_card set userId= #{userId},status=1 where id = #{id} and status = 0")

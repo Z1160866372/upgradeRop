@@ -36,9 +36,9 @@ public class PlodController {
     @Resource
     private CommonService commonService;
 
-    private static String basePath = "https://activity.sh.10086.cn";
+    private static String basePath = "/home/weihu/";
 
-    private static String filePath = "/home/weihu";
+    private static String filePath = "/home/weihu/";
 
 
     /**
@@ -92,7 +92,7 @@ public class PlodController {
      * @return
      * @throws IOException
      */
-    @PostMapping(value = "/getImg")
+    @GetMapping(value = "/getImg")
     public @ResponseBody void getImg(@RequestParam("imgId") String imgId, @RequestParam("type") String type, HttpServletResponse response) throws IOException {
         response.setContentType("image/jpeg");
         String path = "imgs";
@@ -100,8 +100,8 @@ public class PlodController {
             path = "videos";
             response.setContentType("video/mpeg4");
         }
-        System.out.println(basePath + File.separator + filePath + File.separator + imgId);
-        File file = new File(basePath + File.separator + filePath + File.separator + imgId);
+        System.out.println(basePath + File.separator + path + File.separator + imgId);
+        File file = new File(basePath + File.separator + path + File.separator + imgId);
         OutputStream outputStream = response.getOutputStream();
         InputStream inputStream = new FileInputStream(file);
         byte[] bs = new byte[1024];

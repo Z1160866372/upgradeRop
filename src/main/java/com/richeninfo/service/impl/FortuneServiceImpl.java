@@ -56,9 +56,8 @@ public class FortuneServiceImpl implements FortuneService {
          activityUseruser.setPlayNum(1);
          activityUseruser.setAward(0);
          FortuneMapper.saveUser(activityUseruser);
-      } else {
-         activityUseruser.setSecToken(secToken);
       }
+      activityUseruser.setSecToken(secToken);
       jsonObject.put("user", activityUseruser);
       return jsonObject;
    }

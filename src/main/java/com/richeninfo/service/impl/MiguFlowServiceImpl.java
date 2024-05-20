@@ -59,9 +59,8 @@ public class MiguFlowServiceImpl implements MiguFlowService {
             activityUser.setUserId(userId);
             activityUser.setAward(0);
             miguFlowMapper.saveUser(activityUser);
-        } else {
-            activityUser.setSecToken(secToken);
         }
+        activityUser.setSecToken(secToken);
         jsonObject.put("user", activityUser);
         return jsonObject;
     }
@@ -158,6 +157,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
             String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");
             if (Constant.SUCCESS_CODE.equals(res)) {
                 transact_result = true;
+                miguFlowMapper.updateUserAward(history.getUserId());
                 history.setStatus(Constant.STATUS_RECEIVED);
                 object.put(Constant.MSG, Constant.SUCCESS);
                 Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
@@ -180,14 +180,14 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
             }
-            if (true) {
+            /*if (true) {
                 miguFlowMapper.updateUserAward(history.getUserId());
                 transact_result = false;
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
-            }
+            }*/
             history.setMessage(message);
-            history.setCode(JSON.toJSONString(packet));
+            history.setCode(JSONObject.toJSONString(packet));
             object.put("res", res);
             object.put("DoneCode",DoneCode);
             object.put("update_history", JSON.toJSONString(history));

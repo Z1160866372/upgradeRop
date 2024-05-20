@@ -27,7 +27,6 @@ public interface MiguXcService {
 
     /**
      * 多媒体展示
-     * @param userId
      * @param secToken
      * @param channelId
      * @param actId

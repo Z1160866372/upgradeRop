@@ -22,6 +22,7 @@ import com.richeninfo.util.IPUtil;
 import com.richeninfo.util.PacketHelper;
 import com.richeninfo.util.RopServiceManager;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -92,7 +93,7 @@ public class FinanceServiceImpl implements FinanceService {
         String mobile="";
         ActivityUserHistory userHistory = null;
         if(pro_config.size()>0){
-            if (secToken!=null||!secToken.isEmpty()) {
+            if (!StringUtils.isEmpty(secToken)) {
                 mobile= commonService.getMobile(secToken,channelId);
             }
             for (ActivityConfiguration config : pro_config) {
@@ -128,7 +129,7 @@ public class FinanceServiceImpl implements FinanceService {
     public JSONObject submit(String secToken, String actId, int unlocked, String channelId) throws Exception {
         JSONObject object = new JSONObject();
         String mobile="";
-        if (secToken!=null||!secToken.isEmpty()) {
+        if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }else{
             object.put(Constant.MSG,"login");
@@ -167,9 +168,11 @@ public class FinanceServiceImpl implements FinanceService {
                 ActivityConfiguration activityConfiguration =  financeMapper.selectActivityConfigurationByUnlocked(actId,unlocked);
                 if(activityConfiguration.getAmount()>0){
                     List<ActivityCardList> activityCardLists = financeMapper.selectActivityCardList(actId,unlocked,day.format(new Date()));
+                    log.info("size=="+activityCardLists.size());
                     if(activityCardLists.size()>0){
                         ActivityCardList activityCardList = financeMapper.selectActivityCardListByUnlocked(actId,unlocked,day.format(new Date()));
                         int result = financeMapper.updateActivityCardList(mobile,activityCardList.getId());
+                        log.info("result=="+result);
                         if(result>0){
                             activityConfiguration.setValue(activityCardList.getCouponCode());
                             saveHistory(actId, channelId, object, mobile, activityConfiguration);
@@ -241,7 +244,7 @@ public class FinanceServiceImpl implements FinanceService {
     public JSONObject getMyReward(String secToken,String channelId, String actId) {
         JSONObject object = new JSONObject();
         String mobile="";
-        if (secToken!=null||!secToken.isEmpty()) {
+        if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }
         List<ActivityUserHistory> historyList = financeMapper.selectHistory(mobile,actId,month.format(new Date()));
