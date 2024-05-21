@@ -23,7 +23,7 @@ public interface GsmShareService {
      * @param actId
      * @return
      */
-    JSONObject initializeUser(String userId, String secToken, String channelId, String actId);
+    JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch);
 
     /**
      * 领取礼包
@@ -33,7 +33,7 @@ public interface GsmShareService {
      * @param actId
      * @return
      */
-    JSONObject getActGift(String userId, String secToken, String channelId, String actId);
+    JSONObject getActGift(String userId, String secToken, String channelId, String actId,String ditch);
 
     /**
      * 办理业务短信下发

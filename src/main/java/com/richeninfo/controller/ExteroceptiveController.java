@@ -186,7 +186,7 @@ public class ExteroceptiveController {
      */
     @PostMapping(value = "/choujiang")
     @ResponseBody
-    public JSONObject choujiang(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
+    public JSONObject choujiang(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws IOException {
         JSONObject object = new JSONObject();
         if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
@@ -195,7 +195,7 @@ public class ExteroceptiveController {
             if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object = exteroceptiveService.choujiang(channelId, mobile, actId);
+                object = exteroceptiveService.choujiang(channelId, mobile, actId,ditch);
             }
         }
         return object;

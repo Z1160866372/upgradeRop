@@ -9,10 +9,7 @@ package com.richeninfo.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
-import com.richeninfo.entity.mapper.entity.ActivityShare;
-import com.richeninfo.entity.mapper.entity.ActivityUser;
-import com.richeninfo.entity.mapper.entity.OperationLog;
+import com.richeninfo.entity.mapper.entity.*;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
@@ -25,6 +22,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +66,8 @@ public class CommonController {
     private RedisUtil redisUtil;
     @Resource
     HttpServletResponse response;
+    @Resource
+    private JmsMessagingTemplate jmsMessagingTemplate;
 
 
     @RequestMapping(value = "wtFree")
@@ -267,4 +267,27 @@ public class CommonController {
         return this.commonService.insertActivityShare(activityShare);
     }
 
+
+    @ApiOperation("数据补发接口)")
+    @PostMapping(value = "/dataReissue")
+    public @ResponseBody
+    Object dataReissue(@ApiParam(name = "createTime", value = "截止日期", required = true) String createTime, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws Exception {
+        JSONObject object = new JSONObject();
+        String keyword = "wt_"+actId+"_history";
+        List<ActivityUserHistory> activityUserHistoryList = commonMapper.selectActivityUserHistory(createTime,keyword);
+        if(!activityUserHistoryList.isEmpty()){
+            for (ActivityUserHistory history: activityUserHistoryList) {
+                if(history.getActivityId()!=null&&history.getUserId()!=null){
+                    String mqMsg = commonService.issueReward(history);
+                    log.info("4147请求信息：" + mqMsg);
+                    jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
+                }
+            }
+            object.put("objectList",activityUserHistoryList);
+            object.put(Constant.MSG,"yesData");
+        }else{
+            object.put(Constant.MSG,"noData");
+        }
+        return object;
+    }
 }

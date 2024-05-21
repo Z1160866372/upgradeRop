@@ -232,11 +232,13 @@ public class FinanceServiceImpl implements FinanceService {
         newHistory.setValue(activityConfiguration.getValue());
         newHistory.setActId(actId);
         newHistory.setDitch(ditch);
+        newHistory.setActivityId(activityConfiguration.getActivityId());
+        newHistory.setItemId(activityConfiguration.getItemId());
         newHistory.setImgSrc(activityConfiguration.getImgSrc());
         financeMapper.insertActivityUserHistory(newHistory);
         if(activityConfiguration.getUnlocked()==0||activityConfiguration.getUnlocked()==5){
             financeMapper.updateActivityConfigurationAmount(financeMapper.selectActivityConfigurationByUnlocked(actId,6).getId());
-            String mqMsg = commonService.issueReward(activityConfiguration, newHistory);
+            String mqMsg = commonService.issueReward(newHistory);
             log.info("4147请求信息：" + mqMsg);
             jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
         }else{

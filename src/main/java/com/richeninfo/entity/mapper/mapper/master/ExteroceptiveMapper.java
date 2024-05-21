@@ -204,7 +204,7 @@ public interface ExteroceptiveMapper {
      * @param history
      * @return
      */
-    @Insert("INSERT INTO wt_proem_history (userId,rewardName,typeId,unlocked,belongFlag,status,code,message,secToken,channelId,createTime,createDate,actId,winSrc,remark,value) value (#{userId},#{rewardName},#{typeId},#{unlocked},#{belongFlag},#{status},#{code},#{message},#{secToken},#{channelId},now(),curdate(),#{actId},#{winSrc},#{remark},#{value})")
+    @Insert("INSERT INTO wt_proem_history (userId,rewardName,typeId,unlocked,belongFlag,status,code,message,secToken,channelId,createTime,createDate,actId,winSrc,remark,value,activityId,itemId,ditch) value (#{userId},#{rewardName},#{typeId},#{unlocked},#{belongFlag},#{status},#{code},#{message},#{secToken},#{channelId},now(),curdate(),#{actId},#{winSrc},#{remark},#{value},#{activityId},#{itemId},#{ditch})")
     int saveHistory(ActivityUserHistory history);
 
     /**

@@ -25,7 +25,7 @@ public interface ProMemberMapper {
     @Select("select * from wt_proMember_user where userId = #{userId} and actId =#{actId}")
     ActivityUser selectUser(@Param("userId") String userId, @Param("actId") String actId);//查找用户记录
 
-    @Insert("insert into wt_proMember_user_history(userId,belongFlag,userType,rewardName,unlocked,channelId,secToken,createDate,createTime,actId)values(#{userId},#{belongFlag},#{userType},#{rewardName},#{unlocked},#{channelId},#{secToken},curdate(),now(),#{actId})")
+    @Insert("insert into wt_proMember_user_history(userId,belongFlag,userType,rewardName,unlocked,channelId,secToken,createDate,createTime,actId,activityId,itemId)values(#{userId},#{belongFlag},#{userType},#{rewardName},#{unlocked},#{channelId},#{secToken},curdate(),now(),#{actId},#{activityId},#{itemId})")
     int insertUserHistory(ActivityUserHistory history);//保存用户记录
 
     @Select("select * from wt_proMember_user_history where userId = #{userId} and unlocked =#{unlocked} and actId =#{actId}")

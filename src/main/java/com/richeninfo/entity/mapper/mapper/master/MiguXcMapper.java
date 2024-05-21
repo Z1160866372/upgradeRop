@@ -69,7 +69,7 @@ public interface MiguXcMapper {
     * @param history
     * @return
     */
-   @Insert("INSERT INTO wt_miguxc_history (userId,rewardName,typeId,unlocked,belongFlag,status,code,message,secToken,channelId,createTime,createDate,actId,winSrc,remark,ditch) value (#{userId},#{rewardName},#{typeId},#{unlocked},#{belongFlag},#{status},#{code},#{message},#{secToken},#{channelId},now(),curdate(),#{actId},#{winSrc},#{remark},#{ditch})")
+   @Insert("INSERT INTO wt_miguxc_history (userId,rewardName,typeId,unlocked,belongFlag,status,code,message,secToken,channelId,createTime,createDate,actId,winSrc,remark,ditch,activityId,itemId) value (#{userId},#{rewardName},#{typeId},#{unlocked},#{belongFlag},#{status},#{code},#{message},#{secToken},#{channelId},now(),curdate(),#{actId},#{winSrc},#{remark},#{ditch},#{activityId},#{itemId})")
    int saveHistory(ActivityUserHistory history);
 
    /**

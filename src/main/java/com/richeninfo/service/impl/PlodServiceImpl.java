@@ -52,7 +52,7 @@ public class PlodServiceImpl implements PlodService {
     private static String filePath = "/home/weihu/";
 
     @Override
-    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
+    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser activityUser = plodMapper.findUserInfo(userId);
         if (activityUser == null) {
@@ -61,6 +61,7 @@ public class PlodServiceImpl implements PlodService {
             activityUser.setPlayNum(2);
             activityUser.setAward(0);
             activityUser.setChannelId(channelId);
+            activityUser.setDitch(ditch);
             plodMapper.saveUser(activityUser);
         }
             activityUser.setSecToken(secToken);

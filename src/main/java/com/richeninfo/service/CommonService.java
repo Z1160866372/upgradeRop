@@ -92,11 +92,10 @@ public interface CommonService {
     /**
      * 4147礼包奖励发放
      *
-     * @param config
      * @param history
      * @return
      */
-    String issueReward(ActivityConfiguration config, ActivityUserHistory history);
+    String issueReward(ActivityUserHistory history);
 
     /**
      * 根据渠道和secToken获取手机号

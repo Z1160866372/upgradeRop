@@ -44,7 +44,7 @@ public interface FinanceMapper {
     @Update("update activity_configuration set Amount= Amount-1 where id = #{id} and Amount > 0")
     int updateActivityConfigurationAmount(int id);
 
-    @Insert("insert into wt_finance_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,imgSrc,ditch)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{imgSrc},#{ditch})")
+    @Insert("insert into wt_finance_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,imgSrc,ditch,activityId,itemId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{imgSrc},#{ditch},#{activityId},#{itemId})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
     @Select("select * from activity_card where actId = #{actId} and unlocked =#{unlocked} and createDate =#{createDate} and status = 0")

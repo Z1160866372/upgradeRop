@@ -184,6 +184,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
             newHistory.setValue(activityConfiguration.getValue());
             newHistory.setActId(actId);
             newHistory.setDitch(ditch);
+            newHistory.setActivityId(activityConfiguration.getActivityId());
             schoolBaqMapper.insertActivityUserHistory(newHistory);
             oldHistory = schoolBaqMapper.selectActivityUserHistoryByUnlocked(mobile, activityConfiguration.getUnlocked());
         }

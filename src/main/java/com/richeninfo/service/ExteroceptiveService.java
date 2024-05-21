@@ -66,7 +66,7 @@ public interface ExteroceptiveService {
      * @param actId
      * @return
      */
-    JSONObject choujiang(String channelId, String userId, String actId);
+    JSONObject choujiang(String channelId, String userId, String actId,String ditch);
 
     /**
      * 经验值明细

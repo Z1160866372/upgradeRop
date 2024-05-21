@@ -80,14 +80,17 @@ public class FortuneServiceImpl implements FortuneService {
                history.setUnlocked(gift.getUnlocked());
                history.setActId(actId);
                history.setTypeId(gift.getTypeId());
+               history.setDitch(ditch);
                history.setChannelId(channelId);
                history.setDitch(ditch);
+               history.setActivityId(gift.getActivityId());
+               history.setItemId(gift.getItemId());
                int status = FortuneMapper.saveHistory(history);
                try {
                   log.info("status=======" + status);
                   if (status > 0) {//异步mq发放礼包
                      FortuneMapper.updateUserAward(userId);
-                     String mqMsg = commonService.issueReward(gift, history);
+                     String mqMsg = commonService.issueReward(history);
                      log.info("4147请求信息：" + mqMsg);
                      jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
                      jsonObject.put("msg", "success");

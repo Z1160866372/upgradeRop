@@ -47,7 +47,7 @@ public class GsmShareController {
      */
     @PostMapping(value = "/initialize")
     public @ResponseBody
-    JSONObject initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
+    JSONObject initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws IOException {
         JSONObject object = new JSONObject();
         if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
@@ -56,7 +56,7 @@ public class GsmShareController {
             if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                JSONObject object1 = gsmShareService.initializeUser(mobile, secToken, channelId, actId);
+                JSONObject object1 = gsmShareService.initializeUser(mobile, secToken, channelId, actId,ditch);
                 object.put(Constant.MSG, Constant.SUCCESS);
                 object.put("data", object1);
             }
@@ -74,7 +74,7 @@ public class GsmShareController {
      */
     @PostMapping(value = "/getActGift")
     public @ResponseBody
-    JSONObject getActGift(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String randCode) throws IOException {
+    JSONObject getActGift(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String randCode, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws IOException {
         JSONObject object = new JSONObject();
         if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
@@ -83,7 +83,7 @@ public class GsmShareController {
             if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                JSONObject object1 = gsmShareService.getActGift(mobile, secToken, channelId, actId);
+                JSONObject object1 = gsmShareService.getActGift(mobile, secToken, channelId, actId,ditch);
                 object.put("data", object1);
             }
         }

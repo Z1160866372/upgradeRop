@@ -97,6 +97,8 @@ public class MiguXcServiceImpl implements MiguXcService {
                 history.setTypeId(gift.getTypeId());
                 history.setChannelId(channelId);
                 history.setDitch(ditch);
+                history.setActivityId(gift.getActivityId());
+                history.setItemId(gift.getItemId());
                 int status = miguXcMapper.saveHistory(history);
                    history = miguXcMapper.findCurYwHistory(userId);
                 try {

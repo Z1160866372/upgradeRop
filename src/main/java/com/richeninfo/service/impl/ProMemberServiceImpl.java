@@ -192,10 +192,12 @@ public class ProMemberServiceImpl implements ProMemberService {
             history.setTypeId(config.getTypeId());
             history.setUnlocked(config.getUnlocked());
             history.setActId(config.getActId());
+            history.setActivityId(config.getActivityId());
+            history.setItemId(config.getItemId());
             history.setKeyword(commonMapper.selectActivityByActId(config.getActId()).getKeyword());
             proMemberMapper.insertUserHistory(history);
             if (config.getTypeId() == 0) {//4147礼包接口
-                mqMsg = commonService.issueReward(config, history);
+                mqMsg = commonService.issueReward(history);
                 log.info("4147请求信息：" + mqMsg);
                 jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
             }

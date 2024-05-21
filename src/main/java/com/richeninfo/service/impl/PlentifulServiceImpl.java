@@ -35,7 +35,7 @@ public class PlentifulServiceImpl  implements PlentifulService {
    @Resource
    CommonUtil commonUtil;
    @Override
-   public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
+   public JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch) {
       JSONObject jsonObject = new JSONObject();
       ActivityUser activityUser = plentifulMapper.findUserInfo(userId);
       if (activityUser == null) {
@@ -43,6 +43,7 @@ public class PlentifulServiceImpl  implements PlentifulService {
          activityUser.setUserId(userId);
          activityUser.setPlayNum(2);
          activityUser.setAward(0);
+         activityUser.setDitch(ditch);
          plentifulMapper.saveUser(activityUser);
       } else {
          activityUser.setSecToken(secToken);
@@ -52,7 +53,7 @@ public class PlentifulServiceImpl  implements PlentifulService {
    }
 
    @Override
-   public JSONObject getActGift(String userId, String secToken, String channelId, String actId) {
+   public JSONObject getActGift(String userId, String secToken, String channelId, String actId,String ditch) {
       JSONObject jsonObject = new JSONObject();
       ActivityUser user = plentifulMapper.findUserInfo(userId);
       if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 2&&user.getPlayNum()>0) {
@@ -69,6 +70,9 @@ public class PlentifulServiceImpl  implements PlentifulService {
                history.setActId(actId);
                history.setTypeId(gift.getTypeId());
                history.setChannelId(channelId);
+               history.setDitch(ditch);
+               history.setActivityId(gift.getActivityId());
+               history.setItemId(gift.getItemId());
                int status = plentifulMapper.saveHistory(history);
                try {
                   if (status > 0) {//异步mq发放礼包

@@ -33,7 +33,7 @@ public interface NewCallMapper {
     @Select("select * from wt_newCall_history where userId = #{userId} and unlocked =#{unlocked}")
     ActivityUserHistory selectActivityUserHistoryByUnlocked(@Param("userId")String userId, @Param("unlocked")int unlocked);
 
-    @Insert("insert into wt_newCall_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId})")
+    @Insert("insert into wt_newCall_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,activityId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{activityId})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
     @Update("update wt_newCall_history set status=#{status},code=#{code},message=#{message} where id=#{id}")

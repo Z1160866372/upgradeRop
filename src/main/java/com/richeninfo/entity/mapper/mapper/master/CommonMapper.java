@@ -84,4 +84,7 @@ public interface CommonMapper {
     @Insert("insert into ${keyword}(actId,userId,secToken,channelId,createTime)values(#{log.actId},#{log.userId},#{log.secToken},#{log.channelId},now())")
     int insertActivityShare(ActivityShare log, @Param("keyword") String keyword);//添加用户操作记录
 
+    @Select("select * from ${keyword} where `status` !=3 and `message` not like '%地市%' and createTime<#{createTime}")
+    List<ActivityUserHistory> selectActivityUserHistory(@Param("createTime") String createTime, @Param("keyword") String keyword);
+
 }

@@ -54,7 +54,7 @@ public class MigumonthServiceImpl implements MigumonthService {
     private JmsMessagingTemplate jmsMessagingTemplate;
 
     @Override
-    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch) {
+    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId, String ditch) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser activityUser = migumonthMapper.findCurMonthUserInfo(userId, newtime);
         if (activityUser == null) {
@@ -87,12 +87,14 @@ public class MigumonthServiceImpl implements MigumonthService {
                 history.setTypeId(gift.getTypeId());
                 history.setChannelId(channelId);
                 history.setDitch(ditch);
+                history.setActivityId(gift.getActivityId());
+                history.setItemId(gift.getItemId());
                 int status = migumonthMapper.saveHistory(history);
                 try {
                     if (status > 0) {//异步mq发放礼包
                         migumonthMapper.updateUserAward(userId);
                         jsonObject.put("msg", "success");
-                        String mqMsg = commonService.issueReward(gift, history);
+                        String mqMsg = commonService.issueReward(history);
                         log.info("4147请求信息：" + mqMsg);
                         jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
                     }

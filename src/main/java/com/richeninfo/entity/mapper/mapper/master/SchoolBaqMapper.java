@@ -37,7 +37,7 @@ public interface SchoolBaqMapper {
     @Select("select * from wt_schoolBaq_history where userId = #{userId} and unlocked =#{unlocked} and status=3")
     ActivityUserHistory selectActivityUserHistoryByUnlockedAnStatus(@Param("userId")String userId, @Param("unlocked")int unlocked);
 
-    @Insert("insert into wt_schoolBaq_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch})")
+    @Insert("insert into wt_schoolBaq_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
     @Insert("insert into wt_schoolBaq_operationLog(actId,name,address,userId,instructions,createTime)values(#{actId},#{name},#{address},#{userId},#{instructions},now())")

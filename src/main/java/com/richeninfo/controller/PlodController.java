@@ -62,7 +62,7 @@ public class PlodController {
      */
     @PostMapping(value = "/initialize")
     public @ResponseBody
-    JSONObject initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
+    JSONObject initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String ditch) throws IOException {
         JSONObject object = new JSONObject();
         if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
@@ -71,7 +71,7 @@ public class PlodController {
             if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "userId_isNULL");
             } else {
-                JSONObject object1 = plodService.initializeUser(mobile, secToken, channelId, actId);
+                JSONObject object1 = plodService.initializeUser(mobile, secToken, channelId, actId,ditch);
                 object.put(Constant.MSG, Constant.SUCCESS);
                 object.put("data", object1);
             }

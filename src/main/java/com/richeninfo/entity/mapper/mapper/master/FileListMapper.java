@@ -23,7 +23,7 @@ import java.util.List;
 public interface FileListMapper {
 
     @Select("select * from activity_fileList where principal = #{principal}")
-    ActivityFileList selectActivityFileList(String principal);
+    List<ActivityFileList> selectActivityFileList(String principal);
 
     @Insert("insert into activity_fileList(name,fileName,number,principal,createTime)values(#{name},#{fileName},#{number},#{principal},now())")
     int insertActivityFileList(ActivityFileList fileList);//初始化用户

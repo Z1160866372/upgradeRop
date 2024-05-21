@@ -51,7 +51,7 @@ public class GsmShareServiceImpl implements GsmShareService {
     CommonUtil commonUtil;
 
     @Override
-    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
+    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser activityUser = gsmShareMapper.findUserInfo(userId);
         if (activityUser == null) {
@@ -59,6 +59,7 @@ public class GsmShareServiceImpl implements GsmShareService {
             activityUser.setUserId(userId);
             activityUser.setAward(0);
             activityUser.setPlayNum(1);
+            activityUser.setDitch(ditch);
             activityUser.setUserType(userType(userId));
             gsmShareMapper.saveUser(activityUser);
         }
@@ -70,7 +71,7 @@ public class GsmShareServiceImpl implements GsmShareService {
 
 
     @Override
-    public JSONObject getActGift(String userId, String secToken, String channelId, String actId) {
+    public JSONObject getActGift(String userId, String secToken, String channelId, String actId,String ditch) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser user = gsmShareMapper.findUserInfo(userId);
         if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1) {
@@ -126,7 +127,7 @@ public class GsmShareServiceImpl implements GsmShareService {
                         }
                         gsmShareMapper.updateUserAward(userId);
                         gsmShareMapper.updateCurMark(userId,String.valueOf(gift.getTypeId()));
-                        int status=saveHistory(gift, userId, channelId,code);
+                        int status=saveHistory(gift, userId, channelId,code,ditch);
                         if(status>0){
                             jsonObject.put("giftName", gift.getName());
                             jsonObject.put("gift", gift);
@@ -195,7 +196,7 @@ public class GsmShareServiceImpl implements GsmShareService {
 
     }
 
-    public int saveHistory(ActivityConfiguration gift, String userId, String channel_id, String code) {
+    public int saveHistory(ActivityConfiguration gift, String userId, String channel_id, String code,String ditch) {
         ActivityUserHistory history = new ActivityUserHistory();
         history.setUserId(userId);
         history.setChannelId(channel_id);
@@ -205,10 +206,13 @@ public class GsmShareServiceImpl implements GsmShareService {
         history.setRemark(gift.getRemark());
         history.setWinSrc(gift.getWinSrc());
         history.setCode(String.valueOf(code));
+        history.setDitch(ditch);
+        history.setActivityId(gift.getActivityId());
+        history.setItemId(gift.getItemId());
         int status = gsmShareMapper.saveHistory(history);
         try {
             if (status > 0 && Double.valueOf(gift.getValue()) > 0) {
-                String mqMsg = commonService.issueReward(gift, history);
+                String mqMsg = commonService.issueReward(history);
                 log.info("4147请求信息：" + mqMsg);
                 // jmsMessagingTemplate.convertAndSend("proemMQ", mqMsg);
             }

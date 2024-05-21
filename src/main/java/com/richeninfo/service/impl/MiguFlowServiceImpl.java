@@ -94,6 +94,8 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 history.setTypeId(gift.getTypeId());
                 history.setChannelId(channelId);
                 history.setDitch(ditch);
+                history.setActivityId(gift.getActivityId());
+                history.setItemId(gift.getItemId());
                 int status = miguFlowMapper.saveHistory(history);
                 history = miguFlowMapper.findCurYwHistory(userId);
                 try {

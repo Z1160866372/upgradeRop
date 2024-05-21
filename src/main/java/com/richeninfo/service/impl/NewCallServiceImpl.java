@@ -228,6 +228,7 @@ public class NewCallServiceImpl implements NewCallService {
         newHistory.setValue(activityConfiguration.getValue());
         newHistory.setActId(actId);
         newHistory.setDitch(ditch);
+        newHistory.setActivityId(activityConfiguration.getActivityId());
         newCallMapper.insertActivityUserHistory(newHistory);
     }
 

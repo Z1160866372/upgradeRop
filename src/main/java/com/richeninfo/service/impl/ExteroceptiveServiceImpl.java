@@ -301,7 +301,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
     }
 
     @Override
-    public JSONObject choujiang(String channel_id, String userId, String actId) {
+    public JSONObject choujiang(String channel_id, String userId, String actId,String ditch) {
         JSONObject jsonObject = new JSONObject();
         Map<String, Object> map = new HashMap<>();
         try {
@@ -353,7 +353,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
                                     }
                                 }
                             }
-                            saveHistory(gift, userId, channel_id);
+                            saveHistory(gift, userId, channel_id,ditch);
                             ActivityUser users = exteroceptiveMapper.findUserInfoByUserId(userId);
                             map.put("gift", gift);
                             map.put("msg", "success");
@@ -388,7 +388,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
     }
 
     //保存中奖记录
-    public void saveHistory(ActivityConfiguration gift, String userId, String channel_id) {
+    public void saveHistory(ActivityConfiguration gift, String userId, String channel_id,String ditch) {
         ActivityUserHistory history = new ActivityUserHistory();
         history.setUserId(userId);
         history.setChannelId(channel_id);
@@ -399,10 +399,13 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
         history.setUnlocked(gift.getUnlocked());
         history.setRemark(gift.getRemark());
         history.setWinSrc(gift.getWinSrc());
+        history.setDitch(ditch);
+        history.setActivityId(gift.getActivityId());
+        history.setItemId(gift.getItemId());
         int status = exteroceptiveMapper.saveHistory(history);
         try {
             if (status > 0 && Double.valueOf(gift.getValue()) > 0) {
-                String mqMsg = commonService.issueReward(gift, history);
+                String mqMsg = commonService.issueReward(history);
                 log.info("4147请求信息：" + mqMsg);
                 jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
             }

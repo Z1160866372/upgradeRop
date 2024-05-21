@@ -50,6 +50,12 @@ public class ActivityUserHistory {
     @ApiModelProperty(value = "奖励标识")
     private int unlocked;
 
+    @ApiModelProperty(value = "接口编号")
+    private String activityId;
+
+    @ApiModelProperty(value = "接口自定义ID")
+    private String itemId;
+
     @ApiModelProperty(value = "奖励类型")
     private int typeId;
 

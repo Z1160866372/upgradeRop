@@ -32,7 +32,7 @@ public interface PlodMapper {
      * 初始化用户信息
      * @param user
      */
-    @Insert("INSERT INTO wt_plod_user (userId,level,award,playNum,channelId,createTime,createDate) value (#{userId},#{level},#{award},#{playNum},#{channelId},now(),curdate())")
+    @Insert("INSERT INTO wt_plod_user (userId,level,award,playNum,channelId,createTime,createDate,ditch) value (#{userId},#{level},#{award},#{playNum},#{channelId},now(),curdate(),#{ditch})")
     void saveUser(ActivityUser user);
 
     /**

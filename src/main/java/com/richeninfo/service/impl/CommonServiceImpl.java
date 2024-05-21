@@ -328,16 +328,15 @@ public class CommonServiceImpl implements CommonService {
     /**
      * 4147礼包奖励发放
      *
-     * @param config
      * @param history
      * @return
      */
     @Override
-    public String issueReward(ActivityConfiguration config, ActivityUserHistory history) {
+    public String issueReward(ActivityUserHistory history) {
         String mqMsg = "";
         PacketMq mq = new PacketMq();
         String out_order_id = commonUtil.getRandomCode(14, 0);
-        Packet packet = packetHelper.getCommitPacket4147(history.getUserId(), config.getActivityId(), config.getItemId(), out_order_id);
+        Packet packet = packetHelper.getCommitPacket4147(history.getUserId(), history.getActivityId(), history.getItemId(), out_order_id);
         mq.setHistory(history);
         mq.setPacket(packet);
         mqMsg = JSON.toJSONString(mq);
@@ -402,7 +401,7 @@ public class CommonServiceImpl implements CommonService {
                 operationLog.setName(commonMapper.selectActivityByActId(operationLog.getActId()).getName());
                 String keyword = "wt_" + operationLog.getActId() + "_operationLog";
                 commonMapper.insertOperationLog(operationLog, keyword);
-                //object.put("operationLog", operationLog);
+                object.put("operationLog", operationLog);
                 object.put(Constant.MSG, Constant.SUCCESS);
             } else {
                 object.put(Constant.MSG, "noMobile");
@@ -438,7 +437,7 @@ public class CommonServiceImpl implements CommonService {
                 activityShare.setUserId(getMobile(activityShare.getSecToken(), activityShare.getChannelId()));
                 String keyword = "wt_" + activityShare.getActId() + "_share";
                 commonMapper.insertActivityShare(activityShare, keyword);
-                //object.put("activityShare", activityShare);
+                object.put("activityShare", activityShare);
                 object.put(Constant.MSG, Constant.SUCCESS);
             } else {
                 object.put(Constant.MSG, "noMobile");
