@@ -176,7 +176,7 @@ public class MiguXcServiceImpl implements MiguXcService {
                 vasOfferInfo.setOperType("0");
                 offerList.add(vasOfferInfo);
             }
-            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId);
+            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId, history.getDitch());
          /*  String message = ropServiceManager.execute(packet, history.getUserId(),actId);
             log.info("api Message============="+message);
             message = ReqWorker.replaceMessage(message);

@@ -151,7 +151,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 vasOfferInfo.setOperType("0");
                 offerList.add(vasOfferInfo);
             }
-            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId);
+            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId, history.getDitch());
            /* String message = ropServiceManager.execute(packet, history.getUserId(),actId);
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message, Result.class);

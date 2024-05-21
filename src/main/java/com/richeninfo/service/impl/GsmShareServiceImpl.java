@@ -241,7 +241,7 @@ public class GsmShareServiceImpl implements GsmShareService {
                 vasOfferInfo.setOperType("0");
                 offerList.add(vasOfferInfo);
             }
-            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId);
+            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId, history.getDitch());
            /* String message = ropService.execute(packet,history.getUserId());
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message,Result.class);
