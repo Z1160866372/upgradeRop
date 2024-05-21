@@ -49,6 +49,6 @@ public interface NewCallService {
      * @return
      * @throws Exception
      */
-    JSONObject submit(String secToken, String actId, int unlocked, String channelId,String wtAcId, String wtAc,String randCode) throws Exception;
+    JSONObject submit(String secToken, String actId, int unlocked, String channelId,String wtAcId, String wtAc,String randCode,String ditch) throws Exception;
 
 }

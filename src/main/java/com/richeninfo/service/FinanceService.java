@@ -55,7 +55,7 @@ public interface FinanceService {
      * @return
      * @throws Exception
      */
-    JSONObject submit(String secToken, String actId, int unlocked, String channelId) throws Exception;
+    JSONObject submit(String secToken, String actId, int unlocked, String channelId,String ditch) throws Exception;
 
     /**
      * 我的奖励

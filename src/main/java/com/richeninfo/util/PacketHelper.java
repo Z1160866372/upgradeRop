@@ -977,7 +977,7 @@ public class PacketHelper {
      * @param channel_id
      * @return
      */
-    public Packet getCommitPacket306602(String userId, String randCode, List<VasOfferInfo> offerList, String channel_id) {
+    public Packet getCommitPacket306602(String userId, String randCode, List<VasOfferInfo> offerList, String channel_id,String ditch) {
         Request request = new Request();
         request.setBusiCode("PT-SH-FS-OI3066");
         JSONObject busiParams = new JSONObject();
@@ -992,6 +992,11 @@ public class PacketHelper {
         if (channel_id.equals("leadeon")) {
             busiParams.put("xOrgId", "yjdq");
             busiParams.put("xOpId", "1000000002110700006");
+        }else{
+            if(ditch.equals("zxqqd")){
+                busiParams.put("xOrgId", "zxqqd");
+                busiParams.put("xOpId", "2210124995320100001");
+            }
         }
         JSONObject busiParams1 = new JSONObject();
         busiParams1.put("m_iOpEntityId", "0");
@@ -1032,7 +1037,7 @@ public class PacketHelper {
         String busiStatus="00";//订单原始状态01未处理02处理中00处理成功04处理失败05推定成功YJ80退货处理中
         String platformCode="03";//业务上架平台00其他01在线工具02星火平台03中国移动APP
         String orderItemId=packet.getPost().getPubInfo().getTransactionId();//订单项ID
-        String commodityId="";//商品ID
+        String commodityId=config.getProb().split(";")[4];//商品ID
         String commodityName=config.getName();//商品名称
         String commodityNum="1";//商品数量 默认1
         String commodityType=config.getProb().split(";")[2];//商品类型 移动云盘
