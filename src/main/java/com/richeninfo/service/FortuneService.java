@@ -25,7 +25,7 @@ public interface FortuneService {
      * @param actId
      * @return
      */
-    JSONObject initializeUser(String mobile, String secToken, String channelId, String actId);
+    JSONObject initializeUser(String mobile, String secToken, String channelId, String actId,String ditch);
 
     /**
      * 领取礼包
@@ -35,7 +35,7 @@ public interface FortuneService {
      * @param actId
      * @return
      */
-    JSONObject getActGift(String mobile, String secToken, String channelId, String actId);
+    JSONObject getActGift(String mobile, String secToken, String channelId, String actId,String ditch);
 
     void actRecord(String caozuo,String actId, String userId);
 }

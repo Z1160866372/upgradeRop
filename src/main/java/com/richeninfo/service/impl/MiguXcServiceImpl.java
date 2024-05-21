@@ -54,13 +54,14 @@ public class MiguXcServiceImpl implements MiguXcService {
     private RopServiceManager ropServiceManager;
 
     @Override
-    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
+    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser activityUser = miguXcMapper.findCurMonthUserInfo(userId);
         if (activityUser == null) {
             activityUser = new ActivityUser();
             activityUser.setUserId(userId);
             activityUser.setAward(0);
+            activityUser.setDitch(ditch);
             miguXcMapper.saveUser(activityUser);
         }
         activityUser.setSecToken(secToken);
@@ -77,7 +78,7 @@ public class MiguXcServiceImpl implements MiguXcService {
     }
 
     @Override
-    public JSONObject getActGift(String userId, String secToken, String channelId, String actId, String randCode, String wtAcId, String wtAc) {
+    public JSONObject getActGift(String userId, String secToken, String channelId, String actId, String randCode, String wtAcId, String wtAc,String ditch) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser user = miguXcMapper.findCurMonthUserInfo(userId);
         JSONObject newJsonObject = new JSONObject();
@@ -95,6 +96,7 @@ public class MiguXcServiceImpl implements MiguXcService {
                 history.setKeyword(actId);
                 history.setTypeId(gift.getTypeId());
                 history.setChannelId(channelId);
+                history.setDitch(ditch);
                 int status = miguXcMapper.saveHistory(history);
                    history = miguXcMapper.findCurYwHistory(userId);
                 try {

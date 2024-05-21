@@ -51,13 +51,14 @@ public class MiguFlowServiceImpl implements MiguFlowService {
     private RopServiceManager ropServiceManager;
 
     @Override
-    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
+    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser activityUser = miguFlowMapper.findCurMonthUserInfo(userId);
         if (activityUser == null) {
             activityUser = new ActivityUser();
             activityUser.setUserId(userId);
             activityUser.setAward(0);
+            activityUser.setDitch(ditch);
             miguFlowMapper.saveUser(activityUser);
         }
         activityUser.setSecToken(secToken);
@@ -74,7 +75,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
     }
 
     @Override
-    public JSONObject getActGift(String userId, String secToken, String channelId, String actId, String randCode, String wtAcId, String wtAc) {
+    public JSONObject getActGift(String userId, String secToken, String channelId, String actId, String randCode, String wtAcId, String wtAc,String ditch) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser user = miguFlowMapper.findCurMonthUserInfo(userId);
         JSONObject newJsonObject = new JSONObject();
@@ -92,6 +93,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 history.setKeyword(actId);
                 history.setTypeId(gift.getTypeId());
                 history.setChannelId(channelId);
+                history.setDitch(ditch);
                 int status = miguFlowMapper.saveHistory(history);
                 history = miguFlowMapper.findCurYwHistory(userId);
                 try {

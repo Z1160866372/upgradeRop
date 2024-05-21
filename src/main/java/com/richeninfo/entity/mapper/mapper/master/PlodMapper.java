@@ -119,6 +119,10 @@ public interface PlodMapper {
     @Select("select * from wt_plod_login where  userName=#{userName} and password=#{password}")
     PlodLoginUser findLoginUser(@Param("userName") String userName,@Param("password") String password);
 
+
+    @Select("select * from wt_plod_login where  userName=#{userName} ")
+    PlodLoginUser findLoginUserByUserName(@Param("userName") String userName);
+
     /**
      * 后台管理 查询所有建议
      */

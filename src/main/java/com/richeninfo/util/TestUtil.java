@@ -16,13 +16,13 @@ public class TestUtil {
     public static void main(String[] args) throws Exception {
        /* String phone =rsaUtils.decryptByPriKey("gS0qBoxmpWAcf0R1Gu9T7L5P/QgoBV7jxYDleae1dp5n/40Pbp+4gGlY0YBqIgiwfGjH/EnXwkESwKXhw3qJLT4OHRGXeYvCujCm5FroU4Cnxmu/I6y/3jzceZMNSiSvwzLCCBMJBklE6dJqXj9gNN/ar4Qc0B5JXIThRsZLFW4=");
         System.out.println(phone);*/
-     /* String sectoken=  Des3SSL.encodeDC("13564390148","D6Nao9FDoRJ69VavJ4DHXvXJ");
+      String sectoken=  Des3SSL.encodeDC("15839752822","d8IybzY90SsaFGrGUVxSd6C5");
         System.out.println(sectoken);
 
-        System.out.println("Spring Version: " + SpringVersion.getVersion());*/
-String result = "{\"status\":\"SUCCESS\",\"result\":\"{\\\"msg\\\":\\\"111\\\",\\\"code\\\":1000}\"}";
+        System.out.println("Spring Version: " + SpringVersion.getVersion());
+/*String result = "{\"status\":\"SUCCESS\",\"result\":\"{\\\"msg\\\":\\\"111\\\",\\\"code\\\":1000}\"}";
         String code = JSONObject.parseObject(result).getString("result");
-        System.out.println( JSONObject.parseObject(code).getString("code"));
+        System.out.println( JSONObject.parseObject(code).getString("code"));*/
 
 
     }

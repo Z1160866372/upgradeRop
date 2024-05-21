@@ -23,11 +23,10 @@ public interface MiguFlowService {
      * @param actId
      * @return
      */
-    JSONObject initializeUser(String userId, String secToken, String channelId, String actId);
+    JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch);
 
     /**
      * 多媒体展示
-     * @param userId
      * @param secToken
      * @param channelId
      * @param actId
@@ -43,7 +42,7 @@ public interface MiguFlowService {
      * @param actId
      * @return
      */
-    JSONObject getActGift(String userId, String secToken, String channelId, String actId,String randCode,String wtAcId, String wtAc);
+    JSONObject getActGift(String userId, String secToken, String channelId, String actId,String randCode,String wtAcId, String wtAc,String ditch);
 
 
 

@@ -24,7 +24,7 @@ public interface MigumonthService {
      * @param actId
      * @return
      */
-    JSONObject initializeUser(String mobile, String secToken, String channelId, String actId);
+    JSONObject initializeUser(String mobile, String secToken, String channelId, String actId,String ditch);
 
     /**
      * 领取礼包
@@ -34,7 +34,7 @@ public interface MigumonthService {
      * @param actId
      * @return
      */
-    JSONObject getActGift(String mobile, String secToken, String channelId, String actId);
+    JSONObject getActGift(String mobile, String secToken, String channelId, String actId,String ditch);
 
     /**
      * 多媒体展示

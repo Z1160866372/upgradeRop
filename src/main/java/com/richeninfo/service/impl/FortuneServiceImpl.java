@@ -47,7 +47,7 @@ public class FortuneServiceImpl implements FortuneService {
    @Resource
    CommonMapper commonMapper;
    @Override
-   public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
+   public JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch) {
       JSONObject jsonObject = new JSONObject();
       ActivityUser activityUseruser = FortuneMapper.findUserInfo(userId);
       if (activityUseruser == null) {
@@ -55,6 +55,7 @@ public class FortuneServiceImpl implements FortuneService {
          activityUseruser.setUserId(userId);
          activityUseruser.setPlayNum(1);
          activityUseruser.setAward(0);
+         activityUseruser.setDitch(ditch);
          FortuneMapper.saveUser(activityUseruser);
       }
       activityUseruser.setSecToken(secToken);
@@ -63,7 +64,7 @@ public class FortuneServiceImpl implements FortuneService {
    }
 
    @Override
-   public JSONObject getActGift(String userId, String secToken, String channelId, String actId) {
+   public JSONObject getActGift(String userId, String secToken, String channelId, String actId,String ditch) {
       JSONObject jsonObject = new JSONObject();
       ActivityUser user = FortuneMapper.findUserInfo(userId);
       if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1) {
@@ -80,6 +81,7 @@ public class FortuneServiceImpl implements FortuneService {
                history.setActId(actId);
                history.setTypeId(gift.getTypeId());
                history.setChannelId(channelId);
+               history.setDitch(ditch);
                int status = FortuneMapper.saveHistory(history);
                try {
                   log.info("status=======" + status);

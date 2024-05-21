@@ -45,7 +45,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
     @Resource
     private CommonMapper commonMapper;
     @Override
-    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
+    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch) {
         JSONObject object = new JSONObject();
         ActivityUser users = findEveryDayUser(userId, secToken);
 
@@ -69,6 +69,7 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             users.setAnswerNum(1);
             users.setUnlocked(0);
             users.setActId(actId);
+            users.setDitch(ditch);
             users.setSecToken(secToken);
             exteroceptiveMapper.saveUser(users);
             object.put("user", users);

@@ -37,7 +37,7 @@ public class ConsultServiceImpl implements ConsultService {
    @Resource
    CommonUtil commonUtil;
    @Override
-   public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
+   public JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch) {
       JSONObject jsonObject = new JSONObject();
       ActivityUser activityUserUser =cnsultMapper.findUserInfo(userId);
       if (activityUserUser == null) {
@@ -46,6 +46,7 @@ public class ConsultServiceImpl implements ConsultService {
          activityUserUser.setPlayNum(1);
          activityUserUser.setAward(0);
          activityUserUser.setSecToken(secToken);
+         activityUserUser.setDitch(ditch);
          cnsultMapper.saveUser(activityUserUser);
       } else {
          activityUserUser.setSecToken(secToken);

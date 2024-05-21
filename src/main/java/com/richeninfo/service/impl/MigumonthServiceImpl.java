@@ -54,13 +54,14 @@ public class MigumonthServiceImpl implements MigumonthService {
     private JmsMessagingTemplate jmsMessagingTemplate;
 
     @Override
-    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId) {
+    public JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser activityUser = migumonthMapper.findCurMonthUserInfo(userId, newtime);
         if (activityUser == null) {
             activityUser=new ActivityUser();
             activityUser.setUserId(userId);
             activityUser.setAward(0);
+            activityUser.setDitch(ditch);
             migumonthMapper.saveUser(activityUser);
         }
             activityUser.setSecToken(secToken);
@@ -69,7 +70,7 @@ public class MigumonthServiceImpl implements MigumonthService {
     }
 
     @Override
-    public JSONObject getActGift(String userId, String secToken, String channelId, String actId) {
+    public JSONObject getActGift(String userId, String secToken, String channelId, String actId,String ditch) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser user = migumonthMapper.findCurMonthUserInfo(userId, newtime);
         if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1) {
@@ -85,6 +86,7 @@ public class MigumonthServiceImpl implements MigumonthService {
                 history.setActId(actId);
                 history.setTypeId(gift.getTypeId());
                 history.setChannelId(channelId);
+                history.setDitch(ditch);
                 int status = migumonthMapper.saveHistory(history);
                 try {
                     if (status > 0) {//异步mq发放礼包
