@@ -143,17 +143,31 @@ public class PlodController {
                     }
                     System.out.println(basePath + File.separator + path + File.separator + imgId);
                     File file = new File(basePath + File.separator + path + File.separator + imgId);
-                    OutputStream outputStream = response.getOutputStream();
-                    InputStream inputStream = new FileInputStream(file);
-                    byte[] bs = new byte[1024];
-                    int length = inputStream.read(bs);
-                    while (-1 != length) {
-                        outputStream.write(bs, 0, length);
-                        length = inputStream.read(bs);
+                    System.out.println("上传文件路径="+file.getParentFile());
+                    System.out.println("当前文件路径="+new File("/home/weihu/imgs/"));
+                    System.out.println("上传文件路径绝对地址="+file.getParentFile().getAbsolutePath());
+                    System.out.println("文件地址1="+!file.getParentFile().equals(new File("/home/weihu/imgs/")));
+                    System.out.println("文件地址12="+!file.getParentFile().equals(new File("/home/weihu/video/")));
+                    System.out.println("文件地址12="+(!file.getParentFile().equals(new File("/home/weihu/imgs/"))&&!file.getParentFile().equals(new File("/home/weihu/videos/"))));
+                    System.out.println("文件地址判断="+file.getParentFile().getAbsolutePath().contains(".."));
+                    System.out.println("文件地址判断="+file.getParentFile().getAbsolutePath().contains("../"));
+                    if ((!file.getParentFile().equals(new File("/home/weihu/imgs/"))&&!file.getParentFile().equals(new File("/home/weihu/videos/"))) ||file.getParentFile().getAbsolutePath().contains("..") || file.getParentFile().getAbsolutePath().contains("../")) {
+                        object.put(Constant.MSG, "NoFile");
+                        throw new IllegalArgumentException("文件不在指定目录内");
+                    }else{
+                        OutputStream outputStream = response.getOutputStream();
+                        InputStream inputStream = new FileInputStream(file);
+                        byte[] bs = new byte[1024];
+                        int length = inputStream.read(bs);
+                        while (-1 != length) {
+                            outputStream.write(bs, 0, length);
+                            length = inputStream.read(bs);
+                        }
+                        outputStream.flush();
+                        outputStream.close();
+                        inputStream.close();
                     }
-                    outputStream.flush();
-                    outputStream.close();
-                    inputStream.close();
+
                 } else {
                     object.put(Constant.MSG, "NoPower");
                 }

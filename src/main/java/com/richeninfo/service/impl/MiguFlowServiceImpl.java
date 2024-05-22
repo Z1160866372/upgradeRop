@@ -58,6 +58,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
             activityUser = new ActivityUser();
             activityUser.setUserId(userId);
             activityUser.setAward(0);
+            activityUser.setUserType(isBlack(userId));
             activityUser.setDitch(ditch);
             miguFlowMapper.saveUser(activityUser);
         }
@@ -79,7 +80,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
         JSONObject jsonObject = new JSONObject();
         ActivityUser user = miguFlowMapper.findCurMonthUserInfo(userId);
         JSONObject newJsonObject = new JSONObject();
-        if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1) {
+        if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1&&user.getUserType()<1) {
             //查询是否领取过当月的礼包
             ActivityUserHistory history = miguFlowMapper.findCurYwHistory(userId);
             ActivityConfiguration gift = miguFlowMapper.findGiftByUnlocked(0, actId);
@@ -154,12 +155,12 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId, history.getDitch());
-           /* String message = ropServiceManager.execute(packet, history.getUserId(),actId);
+            String message = ropServiceManager.execute(packet, history.getUserId(),actId);
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message, Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
-            String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");*/
-         /*   if (Constant.SUCCESS_CODE.equals(res)) {
+            String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");
+            if (Constant.SUCCESS_CODE.equals(res)) {
                 transact_result = true;
                 miguFlowMapper.updateUserAward(history.getUserId());
                 history.setStatus(Constant.STATUS_RECEIVED);
@@ -183,19 +184,19 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 transact_result = false;
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
-            }*/
-            if (true) {
+            }
+            /*if (true) {
                 miguFlowMapper.updateUserAward(history.getUserId());
                 transact_result = false;
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
                 object.put("res", "0000");
                 object.put("DoneCode", "9999");
-            }
+            }*/
             history.setCode(JSONObject.toJSONString(packet));
-            /*object.put("res", res);
+            object.put("res", res);
             history.setMessage(message);
-            object.put("DoneCode",DoneCode);*/
+            object.put("DoneCode",DoneCode);
             object.put("update_history", JSON.toJSONString(history));
             miguFlowMapper.updateHistory(history);
 
@@ -226,5 +227,14 @@ public class MiguFlowServiceImpl implements MiguFlowService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    //更新黑名单
+    public int isBlack(String userId){
+        int balck=0;
+        List<String> isBlack=miguFlowMapper.findIsBlack(userId);
+        balck=null==isBlack||isBlack.isEmpty()?0:1;
+        log.info("balck==="+balck);
+        return balck;
+
     }
 }

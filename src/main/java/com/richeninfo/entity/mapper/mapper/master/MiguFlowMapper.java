@@ -34,7 +34,7 @@ public interface MiguFlowMapper {
     * 初始化用户信息
     * @param user
     */
-   @Insert("INSERT INTO wt_miguflow_user (userId,level,award,playNum,channelId,grade,answerNum,mark,blowNum,weekTime,createTime,createDate,secToken,ditch) value (#{userId},#{level},#{award},#{playNum},#{channelId},#{grade},#{answerNum},#{mark},#{blowNum},now(),now(),curdate(),#{secToken},#{ditch})")
+   @Insert("INSERT INTO wt_miguflow_user (userId,level,award,playNum,channelId,grade,answerNum,mark,blowNum,weekTime,createTime,createDate,secToken,ditch,userType) value (#{userId},#{level},#{award},#{playNum},#{channelId},#{grade},#{answerNum},#{mark},#{blowNum},now(),now(),curdate(),#{secToken},#{ditch},#{userType})")
    void saveUser(ActivityUser user);
 
    /**
@@ -90,4 +90,7 @@ public interface MiguFlowMapper {
 
    @Update("update wt_miguflow_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
    int updateHistory(ActivityUserHistory history);//更新接口状态
+
+   @Select("SELECT `userId` FROM  `wt_flowmigu_black` WHERE userId=#{userId} ")
+   List<String > findIsBlack(String userId);
 }
