@@ -165,7 +165,7 @@ public class NewCallServiceImpl implements NewCallService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
-           /* String message = ropService.execute(packet,history.getUserId(),history.getActId());
+            String message = ropService.execute(packet,history.getUserId(),history.getActId());
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message,Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
@@ -194,18 +194,18 @@ public class NewCallServiceImpl implements NewCallService {
                 transact_result = false;
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
-            }*/
-            if (true) {
+            }
+            /*if (true) {
                 transact_result = true;
                 history.setStatus(Constant.STATUS_RECEIVED);
                 object.put(Constant.MSG, Constant.SUCCESS);
-            }
+            }*/
             history.setMessage(JSON.toJSONString(result));
             history.setCode(JSON.toJSONString(packet));
-          /*  object.put("res", res);
-            object.put("DoneCode", DoneCode);*/
-            object.put("res", "0000");
-            object.put("DoneCode", "9999");
+            object.put("res", res);
+            object.put("DoneCode", DoneCode);
+           /* object.put("res", "0000");
+            object.put("DoneCode", "9999");*/
             object.put("update_history", JSON.toJSONString(history));
             newCallMapper.updateHistory(history);
 

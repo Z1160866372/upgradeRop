@@ -191,11 +191,11 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
         log.info("oldHistory==="+oldHistory.toString());
         Packet packet = packetHelper.CardVoucherIssued("CH5",activityConfiguration.getActivityId(),mobile);
         try {
-            /*String result = ropService.executes(packet,mobile,actId);
+            String result = ropService.executes(packet,mobile,actId);
             log.info("result==="+result);
             String code = JSONObject.parseObject(result).getString("code");
-            log.info("code==="+code);*/
-            String code="200";
+            log.info("code==="+code);
+           /* String code="200";*/
             if(code.equals("200")){
                 oldHistory.setStatus(Constant.STATUS_RECEIVED);
                 result_status=true;
@@ -204,8 +204,8 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
                 result_status=false;
             }
             oldHistory.setCode(JSONObject.toJSONString(packet));
-            //oldHistory.setMessage(result);
-            oldHistory.setMessage("测试数据～");
+            oldHistory.setMessage(result);
+            //oldHistory.setMessage("测试数据～");
             schoolBaqMapper.updateHistory(oldHistory);
         }catch (Exception exception){
             result_status=false;
