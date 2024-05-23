@@ -13,10 +13,7 @@ import com.richeninfo.entity.mapper.entity.*;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
-import com.richeninfo.util.Des3SSL;
-import com.richeninfo.util.ImageUtil;
-import com.richeninfo.util.RSAUtils;
-import com.richeninfo.util.RedisUtil;
+import com.richeninfo.util.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -26,6 +23,7 @@ import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
@@ -39,6 +37,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.Base64;
 
 /**
  * @Author : zhouxiaohu
@@ -66,6 +65,8 @@ public class CommonController {
     private RedisUtil redisUtil;
     @Resource
     HttpServletResponse response;
+    @Resource
+    private FileUtil fileUtil;
     @Resource
     private JmsMessagingTemplate jmsMessagingTemplate;
 
@@ -289,5 +290,15 @@ public class CommonController {
             object.put(Constant.MSG,"noData");
         }
         return object;
+    }
+
+    /**
+     * 附件上传(仅支持CSV)
+     * @param file
+     */
+    @ResponseBody
+    @RequestMapping("attachmentUpload")
+    public void attachmentUpload(@RequestParam(value = "file", required = false) MultipartFile file){
+        fileUtil.attachmentUpload(request,response,file);
     }
 }

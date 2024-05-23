@@ -22,7 +22,12 @@ import java.util.List;
 @Mapper
 public interface FileListMapper {
 
-    @Select("select * from activity_fileList where principal = #{principal}")
+    @Select({"<script> select * from activity_fileList where 1=1 " +
+            " <if test=\"principal != null and principal != ''\">  " +
+            " and principal = #{principal} " +
+            " </if>" +
+            "</script>"
+    })
     List<ActivityFileList> selectActivityFileList(String principal);
 
     @Insert("insert into activity_fileList(name,fileName,number,principal,createTime)values(#{name},#{fileName},#{number},#{principal},now())")
