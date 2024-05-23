@@ -191,40 +191,35 @@ public class MiguXcServiceImpl implements MiguXcService {
                 miguXcMapper.updateUserAward(history.getUserId());
                 history.setStatus(Constant.STATUS_RECEIVED);
                 object.put(Constant.MSG, Constant.SUCCESS);
-                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
-                System.out.println(new_packet.toString());
-                String result_String =ropServiceManager.execute(new_packet, history.getUserId(),actId);
-                ActivityOrder order = new ActivityOrder();
-                order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
-                String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();
-                order.setThirdTradeId(packetThirdTradeId);
-                order.setOrderItemId("JYRZ"+packetThirdTradeId.substring(packetThirdTradeId.length()-21));
-                order.setBossId(config.getActivityId());
-                order.setCommodityName(config.getName());
-                order.setUserId(history.getUserId());
-                order.setCode(JSONArray.fromObject(new_packet).toString());
-                order.setMessage(result_String);
-                order.setChannelId(channelId);
-                commonMapper.insertActivityOrder(order);
             } else {
                 transact_result = false;
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
             }
-           /*if (true) {
-                miguXcMapper.updateUserAward(history.getUserId());
-                transact_result = false;
-                history.setStatus(Constant.STATUS_RECEIVED_ERROR);
-                object.put(Constant.MSG, Constant.FAILURE);
-               object.put("res", "0000");
-               object.put("DoneCode", "9999");
-            }*/
             history.setMessage(message);
             object.put("res", res);
             object.put("DoneCode",DoneCode);
             history.setCode(JSONObject.toJSONString(packet));
             object.put("update_history",JSONObject.toJSONString(history));
             miguXcMapper.updateHistory(history);
+           if (transact_result) {
+               Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
+               System.out.println(new_packet.toString());
+               String result_String =ropServiceManager.executes(new_packet, history.getUserId(),actId);
+               ActivityOrder order = new ActivityOrder();
+               order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
+               String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();
+               order.setThirdTradeId(packetThirdTradeId);
+               order.setOrderItemId("JYRZ"+packetThirdTradeId.substring(packetThirdTradeId.length()-21));
+               order.setBossId(config.getActivityId());
+               order.setCommodityName(config.getName());
+               order.setUserId(history.getUserId());
+               order.setCode(JSON.toJSONString(new_packet));
+               order.setMessage(result_String);
+               order.setChannelId(channelId);
+               commonMapper.insertActivityOrder(order);
+            }
+
 
 
         } catch (Exception e) {

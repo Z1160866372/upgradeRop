@@ -53,7 +53,7 @@ public class ActivityMqListener {
             String code = request.getResponse().getErrorInfo().getCode();
             String resCode = request.getResponse().getRetInfo().getString("resultCode");
             if (Constant.SUCCESS_CODE.equals(code)) {
-                if (Constant.SUCCESS.equals(resCode)) {
+                if (resCode.equals("SUCCESS")) {
                     history.setStatus(Constant.STATUS_RECEIVED);
                 } else {
                     history.setStatus(Constant.STATUS_RECEIVED_ERROR);

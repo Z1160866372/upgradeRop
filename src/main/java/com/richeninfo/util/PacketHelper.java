@@ -1037,7 +1037,7 @@ public class PacketHelper {
         String busiStatus="00";//订单原始状态01未处理02处理中00处理成功04处理失败05推定成功YJ80退货处理中
         String platformCode="03";//业务上架平台00其他01在线工具02星火平台03中国移动APP
         String orderItemId=packet.getPost().getPubInfo().getTransactionId();//订单项ID
-        String commodityId=config.getProb().split(";")[4];//商品ID
+        String commodityId=config.getProb().split(";")[5];//商品ID
         String commodityName=config.getName();//商品名称
         String commodityNum="1";//商品数量 默认1
         String commodityType=config.getProb().split(";")[2];//商品类型 移动云盘

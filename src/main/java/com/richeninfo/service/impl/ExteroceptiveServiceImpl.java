@@ -47,35 +47,34 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
     @Override
     public JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch) {
         JSONObject object = new JSONObject();
+        ActivityUser user=new ActivityUser();
         ActivityUser users = findEveryDayUser(userId, secToken);
-
         if (users == null) {
-            users= new ActivityUser();
             //查询第一期的分数和对应等级 导入第二期
             ActivityUser olduser = exteroceptiveMapper.findOldUserInfoByUserId(userId);
             if (olduser == null) {
-                users.setGrade(0);
+                user.setGrade(0);
             } else {
-                users.setGrade(olduser.getGrade());
-                users.setMark(olduser.getMark());
+                user.setGrade(olduser.getGrade());
+                user.setMark(olduser.getMark());
                 InsertRecord("2023年心级体验官累积分值", userId, olduser.getMark(), channelId, 0);
             }
-            users.setLevel(0);// 第一次进游戏
-            users.setAward(0);
-            users.setUserId(userId);
-            users.setChannelId(channelId);
-            users.setPlayNum(2);
-            users.setBlowNum(1);
-            users.setAnswerNum(1);
-            users.setUnlocked(0);
-            users.setActId(actId);
-            users.setDitch(ditch);
-            users.setSecToken(secToken);
-            exteroceptiveMapper.saveUser(users);
-            object.put("user", users);
+            user.setLevel(0);// 第一次进游戏
+            user.setAward(0);
+            user.setUserId(userId);
+            user.setChannelId(channelId);
+            user.setPlayNum(2);
+            user.setBlowNum(1);
+            user.setAnswerNum(1);
+            user.setUnlocked(0);
+            user.setActId(actId);
+            user.setDitch(ditch);
+            user.setSecToken(secToken);
+            exteroceptiveMapper.saveUser(user);
+            object.put("user", user);
         } else {
-            users.setSecToken(secToken);
-            object.put("user", users);
+            user.setSecToken(secToken);
+            object.put("user", user);
         }
         return object;
     }

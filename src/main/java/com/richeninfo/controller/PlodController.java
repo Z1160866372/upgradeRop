@@ -167,15 +167,11 @@ public class PlodController {
                         outputStream.close();
                         inputStream.close();
                     }
-
                 } else {
                     object.put(Constant.MSG, "NoPower");
                 }
             }
-            PrintWriter out = response.getWriter();
-            out.println(object);
-            out.flush();
-            out.close();
+
         }
     }
 

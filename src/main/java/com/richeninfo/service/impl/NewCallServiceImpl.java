@@ -174,32 +174,11 @@ public class NewCallServiceImpl implements NewCallService {
                 transact_result = true;
                 history.setStatus(Constant.STATUS_RECEIVED);
                 object.put(Constant.MSG, Constant.SUCCESS);
-                //业务办理成功 接口上报
-                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
-                System.out.println(new_packet.toString());
-                String result_String =ropService.execute(new_packet, history.getUserId(),history.getActId());
-                ActivityOrder order = new ActivityOrder();
-                order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
-                String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();
-                order.setThirdTradeId(packetThirdTradeId);
-                order.setOrderItemId("JYRZ"+packetThirdTradeId.substring(packetThirdTradeId.length()-21));
-                order.setBossId(config.getActivityId());
-                order.setCommodityName(config.getName());
-                order.setUserId(history.getUserId());
-                order.setCode(JSONArray.fromObject(new_packet).toString());
-                 order.setMessage(result_String);
-                order.setChannelId(channelId);
-                commonMapper.insertActivityOrder(order);
             }else{
                 transact_result = false;
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
             }
-            /*if (true) {
-                transact_result = true;
-                history.setStatus(Constant.STATUS_RECEIVED);
-                object.put(Constant.MSG, Constant.SUCCESS);
-            }*/
             history.setMessage(JSON.toJSONString(result));
             history.setCode(JSON.toJSONString(packet));
             object.put("res", res);
@@ -208,7 +187,24 @@ public class NewCallServiceImpl implements NewCallService {
             object.put("DoneCode", "9999");*/
             object.put("update_history", JSON.toJSONString(history));
             newCallMapper.updateHistory(history);
-
+            if (transact_result) {
+                //业务办理成功 接口上报
+                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
+                System.out.println(new_packet.toString());
+                String result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
+                ActivityOrder order = new ActivityOrder();
+                order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
+                String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();
+                order.setThirdTradeId(packetThirdTradeId);
+                order.setOrderItemId("JYRZ"+packetThirdTradeId.substring(packetThirdTradeId.length()-21));
+                order.setBossId(config.getActivityId());
+                order.setCommodityName(config.getName());
+                order.setUserId(history.getUserId());
+                order.setCode(JSON.toJSONString(new_packet));
+                order.setMessage(result_String);
+                order.setChannelId(channelId);
+                commonMapper.insertActivityOrder(order);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

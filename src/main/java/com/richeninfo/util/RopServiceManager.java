@@ -101,7 +101,7 @@ public class RopServiceManager {
     //接口调用日志
     public void saveOpenapiLog(Packet reqPack, String message, String response, String userId,String actId) {
         OpenapiLog log = new OpenapiLog();
-        log.setAddress(request.getLocalAddr() + ":" + request.getLocalPort());
+        //log.setAddress(request.getLocalAddr() + ":" + request.getLocalPort());
         log.setAppCode(appCode);
         log.setApiCode(reqPack.getApiCode());
         log.setCode(message);
