@@ -27,7 +27,7 @@ import java.net.URLEncoder;
 @Component
 public class FileUtil {
 
-    private static String filePath = "/Users/zhouxiaohu/Desktop/";
+    private static String filePath = "/home/weihu/";
     // CSV上传路径
     private static String FILE_UPLOAD_SUB_CSV_DIR = "/csv";
     /**
