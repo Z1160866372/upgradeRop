@@ -1,0 +1,41 @@
+spring:
+  redis:
+    #host: 10.102.75.11
+    host: 10.102.75.6
+    password: Jy*Rds&$8
+    port: 6379
+  master:
+    datasource:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://10.196.65.153:3308/rop?characterEncoding=utf8&allowMultiQueries=true&useSSL=false
+      #url: jdbc:mysql://10.102.74.16:3308/rop?characterEncoding=utf8&allowMultiQueries=true&useSSL=false
+      username: root
+      password: Jy#BC8&%
+  #activemq配置
+  activemq:
+    broker-url: tcp://10.102.75.11:61616  #activeMQ的ip和端口号
+    #broker-url: tcp://10.102.75.6:61616  #activeMQ的ip和端口号
+    user: admin   #activeMq账号
+    password: Jy*Mq&$8 #activeMq密码
+    non-blocking-redelivery: false # 是否在回滚回滚消息之前停止消息传递。这意味着当启用此命令时，消息顺序不会被保留。
+    send-timeout: 0 # 等待消息发送响应的时间。设置为0等待永远。
+    in-memory: true
+    queue-name: commonQueue  # queue队列的名称
+    topic-name: commonTopic  # topic队列的名称
+    pool:
+      enabled: true # 启用连接池
+      max-connections: 100 # 最大连接数
+      idle-timeout: 30000 # 空闲的连接过期时间，默认为30秒
+#能开平台相关配置信息
+#正式地址product
+nengKai:
+  ip: 40.40.40.115
+  config_context: /openapi/secret
+  appCode: A0000479
+  apk_new: ZK2KFvG5wn/pXtUEAeUsv7DWks2eXbU+
+  apk: KbYv6fJRH4pUruNM+2HvTCm2L+nyUR+K
+  securityUrl: http://40.40.40.115/open/security
+  openapiUrl: http://40.40.40.115/open/service
+
+
+

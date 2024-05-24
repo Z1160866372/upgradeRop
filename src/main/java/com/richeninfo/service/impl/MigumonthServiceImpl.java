@@ -62,6 +62,7 @@ public class MigumonthServiceImpl implements MigumonthService {
             activityUser.setUserId(userId);
             activityUser.setAward(0);
             activityUser.setDitch(ditch);
+            activityUser.setChannelId(channelId);
             migumonthMapper.saveUser(activityUser);
         }
             activityUser.setSecToken(secToken);

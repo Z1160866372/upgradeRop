@@ -56,6 +56,7 @@ public class FortuneServiceImpl implements FortuneService {
          activityUseruser.setPlayNum(1);
          activityUseruser.setAward(0);
          activityUseruser.setDitch(ditch);
+         activityUseruser.setChannelId(channelId);
          FortuneMapper.saveUser(activityUseruser);
       }
       activityUseruser.setSecToken(secToken);

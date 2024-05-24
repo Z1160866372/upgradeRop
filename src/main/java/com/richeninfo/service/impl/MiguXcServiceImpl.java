@@ -62,6 +62,7 @@ public class MiguXcServiceImpl implements MiguXcService {
             activityUser.setUserId(userId);
             activityUser.setAward(0);
             activityUser.setDitch(ditch);
+            activityUser.setChannelId(channelId);
             miguXcMapper.saveUser(activityUser);
         }
         activityUser.setSecToken(secToken);

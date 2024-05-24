@@ -60,6 +60,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
             activityUser.setAward(0);
             activityUser.setUserType(isBlack(userId));
             activityUser.setDitch(ditch);
+            activityUser.setChannelId(channelId);
             miguFlowMapper.saveUser(activityUser);
         }
         activityUser.setSecToken(secToken);

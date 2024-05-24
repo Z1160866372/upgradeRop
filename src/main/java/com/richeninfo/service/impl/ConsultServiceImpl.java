@@ -47,6 +47,7 @@ public class ConsultServiceImpl implements ConsultService {
          activityUserUser.setAward(0);
          activityUserUser.setSecToken(secToken);
          activityUserUser.setDitch(ditch);
+         activityUserUser.setChannelId(channelId);
          cnsultMapper.saveUser(activityUserUser);
       } else {
          activityUserUser.setSecToken(secToken);
