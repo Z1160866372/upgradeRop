@@ -72,11 +72,12 @@ public class CommonController {
 
 
     @RequestMapping(value = "wtFree")
-    protected String wtFree(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId) throws ServletException, IOException {
+    protected String wtFree(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId,@ApiParam(name = "ditch", value = "渠道", required = true) String ditch) throws ServletException, IOException {
         secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
         actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
+        ditch = request.getParameter("ditch") == null ? "" : request.getParameter("ditch");
         log.info("微厅免登录接收secToken=="+secToken);
-        String url="https://activity.sh.10086.cn/"+actId+"/index.html?secToken="+secToken;
+        String url="https://activity.sh.10086.cn/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
         return "redirect:"+url+"";
     }
 
