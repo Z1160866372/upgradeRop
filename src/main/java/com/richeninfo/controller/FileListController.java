@@ -65,8 +65,10 @@ public class FileListController {
     @ApiOperation("获取文件列表")
     @PostMapping("/getConf")
     public @ResponseBody
-    void getConf(@ApiParam(name = "principal", value = "用户标识", required = true) String principal) throws Exception {
-        resp.getWriter().write(JSON.toJSONString(fileListService.getActivityFileList(principal)));
+    JSONObject getConf(@ApiParam(name = "principal", value = "用户标识", required = true) String principal) throws Exception {
+        JSONObject object = new JSONObject();
+        object.put(Constant.ObjectList,fileListService.getActivityFileList(principal));
+        return object;
     }
 
 }
