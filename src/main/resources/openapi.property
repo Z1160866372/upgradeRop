@@ -1,0 +1,11 @@
+#开放平台接口v2
+
+#测试环境：
+#security_server_url=http://10.10.140.76/open/security
+#openapi_server_url=http://10.10.140.76/open/service
+ 
+#生产环境地址：
+security_server_url=http://40.40.40.115/open/security
+openapi_server_url=http://40.40.40.115/open/service
+
+

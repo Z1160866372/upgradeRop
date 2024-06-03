@@ -7,7 +7,6 @@
 package com.richeninfo.util;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.OpenapiLog;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.pojo.OpcProperties;
@@ -25,6 +24,7 @@ import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import com.chinamobile.cn.openapi.sdk.v2.client.OpenapiHttpCilent;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -48,22 +48,19 @@ public class RopServiceManager {
     private HttpServletRequest request;
     @Resource
     private CommonMapper commonMapper;
-    @Resource
-    private OpenapiHttpCilent openapiHttpCilent;
 
     public String execute(Packet reqPack, String userId,String actId) throws Exception {
         String response = "";
-
         try {
             log.info("appCode:" + appCode);
             log.info("apk:" + apk_new);
             String message = JSON.toJSONString(reqPack.getPost());
             log.info("Request:\n" + message);
-            // OpenapiHttpCilent client = new OpenapiHttpCilent(appCode, apk_new);
-            response = openapiHttpCilent.call(reqPack.getApiCode(), reqPack.getPost().getPubInfo().getTransactionId(), message);
+            OpenapiHttpCilent client = new OpenapiHttpCilent(appCode, apk_new);
+            response = client.call(reqPack.getApiCode(), reqPack.getPost().getPubInfo().getTransactionId(), message);
+            saveOpenapiLog(reqPack, message, response, userId,actId);//保存用户调用记录
             log.info("Response(" + reqPack.getPost().getRequest().getBusiCode() + "|" + reqPack.getPost().getRequest().getBusiParams().getString("billId") + "):\n" + response);
             String status = JSON.parseObject(response).getString("status");
-            saveOpenapiLog(reqPack, message, response, userId,actId);//保存用户调用记录
             if (!"SUCCESS".equals(status)) {
                 throw new RuntimeException(JSON.parseObject(response).getString("result"));
             }
@@ -89,8 +86,8 @@ public class RopServiceManager {
             //String message = reqPack.getPost().getRequest().getBusiParams().toString();
             String message = reqPack.getObject().toString();
             log.info("card Request:" + message);
-            // OpenapiHttpCilent client = new OpenapiHttpCilent(appCode, apk_new);
-            response = openapiHttpCilent.call(reqPack.getApiCode(), null, message);
+            OpenapiHttpCilent client = new OpenapiHttpCilent(appCode, apk_new);
+            response = client.call(reqPack.getApiCode(), null, message);
             log.info("card Response " + response);
             saveOpenapiLog(reqPack, message, response, userId,actId);//保存用户调用记录
         } catch (Exception e) {
