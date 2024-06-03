@@ -47,9 +47,9 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
     @Override
     public JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch) {
         JSONObject object = new JSONObject();
-        ActivityUser user=new ActivityUser();
         ActivityUser users = findEveryDayUser(userId, secToken);
         if (users == null) {
+            ActivityUser user=new ActivityUser();
             //查询第一期的分数和对应等级 导入第二期
             ActivityUser olduser = exteroceptiveMapper.findOldUserInfoByUserId(userId);
             if (olduser == null) {
@@ -73,8 +73,8 @@ public class ExteroceptiveServiceImpl implements ExteroceptiveService {
             exteroceptiveMapper.saveUser(user);
             object.put("user", user);
         } else {
-            user.setSecToken(secToken);
-            object.put("user", user);
+            users.setSecToken(secToken);
+            object.put("user", users);
         }
         return object;
     }

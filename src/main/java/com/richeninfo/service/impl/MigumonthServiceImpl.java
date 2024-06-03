@@ -41,7 +41,7 @@ public class MigumonthServiceImpl implements MigumonthService {
 
     private DateFormat df = new SimpleDateFormat("yyyy-MM");
 
-    String newtime = df.format(new Date());
+
     @Resource
     MigumonthMapper migumonthMapper;
     @Resource
@@ -56,11 +56,17 @@ public class MigumonthServiceImpl implements MigumonthService {
     @Override
     public JSONObject initializeUser(String userId, String secToken, String channelId, String actId, String ditch) {
         JSONObject jsonObject = new JSONObject();
+        String newtime = df.format(new Date());
         ActivityUser activityUser = migumonthMapper.findCurMonthUserInfo(userId, newtime);
         if (activityUser == null) {
             activityUser=new ActivityUser();
+            ActivityUserHistory history = migumonthMapper.findCurMonthHistory(userId, newtime);
+            if (history == null) {
+                activityUser.setAward(0);
+            }else{
+                activityUser.setAward(1);
+            }
             activityUser.setUserId(userId);
-            activityUser.setAward(0);
             activityUser.setDitch(ditch);
             activityUser.setChannelId(channelId);
             migumonthMapper.saveUser(activityUser);
@@ -73,6 +79,7 @@ public class MigumonthServiceImpl implements MigumonthService {
     @Override
     public JSONObject getActGift(String userId, String secToken, String channelId, String actId,String ditch) {
         JSONObject jsonObject = new JSONObject();
+        String newtime = df.format(new Date());
         ActivityUser user = migumonthMapper.findCurMonthUserInfo(userId, newtime);
         if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1) {
             //查询是否领取过当月的礼包
@@ -93,7 +100,7 @@ public class MigumonthServiceImpl implements MigumonthService {
                 int status = migumonthMapper.saveHistory(history);
                 try {
                     if (status > 0) {//异步mq发放礼包
-                        migumonthMapper.updateUserAward(userId);
+                        migumonthMapper.updateUserAward(user.getId());
                         jsonObject.put("msg", "success");
                         String mqMsg = commonService.issueReward(history);
                         log.info("4147请求信息：" + mqMsg);

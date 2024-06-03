@@ -57,6 +57,9 @@ public interface CommonMapper {
     @Select("select * from ${keyword} where userId = #{userId} and unlocked =#{unlocked} and actId =#{actId}")
     ActivityUserHistory selectHistoryByUnlocked(@Param("userId") String userId, @Param("unlocked") int unlocked, @Param("actId") String actId, @Param("keyword") String keyword);//查询用户当前奖励是否已领取
 
+    @Select("select * from ${keyword} where userId = #{userId} and unlocked =#{unlocked} and actId =#{actId} and createDate=#{createDate}")
+    ActivityUserHistory selectHistoryByUnlockedByCreateDate(@Param("userId") String userId, @Param("unlocked") int unlocked, @Param("actId") String actId, @Param("keyword") String keyword, @Param("createDate") String createDate);//查询用户当前奖励是否已领取
+
     @Update("update ${keyword} set status=#{status},code=#{code},message=#{message} where id=#{id}")
     int updateHistory(@Param("status") int status,@Param("code") String code,@Param("message") String message, @Param("id") int id, @Param("keyword") String keyword);//更新接口状态
 
@@ -84,7 +87,7 @@ public interface CommonMapper {
     @Insert("insert into ${keyword}(actId,userId,secToken,channelId,createTime)values(#{log.actId},#{log.userId},#{log.secToken},#{log.channelId},now())")
     int insertActivityShare(ActivityShare log, @Param("keyword") String keyword);//添加用户操作记录
 
-    @Select("select * from ${keyword} where `status` !=3 and `message` not like '%地市%' and createTime<#{createTime}")
+    @Select("select * from ${keyword} where (`status` !=3 or status is null) and (message not like '%地市%' or message is null) and createTime < #{createTime} and createTime>'2024-05-26 00:00:00' and typeId = 0")
     List<ActivityUserHistory> selectActivityUserHistory(@Param("createTime") String createTime, @Param("keyword") String keyword);
 
 }

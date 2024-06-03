@@ -82,7 +82,7 @@ public class SchoolBaqServiceImpl implements SchoolBaqService {
             new_user.setUserId(user.getUserId());
             new_user.setActId(user.getActId());
             new_user.setChannelId(user.getChannelId());
-            new_user.setCreateDate(month.format(new Date()));
+            new_user.setCreateDate(day.format(new Date()));
             new_user.setDitch(user.getDitch());
             List<ActivityRoster> selectRoster = schoolBaqMapper.selectRoster(user.getUserId());
             if(!CollectionUtils.isEmpty(selectRoster)){

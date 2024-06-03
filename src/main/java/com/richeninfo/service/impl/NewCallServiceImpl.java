@@ -80,6 +80,7 @@ public class NewCallServiceImpl implements NewCallService {
             new_user.setActId(user.getActId());
             new_user.setChannelId(user.getChannelId());
             new_user.setDitch(user.getDitch());
+            new_user.setCreateDate(day.format(new Date()));
             newCallMapper.insertUser(new_user);
             user = new_user;
         } else {

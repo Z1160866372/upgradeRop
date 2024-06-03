@@ -19,6 +19,9 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @Author : zhouxiaohu
@@ -33,6 +36,8 @@ public class ActivityMqListener {
     @Resource
     private RopServiceManager ropServiceManager;
 
+    DateFormat df = new SimpleDateFormat("yyyy-MM");
+
     @JmsListener(destination="commonQueue" , containerFactory="queueListener")
     public void readActiveQueue(String message) {
         log.info("接收信息" + message);
@@ -44,7 +49,12 @@ public class ActivityMqListener {
                 return;
             }
             keyword = "wt_"+mq.getHistory().getActId()+"_history";
-            history = commonMapper.selectHistoryByUnlocked(mq.getHistory().getUserId(), mq.getHistory().getUnlocked(), mq.getHistory().getActId(),keyword);
+            if(mq.getHistory().getActId().equals("finance")){
+                history = commonMapper.selectHistoryByUnlockedByCreateDate(mq.getHistory().getUserId(), mq.getHistory().getUnlocked(), mq.getHistory().getActId(),keyword, df.format(new Date()));
+            }else{
+                history = commonMapper.selectHistoryByUnlocked(mq.getHistory().getUserId(), mq.getHistory().getUnlocked(), mq.getHistory().getActId(),keyword);
+            }
+
             if (history == null || history.getStatus() == Constant.STATUS_RECEIVED || mq.getPacket()== null) {
                 return;
             }
@@ -67,6 +77,7 @@ public class ActivityMqListener {
             history.setCode(JSONObject.toJSONString(mq.getPacket()));
         } catch (Exception e) {
             e.printStackTrace();
+            history.setCode(JSONObject.toJSONString(mq.getPacket()));
             history.setStatus(Constant.STATUS_RECEIVED_ERROR);
             history.setMessage(e.getMessage());
         }

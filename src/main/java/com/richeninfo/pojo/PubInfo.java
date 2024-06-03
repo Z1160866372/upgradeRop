@@ -16,7 +16,7 @@ public class PubInfo {
 
     private String RegionCode = "021";
     private String TransactionTime;
-    private String ClientIP = "120.55.182.176";
+    private String ClientIP = "10.196.26.178";
     private String OrgId = "0";
     private String CountyCode = "210";
     private String OpId = "999990144";

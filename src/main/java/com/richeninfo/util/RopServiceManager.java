@@ -53,6 +53,7 @@ public class RopServiceManager {
 
     public String execute(Packet reqPack, String userId,String actId) throws Exception {
         String response = "";
+
         try {
             log.info("appCode:" + appCode);
             log.info("apk:" + apk_new);
@@ -76,6 +77,7 @@ public class RopServiceManager {
                 }
             }
             log.error("Exception : " + message.toString());
+            saveOpenapiLog(reqPack, message.toString(), response, userId,actId);//保存用户调用记录
             throw e;
         }
         return JSON.parseObject(response).getString("result");

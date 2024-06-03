@@ -13,7 +13,7 @@ spring:
       password: Jy#BC8&%
   #activemq配置
   activemq:
-    broker-url: tcp://10.102.75.11:61616  #activeMQ的ip和端口号
+    broker-url: tcp://10.102.75.6:61616  #activeMQ的ip和端口号
     #broker-url: tcp://10.102.75.6:61616  #activeMQ的ip和端口号
     user: admin   #activeMq账号
     password: Jy*Mq&$8 #activeMq密码

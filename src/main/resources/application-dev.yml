@@ -6,7 +6,7 @@ spring:
   master:
     datasource:
       driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://10.102.74.10:3308/rop?characterEncoding=utf8&allowMultiQueries=true&useSSL=false
+      url: jdbc:mysql://10.196.65.130:3308/rop?characterEncoding=utf8&allowMultiQueries=true&useSSL=false
       #url: jdbc:mysql://10.102.74.20:3308/rop?characterEncoding=utf8&allowMultiQueries=true&useSSL=false
       username: root
       password: Jy#BC8&%

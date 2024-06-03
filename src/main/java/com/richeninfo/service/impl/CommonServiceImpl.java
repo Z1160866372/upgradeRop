@@ -252,12 +252,13 @@ public class CommonServiceImpl implements CommonService {
         try {
             ActivityList activity = commonMapper.selectActivityByActId(actId);
             if (activity != null) {
-                Date nowTime = df.parse(df.format(current_time));
-                //log.info("当前时间"+nowTime.getTime());
+                log.info("当前时间"+new Date());
+                Date nowTime = df.parse(df.format(new Date()));
+                log.info("当前时间"+nowTime.getTime());
                 Date startTime = df.parse(activity.getStartTime());
-                //log.info("开始时间"+startTime.getTime());
+                log.info("开始时间"+startTime.getTime());
                 Date endTime = df.parse(activity.getEndTime());
-                // log.info("结束时间"+endTime.getTime());
+                 log.info("结束时间"+endTime.getTime());
                 if (nowTime.getTime() < startTime.getTime()) {//活动还未开始
                     msg = "NotStarted";
                 } else {

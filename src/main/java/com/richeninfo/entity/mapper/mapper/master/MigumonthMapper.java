@@ -76,11 +76,10 @@ public interface MigumonthMapper {
 
     /**
      * 更新用户award
-     * @param userId
      * @return
      */
-    @Update("update  wt_migumonth_user set award=1 where userId=#{userId} ")
-    int updateUserAward(@Param("userId") String userId);
+    @Update("update  wt_migumonth_user set award=1 where id=#{id} ")
+    int updateUserAward(@Param("id") int id);
 
     /**
      * 多媒体展示
