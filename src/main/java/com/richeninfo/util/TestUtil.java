@@ -16,7 +16,8 @@ public class TestUtil {
     public static void main(String[] args) throws Exception {
        /* String phone =rsaUtils.decryptByPriKey("gS0qBoxmpWAcf0R1Gu9T7L5P/QgoBV7jxYDleae1dp5n/40Pbp+4gGlY0YBqIgiwfGjH/EnXwkESwKXhw3qJLT4OHRGXeYvCujCm5FroU4Cnxmu/I6y/3jzceZMNSiSvwzLCCBMJBklE6dJqXj9gNN/ar4Qc0B5JXIThRsZLFW4=");
         System.out.println(phone);*/
-      String sectoken=  Des3SSL.encodeDC("13761098630","MFiFpxyx6bUsJYWjhSDtuv4Y");
+        //13916233643
+      String sectoken=  Des3SSL.encodeDC("13817513783","TZpOH9nAw8w8swVodr0I8Css");
         System.out.println(sectoken);
 
         System.out.println("Spring Version: " + SpringVersion.getVersion());
@@ -28,6 +29,8 @@ public class TestUtil {
         /*String source[] = Des3SSL.decodeDC("kTUTNSLqGf4Lmvj9d5gqJ-5mo2311HNVjibObFciVTqvCSPQw2PV_Y9Jg9aDzKYe", "d8IybzY90SsaFGrGUVxSd6C5");
         String  mobile = source[0];
         System.out.println(mobile);*/
+        System.out.println(RSAUtils.decryptByPriKey("Y2riWqUIeqSoml8XW+iNLGbCxnNVAmPYmiJA2XFxW0D5NHpbX4ixmGWuiMN9xedoWGUJP5foq6ehZxmDsoyTV1wPhitJnUxYe9ovyTk0TN6zz1VxN+Jr5ien5YnokBfrQn88klzYAffjJwvLxY9H5KNDdeoFWXrYtrhIlS7NPEY="));
+
 
 
     }

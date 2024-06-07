@@ -28,6 +28,7 @@ import javax.jms.Topic;
  * @Author : zhouxiaohu
  * @create 2024/3/19 13:52
  */
+
 @Configuration
 public class ActiveMQConfig{
 
@@ -73,7 +74,7 @@ public class ActiveMQConfig{
         return factory;
     }
 
-  /*  @Bean
+/*  @Bean
     @ConditionalOnMissingBean(
             name = {"queueListener"}
     )
@@ -87,6 +88,7 @@ public class ActiveMQConfig{
 */
 
 
+
     @Bean(name = "topicListener")
     public JmsListenerContainerFactory<?> jmsListenerContainerTopic(ConnectionFactory  connectionFactory) {
         DefaultJmsListenerContainerFactory bean = new DefaultJmsListenerContainerFactory();
@@ -96,5 +98,6 @@ public class ActiveMQConfig{
         return bean;
     }
 }
+
 
 
