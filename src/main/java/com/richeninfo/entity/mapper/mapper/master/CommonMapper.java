@@ -54,8 +54,14 @@ public interface CommonMapper {
     @Select("select * from activity_configuration where actId = #{actId} and unlocked = #{unlocked}")
     ActivityConfiguration selectActivitySomeConfiguration(@Param("actId") String actId, @Param("unlocked") Integer unlocked);//查询某个活动某个奖励配置
 
-    @Select("select * from ${keyword} where userId = #{userId} and unlocked =#{unlocked} and actId =#{actId}")
+    @Select("select * from ${keyword} where userId = #{userId} and unlocked =#{unlocked} and actId =#{actId} and status=0")
     ActivityUserHistory selectHistoryByUnlocked(@Param("userId") String userId, @Param("unlocked") int unlocked, @Param("actId") String actId, @Param("keyword") String keyword);//查询用户当前奖励是否已领取
+
+    @Select("select * from activity_configuration where actId = #{actId} and unlocked = #{unlocked} and typeId=1")
+    ActivityConfiguration selectActivitySomeConfigurationByTYpeId(@Param("actId") String actId, @Param("unlocked") Integer unlocked);//查询用户当前奖励是否已领取
+
+    @Select("select * from ${keyword} where userId = #{userId} and unlocked =#{unlocked} and actId =#{actId} order by createTime desc")
+    List<ActivityUserHistory> selectHistoryByUnlockedList(@Param("userId") String userId, @Param("unlocked") int unlocked, @Param("actId") String actId, @Param("keyword") String keyword);//查询用户当前奖励是否已领取
 
     @Select("select * from ${keyword} where userId = #{userId} and unlocked =#{unlocked} and actId =#{actId} and createDate=#{createDate}")
     ActivityUserHistory selectHistoryByUnlockedByCreateDate(@Param("userId") String userId, @Param("unlocked") int unlocked, @Param("actId") String actId, @Param("keyword") String keyword, @Param("createDate") String createDate);//查询用户当前奖励是否已领取
@@ -75,8 +81,8 @@ public interface CommonMapper {
     @Insert("insert into ${keyword}(actId,name,address,userId,instructions,createTime)values(#{log.actId},#{log.name},#{log.address},#{log.userId},#{log.instructions},now())")
     int insertOperationLog(OperationLog log, @Param("keyword") String keyword);//添加用户操作记录
 
-    @Select("select * from ${keyword} where userId=#{userId} and actId=#{actId}")
-    List<ActivityRoster> selectRoster(@Param("userId") String userId, @Param("actId") String actId, @Param("keyword") String keyword);//查询用户名单列表
+    @Select("select * from ${keyword} where userId=#{userId} and actId=#{actId} and userType=#{userType}")
+    List<ActivityRoster> selectRoster(@Param("userId") String userId, @Param("actId") String actId, @Param("keyword") String keyword, @Param("keyword") int userType);//查询用户名单列表
 
     @Insert("insert into activity_order(name,actId,userId,thirdTradeId,orderItemId,commodityName,bossId,code,message,channelId,createTime)values(#{name},#{actId},#{userId},#{thirdTradeId},#{orderItemId},#{commodityName},#{bossId},#{code},#{message},#{channelId},now())")
     int insertActivityOrder(ActivityOrder activityOrder);//初始化用户
