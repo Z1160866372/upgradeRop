@@ -157,12 +157,7 @@ public class FinanceServiceImpl implements FinanceService {
                     }else{
                         activityConfiguration =  financeMapper.selectActivityConfigurationByUnlocked(actId,0);
                         if(activityConfiguration.getAmount()>0){
-                            mash = financeMapper.updateActivityConfigurationAmount(activityConfiguration.getId());
-                            if(mash>0){
-                                saveHistory(actId, channelId, object, mobile, activityConfiguration,ditch);
-                            }else{//您来晚了
-                                object.put(Constant.MSG,"noDate");
-                            }
+                            saveHistory(actId, channelId, object, mobile, activityConfiguration,ditch);
                         }else{//您来晚了
                             object.put(Constant.MSG,"noDate");
                         }
@@ -170,12 +165,7 @@ public class FinanceServiceImpl implements FinanceService {
                 }else{
                     activityConfiguration =  financeMapper.selectActivityConfigurationByUnlocked(actId,0);
                     if(activityConfiguration.getAmount()>0){
-                        int mash = financeMapper.updateActivityConfigurationAmount(activityConfiguration.getId());
-                        if(mash>0){
-                            saveHistory(actId, channelId, object, mobile, activityConfiguration,ditch);
-                        }else{//您来晚了
-                            object.put(Constant.MSG,"noDate");
-                        }
+                        saveHistory(actId, channelId, object, mobile, activityConfiguration,ditch);
                     }else{//您来晚了
                         object.put(Constant.MSG,"noDate");
                     }

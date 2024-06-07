@@ -74,7 +74,7 @@ public class NewCallController {
                 user.setChannelId(channelId);
                 user.setActId(actId);
                 user.setDitch(ditch);
-                user.setCreateDate(month.format(new Date()));
+                user.setCreateDate(day.format(new Date()));
                 user = newCallService.insertUser(user);
                 object.put(Constant.MSG, Constant.SUCCESS);
                 object.put("user", user);
