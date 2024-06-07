@@ -8,12 +8,11 @@
 
 package com.richeninfo.entity.mapper.mapper.master;
 
-import com.richeninfo.entity.mapper.entity.ActivityShare;
-import com.richeninfo.entity.mapper.entity.ActivityUser;
-import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
-import com.richeninfo.entity.mapper.entity.OperationLog;
+import com.richeninfo.entity.mapper.entity.*;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @Author : zhouxiaohu
@@ -23,25 +22,24 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface JourneyMapper {
 
-
     @Select("select * from wt_journey_user where userId = #{userId}")
     ActivityUser selectUserByCreateDate(@Param("userId") String userId);//查找用户记录
 
-    @Insert("insert into wt_journey_user(userId,channelId,secToken,createDate,createTime,actId)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId})")
+    @Insert("insert into wt_journey_user(userId,channelId,secToken,createDate,createTime,actId,ditch)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{ditch})")
     int insertUser(ActivityUser user);//初始化用户
 
-    @Select("select * from wt_journey_history where userId = #{userId} and unlocked =#{unlocked}")
+    @Select("select * from wt_journey_history where userId = #{userId} and unlocked =#{unlocked} and module=1")
     ActivityUserHistory selectActivityUserHistoryByUnlocked(@Param("userId")String userId, @Param("unlocked")int unlocked);
 
-    @Insert("insert into wt_journey_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId})")
+    @Select("select * from wt_journey_history where userId = #{userId} and module=1")
+    List<ActivityUserHistory> selectActivityUserHistoryList(@Param("userId")String userId,@Param("actId") String actId);
+
+    @Insert("insert into wt_journey_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId},#{itemId},#{module},#{remark})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
     @Update("update wt_journey_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
     int updateHistory(ActivityUserHistory history);//更新接口状态
 
-    @Insert("insert into wt_journey_operationLog(actId,name,address,userId,instructions,createTime)values(#{actId},#{name},#{address},#{userId},#{instructions},now())")
-    int insertOperationLog(OperationLog log);//添加用户操作记录
-
-    @Insert("insert into wt_journey_share(actId,channelId,userId,createTime)values(#{actId},#{channelId},#{userId},now())")
-    int insertShareUser(ActivityShare shareUser);//保存用户分享记录
+    @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and userType=#{userType}")
+    List<ActivityConfiguration> selectActivityConfigurationList(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("userType") Integer userType);
 }

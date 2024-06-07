@@ -32,6 +32,9 @@ public class ActivityUserHistory {
     @ApiModelProperty(value = "IP段")
     private String ipScanner;
 
+    @ApiModelProperty(value = "楼层模块")
+    private int module;
+
     @ApiModelProperty(value = "用户号码")
     private String userId;
 
