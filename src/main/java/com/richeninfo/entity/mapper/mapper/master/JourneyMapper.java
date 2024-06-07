@@ -34,7 +34,7 @@ public interface JourneyMapper {
     @Select("select * from wt_journey_history where userId = #{userId} and module=1")
     List<ActivityUserHistory> selectActivityUserHistoryList(@Param("userId")String userId,@Param("actId") String actId);
 
-    @Insert("insert into wt_journey_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId},#{itemId},#{module},#{remark})")
+    @Insert("insert into wt_journey_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark,winSrc,imgSrc)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId},#{itemId},#{module},#{remark},#{winSrc},#{imgSrc})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
     @Update("update wt_journey_history set status=#{status},code=#{code},message=#{message} where id=#{id}")

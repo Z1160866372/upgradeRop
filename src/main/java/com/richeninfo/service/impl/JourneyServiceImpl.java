@@ -190,6 +190,7 @@ public class JourneyServiceImpl implements JourneyService {
         newHistory.setActivityId(activityConfiguration.getActivityId());
         newHistory.setItemId(activityConfiguration.getItemId());
         newHistory.setImgSrc(activityConfiguration.getImgSrc());
+        newHistory.setWinSrc(activityConfiguration.getWinSrc());
         newHistory.setRemark(activityConfiguration.getRemark());
         newHistory.setModule(activityConfiguration.getModule());
         journeyMapper.insertActivityUserHistory(newHistory);
