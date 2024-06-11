@@ -10,10 +10,7 @@ package com.richeninfo.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
-import com.richeninfo.entity.mapper.entity.ActivityOrder;
-import com.richeninfo.entity.mapper.entity.ActivityUser;
-import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
+import com.richeninfo.entity.mapper.entity.*;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.entity.mapper.mapper.master.FoodieMapper;
 import com.richeninfo.entity.mapper.mapper.master.ProtectMapper;
@@ -30,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -81,6 +79,10 @@ public class FoodieServiceImpl implements FoodietService {
             new_user.setChannelId(user.getChannelId());
             new_user.setDitch(user.getDitch());
             new_user.setCreateDate(day.format(new Date()));
+            List<ActivityRoster> selectRoster = commonMapper.selectRoster(user.getUserId(),"foodie","wt_foodie_roster",1);
+            if(!CollectionUtils.isEmpty(selectRoster)){
+                new_user.setUserType(1);
+            }
             foodieMapper.insertUser(new_user);
             user = new_user;
         } else {
@@ -101,16 +103,24 @@ public class FoodieServiceImpl implements FoodietService {
             }
             for (ActivityConfiguration config : pro_config) {
                 if(config.getTypeId()==1){
-                    userHistory=foodieMapper.selectActivityUserHistoryByUnlocked(mobile,config.getUnlocked());
-                    if(userHistory!=null&&userHistory.getStatus()==3){//已办理
-                        config.setStatus(2);
-                    }else{//去办理
-                       if(config.getAmount()>0){
-                           config.setStatus(0);
-                       }else{//已抢完
-                            config.setStatus(1);
+                    ActivityUser select_user = foodieMapper.selectUserByCreateDate(mobile);
+                    if(select_user!=null){
+                        if(select_user.getUserType()>0){//黑名单
+                            config.setStatus(3);
+                        }else{
+                            userHistory=foodieMapper.selectActivityUserHistoryByUnlocked(mobile,config.getUnlocked());
+                            if(userHistory!=null&&userHistory.getStatus()==3){//已办理
+                                config.setStatus(2);
+                            }else{//去办理
+                                if(config.getAmount()>0){
+                                    config.setStatus(0);
+                                }else{//已抢完
+                                    config.setStatus(1);
+                                }
+                            }
                         }
                     }
+
                 }
             }
         }
@@ -124,6 +134,13 @@ public class FoodieServiceImpl implements FoodietService {
         ActivityConfiguration config =null;
         if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
+        }
+        ActivityUser select_user = foodieMapper.selectUserByCreateDate(mobile);
+        if(select_user!=null){
+            if(select_user.getUserType()>0){
+                object.put(Constant.MSG,"blackList");
+                return object;
+            }
         }
        /* if(!commonService.checkUserIsChinaMobile(mobile,actId)){
             object.put(Constant.MSG,"noShYd");

@@ -105,6 +105,7 @@ public class JourneyServiceImpl implements JourneyService {
                     config.setUnlocked(userHistory.getUnlocked());
                     config.setWinSrc(userHistory.getWinSrc());
                     config.setImgSrc(userHistory.getImgSrc());
+                    config.setRemark(userHistory.getRemark());
                     if(userHistory.getTypeId()==1){
                         if(userHistory.getStatus()==3){//已办理
                             config.setStatus(2);
@@ -141,7 +142,15 @@ public class JourneyServiceImpl implements JourneyService {
         if(userHistory==null){
             ActivityConfiguration config =null;
             String  keyword = "wt_"+actId+"_roster";
-            if(unlocked==3){//惠玩包
+            if(unlocked==0){//5元话费
+                List<ActivityRoster> rosterList = commonMapper.selectRoster(mobile,actId,keyword,0);
+                if(!rosterList.isEmpty()){//送话费
+                    config=journeyMapper.selectActivityConfigurationList(actId,unlocked,0).get(0);
+                }else{
+                    object.put(Constant.MSG,"noData");
+                    return object;
+                }
+            }else if(unlocked==3){//惠玩包
                 List<ActivityRoster> rosterList = commonMapper.selectRoster(mobile,actId,keyword,unlocked*10);
                 if(!rosterList.isEmpty()){//取外链
                     config=journeyMapper.selectActivityConfigurationList(actId,unlocked,1).get(0);
@@ -171,7 +180,6 @@ public class JourneyServiceImpl implements JourneyService {
             object.put("config",config);
             object.put(Constant.MSG,Constant.YLQ);
         }
-
         return object;
     }
 

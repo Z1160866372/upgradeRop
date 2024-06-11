@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
+import com.richeninfo.service.FoodietService;
 import com.richeninfo.service.ProtectService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,7 +42,7 @@ public class FoodieController {
     @Resource
     private CommonService commonService;
     @Resource
-    private ProtectService protectService;
+    private FoodietService foodietService;
     @Resource
     private HttpServletRequest request;
     @Resource
@@ -72,7 +73,7 @@ public class FoodieController {
                 user.setActId(actId);
                 user.setDitch(ditch);
                 user.setCreateDate(day.format(new Date()));
-                user = protectService.insertUser(user);
+                user = foodietService.insertUser(user);
                 object.put(Constant.MSG, Constant.SUCCESS);
                 object.put("user", user);
             }
@@ -84,7 +85,7 @@ public class FoodieController {
     @PostMapping("/getConf")
     public @ResponseBody
     void getConf(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws IOException {
-        CommonController.getActId(request, protectService.getConfiguration(secToken, actId, channelId), resp, secToken);
+        CommonController.getActId(request, foodietService.getConfiguration(secToken, actId, channelId), resp, secToken);
     }
 
 
@@ -94,7 +95,7 @@ public class FoodieController {
     JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked
     ,@ApiParam(name = "wtAcId", value = "wtAcId", required = true) String wtAcId, @ApiParam(name = "wtAc", value = "wtAc", required = true) String wtAc, @ApiParam(name = "randCode", value = "二次短信验证码", required = true) String randCode, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
         CommonController.getParameter(request, actId, channelId,unlocked,ditch);
-        return this.protectService.submit(secToken, actId, unlocked, channelId,wtAcId,wtAc,randCode,ditch);
+        return this.foodietService.submit(secToken, actId, unlocked, channelId,wtAcId,wtAc,randCode,ditch);
     }
 
 }
