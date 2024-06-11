@@ -79,10 +79,7 @@ public class CommonController {
         String url="";
         if(actId.equals("newcall")||actId.equals("finance")||actId.equals("schoolbaq")||actId.equals("consult")||actId.equals("fortune")
         ||actId.equals("migumonth")||actId.equals("miguxc")||actId.equals("proem")||actId.equals("plod")||actId.equals("miguflow")){
-            //测试地址
-            url="https://activity.sh.10086.cn/sandbox/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
-            //生产地址
-            //url="https://activity.sh.10086.cn/environment/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
+            url="https://activity.sh.10086.cn/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
         }else{
             Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
