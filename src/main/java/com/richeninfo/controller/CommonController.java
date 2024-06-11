@@ -70,14 +70,32 @@ public class CommonController {
     @Resource
     private JmsMessagingTemplate jmsMessagingTemplate;
 
-
     @RequestMapping(value = "wtFree")
     protected String wtFree(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId,@ApiParam(name = "ditch", value = "渠道", required = true) String ditch) throws ServletException, IOException {
         secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
         actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
         ditch = request.getParameter("ditch") == null ? "" : request.getParameter("ditch");
         log.info("微厅免登录接收secToken=="+secToken);
-        String url="https://activity.sh.10086.cn/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
+        String url="";
+        if(actId.equals("newcall")||actId.equals("finance")||actId.equals("schoolbaq")||actId.equals("consult")||actId.equals("fortune")
+        ||actId.equals("migumonth")||actId.equals("miguxc")||actId.equals("proem")||actId.equals("plod")||actId.equals("miguflow")){
+            //测试地址
+            url="https://activity.sh.10086.cn/sandbox/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
+            //生产地址
+            //url="https://activity.sh.10086.cn/environment/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
+        }else{
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH) + 1; // 月份从0开始，所以需要+1
+            String formattedMonth="";
+            if(month<10){
+                formattedMonth = String.format("%02d", month);
+            }
+            //测试地址
+            url="https://activity.sh.10086.cn/sandbox/"+year+"/"+formattedMonth+"/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
+            //生产地址
+            //url="https://activity.sh.10086.cn/environment/"+year+"/"+formattedMonth+"/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
+        }
         return "redirect:"+url+"";
     }
 
