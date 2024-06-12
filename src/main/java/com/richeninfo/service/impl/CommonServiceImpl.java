@@ -78,7 +78,7 @@ public class CommonServiceImpl implements CommonService {
             resultObj.put(Constant.MSG, Constant.SEND_MSG_SEPARATION_NOT_ENOUGH);
             return resultObj;
         }
-        ActivityConfiguration configuration = commonMapper.selectActivitySomeConfiguration(actId, unlocked);
+        ActivityConfiguration configuration = commonMapper.selectActivitySomeConfigurationByTYpeId(actId, unlocked);
         redisUtil.set(userId, configuration.getActivityId(), 60);
         try {
             if (configuration != null) {
