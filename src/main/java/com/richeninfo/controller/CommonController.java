@@ -19,6 +19,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -69,6 +70,8 @@ public class CommonController {
     private FileUtil fileUtil;
     @Resource
     private JmsMessagingTemplate jmsMessagingTemplate;
+    @Value("${context}")
+    private String context;
 
     @RequestMapping(value = "wtFree")
     protected String wtFree(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId,@ApiParam(name = "ditch", value = "渠道", required = true) String ditch) throws ServletException, IOException {
@@ -88,11 +91,8 @@ public class CommonController {
             if(month<10){
                 formattedMonth = String.format("%02d", month);
             }
-            //测试地址
-            url="https://activity.sh.10086.cn/sandbox/"+year+"/"+formattedMonth+"/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
-            //生产地址
-            //url="https://activity.sh.10086.cn/environment/"+year+"/"+formattedMonth+"/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
-        }
+            url="https://activity.sh.10086.cn/"+context+"/"+year+"/"+formattedMonth+"/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
+       }
         return "redirect:"+url+"";
     }
 
