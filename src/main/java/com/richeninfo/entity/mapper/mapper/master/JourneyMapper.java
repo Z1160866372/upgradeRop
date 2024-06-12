@@ -42,4 +42,7 @@ public interface JourneyMapper {
 
     @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and userType=#{userType}")
     List<ActivityConfiguration> selectActivityConfigurationList(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("userType") Integer userType);
+
+    @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and module=#{module}")
+    ActivityConfiguration selectActivityConfigurationByModule(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("module") Integer module);
 }

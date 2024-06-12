@@ -324,6 +324,12 @@ public class JourneyServiceImpl implements JourneyService {
                 }else{
                     config = commonMapper.selectActivitySomeConfigurationByTYpeId(actId,unlocked);
                     object = transact3066Business(userHistory,config,randCode,channelId,wtAcId,wtAc,ditch);
+                    if(object.getString("transact_result")=="true"){
+                        config = journeyMapper.selectActivityConfigurationByModule(actId,unlocked,10);
+                        if(config!=null){
+                            saveHistory( actId,  channelId,  object,  mobile, config, ditch);
+                        }
+                    }
                 }
             }else{//不能办理
                 object.put(Constant.MSG,"noTransaction");
