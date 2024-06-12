@@ -3,6 +3,7 @@ package com.richeninfo;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.util.CommonUtil;
 import com.richeninfo.util.CreateCSVFile;
+import com.richeninfo.util.Des3SSL;
 import com.richeninfo.util.RSAUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,9 @@ class RopApplicationTests {
     //声明一个队列
     @Test
     public void createQueue() throws Exception {
+
+        String sectoken=  Des3SSL.encodeDC("13816348600","TZpOH9nAw8w8swVodr0I8Css");
+        System.out.println(sectoken);
        /* ActivityConfiguration config =new ActivityConfiguration();
         config.setActivityId("1234");
         config.setItemId("5678");

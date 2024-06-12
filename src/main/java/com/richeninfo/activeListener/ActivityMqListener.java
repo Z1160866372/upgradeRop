@@ -71,9 +71,9 @@ public class ActivityMqListener {
             } else {
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
             }
-            history.setMessage(response_message);
-            /* history.setStatus(Constant.STATUS_RECEIVED);
-            history.setMessage("测试数据～");*/
+           /* history.setMessage(response_message);*/
+             history.setStatus(Constant.STATUS_RECEIVED);
+            history.setMessage("测试数据～");
             history.setCode(JSONObject.toJSONString(mq.getPacket()));
         } catch (Exception e) {
             e.printStackTrace();

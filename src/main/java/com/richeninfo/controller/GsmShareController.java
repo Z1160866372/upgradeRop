@@ -119,7 +119,7 @@ public class GsmShareController {
     }
 
     /**
-     * 初始化用户数据
+     * 5956业务短信下发
      *
      * @param secToken
      * @param channelId

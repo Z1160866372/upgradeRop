@@ -17,7 +17,7 @@ public class TestUtil {
        /* String phone =rsaUtils.decryptByPriKey("gS0qBoxmpWAcf0R1Gu9T7L5P/QgoBV7jxYDleae1dp5n/40Pbp+4gGlY0YBqIgiwfGjH/EnXwkESwKXhw3qJLT4OHRGXeYvCujCm5FroU4Cnxmu/I6y/3jzceZMNSiSvwzLCCBMJBklE6dJqXj9gNN/ar4Qc0B5JXIThRsZLFW4=");
         System.out.println(phone);*/
         //13916233643
-      String sectoken=  Des3SSL.encodeDC("13817513783","TZpOH9nAw8w8swVodr0I8Css");
+      String sectoken=  Des3SSL.encodeDC("13817513783","KHBKnlXYLQfRwQkWH4mDxb1C");
         System.out.println(sectoken);
 
         System.out.println("Spring Version: " + SpringVersion.getVersion());
