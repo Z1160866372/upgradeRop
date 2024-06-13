@@ -33,4 +33,11 @@ public interface FileListMapper {
     @Insert("insert into activity_fileList(name,fileName,number,principal,createTime)values(#{name},#{fileName},#{number},#{principal},now())")
     int insertActivityFileList(ActivityFileList fileList);//初始化用户
 
+    @Insert({"<script> insert into ${tableName} (userId,userType) values " +
+            " <foreach item=\"item\" index=\"index\" collection=\"oneList\" separator=\",\">\n" +
+            " (#{item},#{userType})\n" +
+            " </foreach>  " +
+            "</script>"
+    })
+    Integer batchDataList(@Param("tableName") String tableName, @Param("oneList") List<String> dataOneList,@Param("userType") Integer userType);
 }

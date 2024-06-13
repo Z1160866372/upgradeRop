@@ -71,4 +71,11 @@ public class FileListController {
         return object;
     }
 
+    @ApiOperation(value = "导入CSV数据")
+    @PostMapping("/importCSV")
+    public @ResponseBody
+    Integer importCsv(@ApiParam(name = "fileName", value = "文件名称", required = true) String fileName, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "userType", value = "名单标识", required = true) Integer userType) throws IOException {
+        return fileListService.importCSVData(fileName,actId,userType);
+    }
+
 }

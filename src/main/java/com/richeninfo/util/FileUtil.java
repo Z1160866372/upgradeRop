@@ -8,17 +8,22 @@
 
 package com.richeninfo.util;
 
+import com.univocity.parsers.common.processor.BeanListProcessor;
+import com.univocity.parsers.csv.CsvFormat;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.mozilla.universalchardet.UniversalDetector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @Author : zhouxiaohu
@@ -27,7 +32,7 @@ import java.net.URLEncoder;
 @Component
 public class FileUtil {
 
-    private static String filePath = "/home/weihu/";
+    private static String filePath = "/Users/zhouxiaohu/Desktop";
     // CSV上传路径
     private static String FILE_UPLOAD_SUB_CSV_DIR = "/csv";
     /**
@@ -128,5 +133,55 @@ public class FileUtil {
         System.out.println("新地址"+newFile.getPath());
         file.transferTo(newFile);
         return fileClientName;
+    }
+    /**
+     * 读取crv文件并转换成List
+     *
+     * @param clazz  bean对象
+     * @param file   待读取文件
+     * @return crv对象list
+     */
+    public static <T> List<T> read(MultipartFile file, Class<T> clazz, String charset) {
+
+        List<T> result = Collections.emptyList();
+        try {
+            BeanListProcessor<T> rowProcessor = new BeanListProcessor<>(clazz);
+            InputStream in = file.getInputStream();
+//          InputStreamReader reader = new InputStreamReader(in, "GBK");
+            InputStreamReader reader = new InputStreamReader(in, charset);
+
+            CsvParserSettings settings = new CsvParserSettings();
+            settings.getFormat().setLineSeparator("\n");
+            settings.setProcessor(rowProcessor);
+            settings.setFormat(new CsvFormat());
+            CsvParser parser = new CsvParser(settings);
+            parser.parse(reader);
+            //逐行读取
+            result = rowProcessor.getBeans();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return result;
+    }
+
+
+    /**
+     * 获取CSV文件编码格式
+     * @param inputStream
+     * @return
+     * @throws IOException
+     */
+    public static String getCsvCharset(InputStream inputStream) throws IOException {
+        byte[] buf = new byte[4096];
+        UniversalDetector detector = new UniversalDetector(null);
+        int nread;
+        while ((nread = inputStream.read(buf)) > 0 && !detector.isDone()) {
+            detector.handleData(buf, 0, nread);
+        }
+        detector.dataEnd();
+
+        String encoding = detector.getDetectedCharset();
+        detector.reset();
+        return encoding;
     }
 }
