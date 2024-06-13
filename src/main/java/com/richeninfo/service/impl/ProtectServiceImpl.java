@@ -122,10 +122,10 @@ public class ProtectServiceImpl implements ProtectService {
         if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }
-       /* if(!commonService.checkUserIsChinaMobile(mobile,actId)){
+        if(!commonService.checkUserIsChinaMobile(mobile,actId)){
             object.put(Constant.MSG,"noShYd");
             return object;
-        }*/
+        }
         ActivityUserHistory userHistory  =protectMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
         if(userHistory!=null){
             if(userHistory.getStatus()==3){//已办理
@@ -165,12 +165,11 @@ public class ProtectServiceImpl implements ProtectService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
-            /*String message = ropService.execute(packet,history.getUserId(),history.getActId());
+            String message = ropService.execute(packet,history.getUserId(),history.getActId());
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message,Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
-            String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");*/
-            String res = "0000";
+            String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");
             if(Constant.SUCCESS_CODE.equals(res)){
                 transact_result = true;
                 history.setStatus(Constant.STATUS_RECEIVED);
@@ -182,17 +181,17 @@ public class ProtectServiceImpl implements ProtectService {
             }
             history.setMessage(JSON.toJSONString(result));
             history.setCode(JSON.toJSONString(packet));
-           /* object.put("res", res);
-            object.put("DoneCode", DoneCode);*/
-            object.put("res", "0000");
-            object.put("DoneCode", "9999");
+            object.put("res", res);
+            object.put("DoneCode", DoneCode);
+            /*object.put("res", "0000");
+            object.put("DoneCode", "9999");*/
             object.put("update_history", JSON.toJSONString(history));
             protectMapper.updateHistory(history);
             if (transact_result) {
                 //业务办理成功 接口上报
                 Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
                 System.out.println(new_packet.toString());
-               // String result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
+                String result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
                 ActivityOrder order = new ActivityOrder();
                 order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
                 String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();
@@ -202,8 +201,7 @@ public class ProtectServiceImpl implements ProtectService {
                 order.setCommodityName(config.getName());
                 order.setUserId(history.getUserId());
                 order.setCode(JSON.toJSONString(new_packet));
-                //order.setMessage(result_String);
-                order.setMessage("");
+                order.setMessage(result_String);
                 order.setChannelId(channelId);
                 commonMapper.insertActivityOrder(order);
             }

@@ -66,7 +66,7 @@ public class FileListServiceImpl implements FileListService {
     private RSAUtils rsaUtils;
     @Resource
     private HttpServletRequest request;
-    private static String filePath = "/Users/zhouxiaohu/Desktop/";
+    private static String filePath = "/data/actCSV/csv/";
     SimpleDateFormat month = new SimpleDateFormat("yyyy-MM");
     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd");
