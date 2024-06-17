@@ -37,6 +37,7 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Base64;
 
@@ -72,6 +73,7 @@ public class CommonController {
     private JmsMessagingTemplate jmsMessagingTemplate;
     @Value("${context}")
     private String context;
+    SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd");
 
     @RequestMapping(value = "wtFree")
     protected String wtFree(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId,@ApiParam(name = "ditch", value = "渠道", required = true) String ditch) throws ServletException, IOException {
@@ -316,5 +318,41 @@ public class CommonController {
     @RequestMapping("attachmentUpload")
     public void attachmentUpload(@RequestParam(value = "file", required = false) MultipartFile file){
         fileUtil.attachmentUpload(request,response,file);
+    }
+
+    @ApiOperation(value = "初始化用户", httpMethod = "POST")
+    @PostMapping(value = "/initialize")
+    public @ResponseBody
+    void initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws IOException {
+        ActivityUser user = new ActivityUser();
+        JSONObject object = new JSONObject();
+        secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
+        channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
+        if (secToken.isEmpty()) {
+            object.put(Constant.MSG, "login");
+        } else {
+            String mobile = commonService.getMobile(secToken, channelId);
+            if (mobile==null||mobile.isEmpty()) {
+                object.put(Constant.MSG, "channelId_error");
+            }else{
+                user.setUserId(mobile);
+                user.setSecToken(secToken);
+                user.setChannelId(channelId);
+                user.setActId(actId);
+                user.setCreateDate(day.format(new Date()));
+                user.setDitch(ditch);
+                user = commonService.insertUser(user);
+                object.put(Constant.MSG, Constant.SUCCESS);
+                object.put("user", user);
+            }
+        }
+        resp.getWriter().write(object.toJSONString());
+    }
+
+    @ApiOperation("获取奖励列表")
+    @PostMapping("/getConf")
+    public @ResponseBody
+    void getConf(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws Exception {
+        CommonController.getActId(request, commonService.getConfiguration(secToken, actId, channelId), resp, secToken);
     }
 }

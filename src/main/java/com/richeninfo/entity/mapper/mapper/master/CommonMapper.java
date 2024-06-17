@@ -48,7 +48,7 @@ public interface CommonMapper {
     @Select("select * from ${keyword} where userId = #{userId} and actId =#{actId} and createDate=#{createDate}")
     ActivityUser selectUserByCreateDate(@Param("userId") String userId, @Param("actId") String actId, @Param("keyword") String keyword, @Param("createDate") String createDate);//查找用户记录
 
-    @Insert("insert into ${keyword}(userId,belongFlag,userType,channelId,secToken,createDate,createTime,actId)values(#{userId},#{belongFlag},#{userType},#{channelId},#{secToken},curdate(),now(),#{actId})")
+    @Insert("insert into ${keyword}(userId,belongFlag,userType,channelId,secToken,createDate,createTime,actId)values(#{user.userId},#{user.belongFlag},#{user.userType},#{user.channelId},#{user.secToken},#{user.createDate},now(),#{user.actId})")
     int insertUser(ActivityUser user, @Param("keyword") String keyword);//初始化用户
 
     @Select("select * from activity_configuration where actId = #{actId} and unlocked = #{unlocked}")

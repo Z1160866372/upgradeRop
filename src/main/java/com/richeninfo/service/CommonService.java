@@ -128,5 +128,21 @@ public interface CommonService {
      */
     JSONObject insertActivityShare(@ModelAttribute ActivityShare activityShare);
 
+    /**
+     * 初始化用户
+     *
+     * @param user
+     * @return
+     */
+    ActivityUser insertUser(@ModelAttribute ActivityUser user);
+
+    /**
+     * 获取奖励列表
+     *
+     * @param secToken
+     * @param actId
+     * @return
+     */
+    List<ActivityConfiguration> getConfiguration(String secToken, String actId, String channelId) throws Exception;
 
 }

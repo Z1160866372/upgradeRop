@@ -450,4 +450,35 @@ public class CommonServiceImpl implements CommonService {
         return object;
     }
 
+    /**
+     * 初始化用户
+     *
+     * @param user
+     * @return
+     */
+    public ActivityUser insertUser(ActivityUser user) {
+        String keyword="wt_"+user.getActId()+"_user";
+        ActivityUser select_user = commonMapper.selectUser(user.getUserId(),user.getActId(),keyword);
+        if (select_user == null) {
+            ActivityUser new_user = new ActivityUser();
+            new_user.setSecToken(user.getSecToken());
+            new_user.setUserId(user.getUserId());
+            new_user.setActId(user.getActId());
+            new_user.setChannelId(user.getChannelId());
+            new_user.setCreateDate(day.format(new Date()));
+            new_user.setDitch(user.getDitch());
+            commonMapper.insertUser(new_user,keyword);
+            user = new_user;
+        } else {
+            select_user.setSecToken(user.getSecToken());
+            user = select_user;
+        }
+        return user;
+    }
+
+    @Override
+    public List<ActivityConfiguration>  getConfiguration(String secToken, String actId, String channelId) throws Exception {
+        List<ActivityConfiguration> pro_config = commonMapper.selectActivityConfigurationByActId(actId);
+        return pro_config;
+    }
 }
