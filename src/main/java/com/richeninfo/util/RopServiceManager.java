@@ -94,7 +94,16 @@ public class RopServiceManager {
             log.info("card Response " + response);
             saveOpenapiLog(reqPack, message, response, userId,actId);//保存用户调用记录
         } catch (Exception e) {
-            log.error("Exception : " + e.getMessage());
+            StringBuffer message = new StringBuffer();
+            if (e != null) {
+                message.append(e.getClass()).append(": ").append(e.getMessage()).append("\n");
+                StackTraceElement[] elements = e.getStackTrace();
+                for (StackTraceElement stackTraceElement : elements) {
+                    message.append("\t").append(stackTraceElement.toString()).append("\n");
+                }
+            }
+            log.error("Exception : " + message.toString());
+            saveOpenapiLog(reqPack, message.toString(), response, userId,actId);//保存用户调用记录
             throw e;
         }
         return JSON.parseObject(response).getString("result");

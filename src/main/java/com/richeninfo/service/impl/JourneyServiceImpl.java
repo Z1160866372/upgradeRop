@@ -146,9 +146,13 @@ public class JourneyServiceImpl implements JourneyService {
                 List<ActivityRoster> rosterList = commonMapper.selectRoster(mobile,actId,keyword,0);
                 if(!rosterList.isEmpty()){//送话费
                     config=journeyMapper.selectActivityConfigurationList(actId,unlocked,0).get(0);
+                    if(config.getAmount()==0){
+                        object.put(Constant.MSG,"noData");
+                        return object;
+                    }
                 }else{
-                    object.put(Constant.MSG,"noData");
-                    return object;
+                        object.put(Constant.MSG,"noData");
+                        return object;
                 }
             }else if(unlocked==3){//惠玩包
                 List<ActivityRoster> rosterList = commonMapper.selectRoster(mobile,actId,keyword,unlocked*10);
@@ -251,7 +255,7 @@ public class JourneyServiceImpl implements JourneyService {
             history.setCode(JSON.toJSONString(packet));
             object.put("res", res);
             object.put("DoneCode", DoneCode);
-            /*object.put("res", "0000");
+           /* object.put("res", "0000");
             object.put("DoneCode", "9999");*/
             object.put("update_history", JSON.toJSONString(history));
             journeyMapper.updateHistory(history);
@@ -259,7 +263,12 @@ public class JourneyServiceImpl implements JourneyService {
                 //业务办理成功 接口上报
                 Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
                 System.out.println(new_packet.toString());
-                String result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
+                String result_String="";
+                try {
+                    result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
+                }catch (Exception e){
+                    result_String="ERROR";
+                }
                 ActivityOrder order = new ActivityOrder();
                 order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
                 String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();

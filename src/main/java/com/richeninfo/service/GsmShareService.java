@@ -55,6 +55,6 @@ public interface GsmShareService {
      * @param randCode
      * @return
      */
-    JSONObject transact(String userId, String secToken, String channelId, String actId,String randCode);
+    JSONObject transact(String userId, String secToken, String channelId, String actId,String randCode,String wtAcId, String wtAc,String ditch);
 
 }

@@ -74,7 +74,7 @@ public class GsmShareController {
      */
     @PostMapping(value = "/getActGift")
     public @ResponseBody
-    JSONObject getActGift(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String randCode, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws IOException {
+    JSONObject getActGift(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws IOException {
         JSONObject object = new JSONObject();
         if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
@@ -91,7 +91,7 @@ public class GsmShareController {
     }
 
     /**
-     * 视频展示数据
+     * 业务办理
      *
      * @param secToken
      * @param channelId
@@ -101,7 +101,7 @@ public class GsmShareController {
      */
     @PostMapping(value = "/transact")
     public @ResponseBody
-    JSONObject transact(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String randCode) throws IOException {
+    JSONObject transact(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String randCode,String wtAcId, String wtAc,String ditch) throws IOException {
         JSONObject object = new JSONObject();
         if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
@@ -110,7 +110,7 @@ public class GsmShareController {
             if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                JSONObject object1 = gsmShareService.transact(mobile, secToken, channelId, actId,randCode);
+                JSONObject object1 = gsmShareService.transact(mobile, secToken, channelId, actId,randCode, wtAcId, wtAc,ditch);
                 object.put(Constant.MSG, Constant.SUCCESS);
                 object.put("data", object1);
             }

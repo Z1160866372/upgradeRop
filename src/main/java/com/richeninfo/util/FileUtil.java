@@ -16,8 +16,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.mozilla.universalchardet.UniversalDetector;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -32,7 +30,7 @@ import java.util.List;
 @Component
 public class FileUtil {
 
-    private static String filePath = "/Users/zhouxiaohu/Desktop";
+    private static String filePath = "/home/weihu/csv/";
     // CSV上传路径
     private static String FILE_UPLOAD_SUB_CSV_DIR = "/csv";
     /**
@@ -165,23 +163,4 @@ public class FileUtil {
     }
 
 
-    /**
-     * 获取CSV文件编码格式
-     * @param inputStream
-     * @return
-     * @throws IOException
-     */
-    public static String getCsvCharset(InputStream inputStream) throws IOException {
-        byte[] buf = new byte[4096];
-        UniversalDetector detector = new UniversalDetector(null);
-        int nread;
-        while ((nread = inputStream.read(buf)) > 0 && !detector.isDone()) {
-            detector.handleData(buf, 0, nread);
-        }
-        detector.dataEnd();
-
-        String encoding = detector.getDetectedCharset();
-        detector.reset();
-        return encoding;
-    }
 }

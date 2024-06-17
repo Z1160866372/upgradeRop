@@ -217,7 +217,12 @@ public class FoodieServiceImpl implements FoodietService {
                 //业务办理成功 接口上报
                 Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
                 System.out.println(new_packet.toString());
-                String result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
+                String result_String="";
+                try {
+                    result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
+                }catch (Exception e){
+                    result_String="ERROR";
+                }
                 ActivityOrder order = new ActivityOrder();
                 order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
                 String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();

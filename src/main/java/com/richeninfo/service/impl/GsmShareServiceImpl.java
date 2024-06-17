@@ -21,7 +21,10 @@ import com.richeninfo.service.CommonService;
 import com.richeninfo.service.GsmShareService;
 import com.richeninfo.util.CommonUtil;
 import com.richeninfo.util.PacketHelper;
+import com.richeninfo.util.ReqWorker;
+import com.richeninfo.util.RopServiceManager;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -48,6 +51,9 @@ public class GsmShareServiceImpl implements GsmShareService {
     private PacketHelper packetHelper;
 
     @Resource
+    private RopServiceManager ropService;
+
+    @Resource
     CommonUtil commonUtil;
 
     @Override
@@ -59,6 +65,8 @@ public class GsmShareServiceImpl implements GsmShareService {
             activityUser.setUserId(userId);
             activityUser.setAward(0);
             activityUser.setPlayNum(1);
+            activityUser.setUnlocked(0);
+            activityUser.setChannelId(channelId);
             activityUser.setDitch(ditch);
             activityUser.setUserType(userType(userId));
             gsmShareMapper.saveUser(activityUser);
@@ -67,8 +75,6 @@ public class GsmShareServiceImpl implements GsmShareService {
             jsonObject.put("user", activityUser);
             return jsonObject;
     }
-
-
 
     @Override
     public JSONObject getActGift(String userId, String secToken, String channelId, String actId,String ditch) {
@@ -83,8 +89,8 @@ public class GsmShareServiceImpl implements GsmShareService {
                             gift=gsmShareMapper.findGiftByUnlocked(7,actId);
                         }else{
                             List<ActivityConfiguration> giftList=gsmShareMapper.findGiftListByActId(actId);
-                              gift=  commonUtil.randomGift(giftList);
-                            if(gift.getTypeId()!=7){//抽中了 卡券或者业务
+                              gift=  randomGsmGift(giftList);
+                            if(gift.getUnlocked()!=7){//抽中了 卡券或者业务
                                 log.info(userId+"抽中卡券或者业务检查数量是否足够==========="+gift);
                                 List<ActivityCardList>  bindlist=gsmShareMapper.findBindUserIdIsNullByTypeId(gift.getUnlocked());
                                 int  scount=0;
@@ -103,19 +109,19 @@ public class GsmShareServiceImpl implements GsmShareService {
                                     if(loseNum<1){
                                         gift=gsmShareMapper.findGiftByUnlocked(7,actId);
                                     }else{
-                                        if(gift.getTypeId()!=6&&bindlist.size()>0) {
+                                        if(gift.getUnlocked()!=6&&bindlist.size()>0) {
                                             //查询是否还有剩余门票
                                             int updateBindUserId=gsmShareMapper.updateBindUserId(userId, bindlist.get(0).getId());
                                             if(updateBindUserId<1){
                                                 gift=gsmShareMapper.findGiftByUnlocked(7,actId);
                                             }else {
-                                                if(gift.getTypeId()<6) {//需要发送短信
+                                                if(gift.getUnlocked()<6) {//需要发送短信
                                                     code=bindlist.get(0).getCouponCode();
                                                     gsmShareMapper.updateUserNickName(code,userId);
                                                     String msg=gift.getRemark();
                                                     String message= msg.replace("code",code);
                                                     log.info("获奖短信内容==============="+message);
-                                                    //sendNote(userId,message);
+                                                    sendNote(userId,message);
                                                 }
                                             }
                                         }
@@ -126,7 +132,7 @@ public class GsmShareServiceImpl implements GsmShareService {
                             }
                         }
                         gsmShareMapper.updateUserAward(userId);
-                        gsmShareMapper.updateCurMark(userId,String.valueOf(gift.getTypeId()));
+                        gsmShareMapper.updateCurMark(String.valueOf(gift.getUnlocked()),userId);
                         int status=saveHistory(gift, userId, channelId,code,ditch);
                         if(status>0){
                             jsonObject.put("giftName", gift.getName());
@@ -148,25 +154,29 @@ public class GsmShareServiceImpl implements GsmShareService {
     }
 
     @Override
-    public JSONObject transact(String userId, String secToken, String channelId, String actId,String randCode) {
+    public JSONObject transact(String userId, String secToken, String channelId, String actId,String randCode,String wtAcId, String wtAc, String ditch) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser user = gsmShareMapper.findUserInfo(userId);
-        if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1) {
+        JSONObject newJsonObject = new JSONObject();
+        if (user != null && commonService.verityTime(actId).equals("underway") && user.getUnlocked() < 1) {
             //查询是否领取过当月的礼包
             ActivityUserHistory history = gsmShareMapper.findCurYwHistory(userId);
+            ActivityConfiguration gift = gsmShareMapper.findGiftByUnlocked(6, actId);
             if (history == null) {
-                //查询活动配置礼包
-                ActivityConfiguration gift = gsmShareMapper.findGiftByUnlocked(0, actId);
-                history=new ActivityUserHistory();
-                history.setUserId(userId);
-                history.setRewardName(gift.getName());
-                history.setUnlocked(gift.getUnlocked());
-                history.setActId(actId);
-                history.setKeyword(actId);
-                history.setTypeId(gift.getTypeId());
-                history.setChannelId(channelId);
-                int status = gsmShareMapper.saveHistory(history);
-
+                history = gsmShareMapper.findSaveYwHistory(userId);
+                newJsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
+                Boolean ywStatus = newJsonObject.getBoolean("transact_result");
+                jsonObject.put("msg", ywStatus);
+                jsonObject.put("newJsonObject", newJsonObject);
+            } else {
+                if (history.getStatus() == 3) {
+                    jsonObject.put("msg", "ybl");
+                } else {
+                    newJsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
+                    Boolean ywStatus = newJsonObject.getBoolean("transact_result");
+                    jsonObject.put("msg", ywStatus);
+                    jsonObject.put("newJsonObject", newJsonObject);
+                }
             }
         } else {
             jsonObject.put("msg", "error");
@@ -188,12 +198,15 @@ public class GsmShareServiceImpl implements GsmShareService {
         return type;
     }
 
-    public void sendNote(String userId,String message){
+    public void sendNote(String userId,String message) {
         log.info("短信内容："+message);
-      /*  Packet packet = packetHelper.getKQPacketds(userId,message);
-        Result result =packetHelper.execute(packet, false);
-        log.info("短信返回："+result.getResponse().toString());*/
-
+        try {
+            Packet packet = packetHelper.getCommitPacket1638(userId,message);
+            Result result = JSON.parseObject(ropService.execute(packet, userId, "gsmshare"), Result.class);
+            log.info("短信返回："+result.getResponse().toString());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public int saveHistory(ActivityConfiguration gift, String userId, String channel_id, String code,String ditch) {
@@ -210,21 +223,11 @@ public class GsmShareServiceImpl implements GsmShareService {
         history.setActivityId(gift.getActivityId());
         history.setItemId(gift.getItemId());
         int status = gsmShareMapper.saveHistory(history);
-        try {
-            if (status > 0 && Double.valueOf(gift.getValue()) > 0) {
-                String mqMsg = commonService.issueReward(history);
-                log.info("4147请求信息：" + mqMsg);
-                // jmsMessagingTemplate.convertAndSend("proemMQ", mqMsg);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         return status;
     }
 
 
-    public JSONObject transact3066Business(ActivityUserHistory history, ActivityConfiguration config, String randCode, String channelId, String wtAcId, String wtAc) {
+    public JSONObject transact3066Business(ActivityUserHistory history, ActivityConfiguration config, String randCode, String channelId, String wtAcId, String wtAc, String actId) {
         JSONObject object = new JSONObject();
         boolean transact_result = false;
         Result result = new Result();
@@ -246,51 +249,80 @@ public class GsmShareServiceImpl implements GsmShareService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId, history.getDitch());
-           /* String message = ropService.execute(packet,history.getUserId());
+            String message = ropService.execute(packet, history.getUserId(), actId);
             message = ReqWorker.replaceMessage(message);
-            result = JSON.parseObject(message,Result.class);
+            result = JSON.parseObject(message, Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
             String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");
-            if(Constant.SUCCESS_CODE.equals(res)){
+           /* String res="0000";
+            String DoneCode="11111";*/
+            if (Constant.SUCCESS_CODE.equals(res)) {
                 transact_result = true;
+                gsmShareMapper.updateUnlocked(history.getUserId());
                 history.setStatus(Constant.STATUS_RECEIVED);
                 object.put(Constant.MSG, Constant.SUCCESS);
-            }else{
-                transact_result = false;
-                history.setStatus(Constant.STATUS_RECEIVED_ERROR);
-                object.put(Constant.MSG, Constant.FAILURE);
-            }*/
-            if (true) {
-                gsmShareMapper.updateUserAward(history.getUserId());
+            } else {
                 transact_result = false;
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
             }
-            history.setMessage("");
-            history.setCode(JSON.toJSONString(packet));
-            object.put("res", "0000");
-            object.put("DoneCode", "12343242343A");
+            history.setCode(JSONObject.toJSONString(packet));
+            history.setMessage(message);
+            object.put("res", res);
+            object.put("DoneCode", DoneCode);
             object.put("update_history", JSON.toJSONString(history));
-           // gsmShareMapper.updateHistory(history);
-            //Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
-            // System.out.println(new_packet.toString());
-            /*  String result_String =ropService.execute(new_packet, history.getUserId());*/
-           /* ActivityOrder order = new ActivityOrder();
-            order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
-            String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();
-            order.setThirdTradeId(packetThirdTradeId);
-            order.setOrderItemId("JYRZ"+packetThirdTradeId.substring(packetThirdTradeId.length()-21));
-            order.setBossId(config.getActivityId());
-            order.setCommodityName(config.getName());
-            order.setUserId(history.getUserId());
-            order.setCode(JSONArray.fromObject(new_packet).toString());
-            *//* order.setMessage(result_String);*//*
-            order.setChannelId(channelId);
-            commonMapper.insertActivityOrder(order);*/
+            gsmShareMapper.updateHistory(history);
+            if (transact_result) {
+                //业务办理成功 接口上报
+                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
+                System.out.println(new_packet.toString());
+                String result_String="";
+                try {
+                    result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
+                }catch (Exception e){
+                    result_String="ERROR";
+                }
+                ActivityOrder order = new ActivityOrder();
+                order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
+                String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();
+                order.setThirdTradeId(packetThirdTradeId);
+                order.setOrderItemId("JYRZ"+packetThirdTradeId.substring(packetThirdTradeId.length()-21));
+                order.setBossId(config.getActivityId());
+                order.setCommodityName(config.getName());
+                order.setUserId(history.getUserId());
+                order.setCode(JSON.toJSONString(new_packet));
+                order.setMessage(result_String);
+                order.setChannelId(channelId);
+                commonMapper.insertActivityOrder(order);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         object.put("transact_result", transact_result);
         return object;
+    }
+
+    /**
+     * 概率
+     *
+     * @param giftList
+     * @return
+     */
+    public static ActivityConfiguration randomGsmGift(List<ActivityConfiguration> giftList) {
+        double randomNum = RandomUtils.nextDouble();
+        log.info("随机数=" + randomNum);
+        double startRate = 0;
+        double endRate = 0;
+        for (int i = 0; i < giftList.size(); i++) {
+            log.info("rate=" + giftList.get(i).getWtEvent());
+            startRate = endRate;
+            log.info("startRate=" + startRate);
+            endRate += Double.valueOf(giftList.get(i).getWtEvent());
+            log.info("endRate=" + endRate);
+            if (randomNum >= startRate && randomNum < endRate) {
+                return giftList.get(i);
+            }
+        }
+        return null;
     }
 }

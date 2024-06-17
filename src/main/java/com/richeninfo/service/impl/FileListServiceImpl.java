@@ -113,7 +113,11 @@ public class FileListServiceImpl implements FileListService {
                 // 使用逗号作为分隔符
                 String[] data = line.split(csvSplitBy);
                 for (String dataElement : data) {
-                    list.add(dataElement);
+                    if(dataElement.contains("“")){
+                        list.add(dataElement.substring(1, dataElement.length() - 1));
+                    }else{
+                        list.add(dataElement);
+                    }
                 }
             }
             // 读取后根据表名插入表数据

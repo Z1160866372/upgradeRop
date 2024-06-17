@@ -183,7 +183,7 @@ public class ProtectServiceImpl implements ProtectService {
             history.setCode(JSON.toJSONString(packet));
             object.put("res", res);
             object.put("DoneCode", DoneCode);
-            /*object.put("res", "0000");
+           /* object.put("res", "0000");
             object.put("DoneCode", "9999");*/
             object.put("update_history", JSON.toJSONString(history));
             protectMapper.updateHistory(history);
@@ -191,7 +191,12 @@ public class ProtectServiceImpl implements ProtectService {
                 //业务办理成功 接口上报
                 Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
                 System.out.println(new_packet.toString());
-                String result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
+                String result_String="";
+                try {
+                    result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
+                }catch (Exception e){
+                    result_String="ERROR";
+                }
                 ActivityOrder order = new ActivityOrder();
                 order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
                 String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();

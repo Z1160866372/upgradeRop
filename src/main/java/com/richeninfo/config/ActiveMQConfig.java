@@ -64,7 +64,6 @@ public class ActiveMQConfig{
     public ConnectionFactory connectionFactory(){
         return new ActiveMQConnectionFactory(userName, password, brokerUrl);
     }
-
     // 在Queue模式中，对消息的监听需要对containerFactory进行配置
     @Bean("queueListener")
     public JmsListenerContainerFactory<?> queueJmsListenerContainerFactory(ConnectionFactory connectionFactory){
@@ -73,21 +72,6 @@ public class ActiveMQConfig{
         factory.setPubSubDomain(false);
         return factory;
     }
-
-/*  @Bean
-    @ConditionalOnMissingBean(
-            name = {"queueListener"}
-    )
-    public JmsListenerContainerFactory<?> jmsListenerContainerQueue(ActiveMQConnectionFactory connectionFactory) {
-        //如果用自定义bean,高版本需要添加这行,否则会报错
-        connectionFactory.setTrustAllPackages(true);
-        DefaultJmsListenerContainerFactory bean = new DefaultJmsListenerContainerFactory();
-        bean.setConnectionFactory(connectionFactory);
-        return bean;
-    }
-*/
-
-
 
     @Bean(name = "topicListener")
     public JmsListenerContainerFactory<?> jmsListenerContainerTopic(ConnectionFactory  connectionFactory) {

@@ -32,7 +32,7 @@ public interface GsmShareMapper {
     * 初始化用户信息
     * @param user
     */
-   @Insert("INSERT INTO wt_gsmshare_user (userId,level,award,playNum,channelId,grade,answerNum,mark,blowNum,weekTime,createTime,createDate,secToken,ditch) value (#{userId},#{level},#{award},#{playNum},#{channelId},#{grade},#{answerNum},#{mark},#{blowNum},now(),now(),curdate(),#{secToken},#{ditch})")
+   @Insert("INSERT INTO wt_gsmshare_user (userId,level,award,playNum,channelId,grade,answerNum,mark,blowNum,weekTime,createTime,createDate,secToken,ditch,userType,unlocked) value (#{userId},#{level},#{award},#{playNum},#{channelId},#{grade},#{answerNum},#{mark},#{blowNum},now(),now(),curdate(),#{secToken},#{ditch},#{userType},#{unlocked})")
    void saveUser(ActivityUser user);
 
    /**
@@ -40,8 +40,17 @@ public interface GsmShareMapper {
     * @param userId
     * @return
     */
-   @Select("select * from wt_gsmshare_history where userId = #{userId} and unlocked=0 and status=3 and unlocked=7 ")
+   @Select("select * from wt_gsmshare_history where userId = #{userId} and unlocked=6 and status=3 ")
    ActivityUserHistory findCurYwHistory(@Param("userId") String userId);
+
+
+    /**
+     * 查询是否有当月获取记录
+     * @param userId
+     * @return
+     */
+    @Select("select * from wt_gsmshare_history where userId = #{userId} and unlocked=6 ")
+    ActivityUserHistory findSaveYwHistory(@Param("userId") String userId);
 
    /**
     * 查询奖品
@@ -99,7 +108,7 @@ public interface GsmShareMapper {
     * @param actId
     * @return
     */
-   @Select("select * from wt_gsmshare_whitelist where userId=#{userId}")
+   @Select("select * from wt_gsmshare_roster where userId=#{userId} ")
    ActivityRoster findActWhiteList(String actId);
 
 
@@ -130,6 +139,13 @@ public interface GsmShareMapper {
 
     @Update("update wt_gsmshare_user set mark=#{mark} where userId=#{userId}")
     int updateCurMark(@Param("mark") String nickName,@Param("userId")String userId);
+
+
+    @Update("update wt_gsmshare_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
+    int updateHistory(ActivityUserHistory history);//更新接口状态
+
+    @Update(" update  wt_gsmshare_user set unlocked=1 where userId=#{userId} and unlocked =0")
+    int updateUnlocked(String userId);
 
 
 
