@@ -121,7 +121,7 @@ public class FileListServiceImpl implements FileListService {
                 }
             }
             // 读取后根据表名插入表数据
-            resultNum = insert(tableName, list,userType);
+            resultNum = insert(tableName, list,userType,actId);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -130,7 +130,7 @@ public class FileListServiceImpl implements FileListService {
 
 
     @Transactional
-    public Integer insert(String tableName, List<String> list,Integer userType) {
+    public Integer insert(String tableName, List<String> list,Integer userType,String actId) {
         Integer number =0;
         try{
             // 每次插入的数量
@@ -145,7 +145,7 @@ public class FileListServiceImpl implements FileListService {
                 // 截取本次要添加的数据
                 List<String> insertList = list.subList(i - batchSize, i);
                 // 添加本批次数据到数据库中
-                number+=fileListMapper.batchDataList(tableName, insertList,userType);
+                number+=fileListMapper.batchDataList(tableName, insertList,userType,actId);
             }
             long end = System.currentTimeMillis();
             System.out.println("耗时："+( end - start ) + "ms");
@@ -154,7 +154,7 @@ public class FileListServiceImpl implements FileListService {
                 // 如果元素有剩余则将所有元素作为一个子列表一次性插入
                 List<String> lastList = list.subList(batchSize * batch, list.size());
                 // 添加集合到数据库中
-                number+=fileListMapper.batchDataList(tableName, lastList,userType);
+                number+=fileListMapper.batchDataList(tableName, lastList,userType,actId);
             }
         }catch (Exception e){
             System.out.println(e);
