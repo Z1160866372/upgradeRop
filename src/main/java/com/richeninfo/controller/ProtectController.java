@@ -35,8 +35,8 @@ import java.util.Date;
  * @create 2024/4/29 15:04
  */
 @Controller
-@Api(value = "守护父母-父亲节体验", tags = {"守护父母-父亲节体验"})
-@RequestMapping("/2024/06/protect")
+@Api(value = "魔速计划，非凡体验", tags = {"魔速计划，非凡体验"})
+@RequestMapping("/2024/06/trade")
 @Slf4j
 public class ProtectController {
     @Resource
@@ -93,9 +93,9 @@ public class ProtectController {
     @PostMapping("/draw")
     public @ResponseBody
     JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked
-    ,@ApiParam(name = "wtAcId", value = "wtAcId", required = true) String wtAcId, @ApiParam(name = "wtAc", value = "wtAc", required = true) String wtAc, @ApiParam(name = "randCode", value = "二次短信验证码", required = true) String randCode, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
+    ,@ApiParam(name = "name", value = "name", required = true) String name, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
         CommonController.getParameter(request, actId, channelId,unlocked,ditch);
-        return this.protectService.submit(secToken, actId, unlocked, channelId,wtAcId,wtAc,randCode,ditch);
+        return this.protectService.submit(secToken, actId, unlocked, channelId,name,ditch);
     }
 
 }

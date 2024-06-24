@@ -6,20 +6,7 @@
  *
  */
 
-package com.richeninfo.service;/*
- * Project: eurekaclient
- * 
- * File Created at 2018年8月3日
- * 
- * Copyright 2016 CMCC Corporation Limited.
- * All rights reserved.
- *
- * This software is the confidential and proprietary information of
- * ZYHY Company. ("Confidential Information").  You shall not
- * disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license.
- */
-
+package com.richeninfo.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.pojo.Constant;
@@ -29,24 +16,11 @@ import com.richeninfo.util.DateUtil;
 import com.richeninfo.util.HttpsClientNSSL;
 import lombok.extern.log4j.Log4j;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.HttpClientUtils;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
-import java.net.SocketTimeoutException;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.UUID;
 

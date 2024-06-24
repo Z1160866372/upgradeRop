@@ -48,6 +48,6 @@ public interface ProtectService {
      * @return
      * @throws Exception
      */
-    JSONObject submit(String secToken, String actId, int unlocked, String channelId,String wtAcId, String wtAc,String randCode,String ditch) throws Exception;
+    JSONObject submit(String secToken, String actId, int unlocked, String channelId,String name,String ditch) throws Exception;
 
 }

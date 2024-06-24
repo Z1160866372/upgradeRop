@@ -99,15 +99,15 @@ public class ProtectServiceImpl implements ProtectService {
                 mobile= commonService.getMobile(secToken,channelId);
             }
             for (ActivityConfiguration config : pro_config) {
-                if(config.getTypeId()==1){
-                    userHistory=protectMapper.selectActivityUserHistoryByUnlocked(mobile,config.getUnlocked());
-                    if(userHistory!=null&&userHistory.getStatus()==3){//已办理
-                        config.setStatus(2);
-                    }else{//去办理
+                userHistory=protectMapper.selectActivityUserHistoryByUnlocked(mobile,config.getUnlocked());
+                if(userHistory!=null){//已报名
+                    config.setStatus(2);
+                }else{//去报名
+                    if(config.getAmount()>0){
                         config.setStatus(0);
+                    }else{//已抢完
+                        config.setStatus(1);
                     }
-                }else{//权益 跳转
-                    config.setStatus(0);
                 }
             }
         }
@@ -115,123 +115,58 @@ public class ProtectServiceImpl implements ProtectService {
     }
 
     @Override
-    public JSONObject submit(String secToken, String actId, int unlocked, String channelId,String wtAcId, String wtAc,String randCode,String ditch) throws Exception {
+    public JSONObject submit(String secToken, String actId, int unlocked, String channelId,String name,String ditch) throws Exception {
         JSONObject object = new JSONObject();
         String mobile="";
         ActivityConfiguration config =null;
         if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }
-        if(!commonService.checkUserIsChinaMobile(mobile,actId)){
+        /*if(!commonService.checkUserIsChinaMobile(mobile,actId)){
             object.put(Constant.MSG,"noShYd");
             return object;
-        }
+        }*/
         ActivityUserHistory userHistory  =protectMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
         if(userHistory!=null){
-            if(userHistory.getStatus()==3){//已办理
-                object.put(Constant.MSG,"ybl");
-            }else{
-                config = commonMapper.selectActivityConfiguration(actId,unlocked);
-                object = transact3066Business(userHistory,config,randCode,channelId,wtAcId,wtAc,ditch);
-            }
+            object.put("history",userHistory);
+            object.put(Constant.MSG,"ylq");
         }else{
             config = commonMapper.selectActivityConfiguration(actId,unlocked);
-            saveHistory(actId,channelId,mobile,config,ditch);
-            userHistory  =protectMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
-            object = transact3066Business(userHistory,config,randCode,channelId,wtAcId,wtAc,ditch);
+            boolean result =  saveHistory(actId,channelId,mobile,config,ditch,name);
+            if(result){
+                userHistory  =protectMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
+                object.put("history",userHistory);
+                object.put(Constant.MSG,Constant.SUCCESS);
+            }else{
+                object.put(Constant.MSG,"noNum");
+            }
+
         }
         return object;
     }
 
-    public JSONObject transact3066Business(ActivityUserHistory history,ActivityConfiguration config,String randCode,String channelId,String wtAcId, String wtAc,String ditch) {
-        JSONObject object = new JSONObject();
-        boolean transact_result = false;
-        Result result = new Result();
-        try {
-            List<VasOfferInfo> offerList = new ArrayList<VasOfferInfo>();
-            if(config.getActivityId().contains(",")){
-                for (int i = 0; i < config.getActivityId().split(",").length; i++) {
-                    VasOfferInfo vasOfferInfo = new VasOfferInfo();
-                    vasOfferInfo.setOfferId(config.getActivityId().split(",")[i]);
-                    vasOfferInfo.setEffectiveType("0");
-                    vasOfferInfo.setOperType("0");
-                    offerList.add(vasOfferInfo);
-                }
-            }else{
-                VasOfferInfo vasOfferInfo = new VasOfferInfo();
-                vasOfferInfo.setOfferId(config.getActivityId());
-                vasOfferInfo.setEffectiveType("0");
-                vasOfferInfo.setOperType("0");
-                offerList.add(vasOfferInfo);
+    private boolean saveHistory(String actId, String channelId, String mobile, ActivityConfiguration activityConfiguration,String ditch,String name) {
+        boolean result = false;
+        if (activityConfiguration.getAmount() > 0) {
+            int updateNum = protectMapper.updateActivityConfigurationAmount(activityConfiguration.getId());
+            if (updateNum > 0) {
+                result = true;
+                ActivityUserHistory newHistory = new ActivityUserHistory();
+                newHistory.setUserId(mobile);
+                newHistory.setChannelId(channelId);
+                newHistory.setRewardName(activityConfiguration.getName());
+                newHistory.setTypeId(activityConfiguration.getTypeId());
+                newHistory.setUnlocked(activityConfiguration.getUnlocked());
+                newHistory.setCreateDate(day.format(new Date()));
+                newHistory.setCreateTime(df.format(new Date()));
+                newHistory.setValue(name);
+                newHistory.setActId(actId);
+                newHistory.setDitch(ditch);
+                protectMapper.insertActivityUserHistory(newHistory);
             }
-            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
-            String message = ropService.execute(packet,history.getUserId(),history.getActId());
-            message = ReqWorker.replaceMessage(message);
-            result = JSON.parseObject(message,Result.class);
-            String res = result.getResponse().getErrorInfo().getCode();
-            String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");
-            if(Constant.SUCCESS_CODE.equals(res)){
-                transact_result = true;
-                history.setStatus(Constant.STATUS_RECEIVED);
-                object.put(Constant.MSG, Constant.SUCCESS);
-            }else{
-                transact_result = false;
-                history.setStatus(Constant.STATUS_RECEIVED_ERROR);
-                object.put(Constant.MSG, Constant.FAILURE);
-            }
-            history.setMessage(JSON.toJSONString(result));
-            history.setCode(JSON.toJSONString(packet));
-            object.put("res", res);
-            object.put("DoneCode", DoneCode);
-           /* object.put("res", "0000");
-            object.put("DoneCode", "9999");*/
-            object.put("update_history", JSON.toJSONString(history));
-            protectMapper.updateHistory(history);
-            if (transact_result) {
-                //业务办理成功 接口上报
-                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
-                System.out.println(new_packet.toString());
-                String result_String="";
-                try {
-                    result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
-                }catch (Exception e){
-                    result_String="ERROR";
-                }
-                ActivityOrder order = new ActivityOrder();
-                order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
-                String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();
-                order.setThirdTradeId(packetThirdTradeId);
-                order.setOrderItemId("JYRZ"+packetThirdTradeId.substring(packetThirdTradeId.length()-21));
-                order.setBossId(config.getActivityId());
-                order.setCommodityName(config.getName());
-                order.setUserId(history.getUserId());
-                order.setCode(JSON.toJSONString(new_packet));
-                order.setMessage(result_String);
-                order.setChannelId(channelId);
-                commonMapper.insertActivityOrder(order);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+
         }
-        object.put("transact_result", transact_result);
-        return object;
+        return result;
     }
-
-    private void saveHistory(String actId, String channelId, String mobile, ActivityConfiguration activityConfiguration,String ditch) {
-        ActivityUserHistory newHistory = new ActivityUserHistory();
-        newHistory.setUserId(mobile);
-        newHistory.setChannelId(channelId);
-        newHistory.setRewardName(activityConfiguration.getName());
-        newHistory.setTypeId(activityConfiguration.getTypeId());
-        newHistory.setUnlocked(activityConfiguration.getUnlocked());
-        newHistory.setCreateDate(day.format(new Date()));
-        newHistory.setCreateTime(df.format(new Date()));
-        newHistory.setValue(activityConfiguration.getValue());
-        newHistory.setActId(actId);
-        newHistory.setDitch(ditch);
-        newHistory.setActivityId(activityConfiguration.getActivityId());
-        protectMapper.insertActivityUserHistory(newHistory);
-    }
-
 
 }

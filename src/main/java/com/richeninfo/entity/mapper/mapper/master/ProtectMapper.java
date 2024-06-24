@@ -24,19 +24,22 @@ import org.springframework.stereotype.Repository;
 public interface ProtectMapper {
 
 
-    @Select("select * from wt_protect_user where userId = #{userId}")
+    @Select("select * from wt_trade_user where userId = #{userId}")
     ActivityUser selectUserByCreateDate(@Param("userId") String userId);//查找用户记录
 
-    @Insert("insert into wt_protect_user(userId,channelId,secToken,createDate,createTime,actId)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId})")
+    @Insert("insert into wt_trade_user(userId,channelId,secToken,createDate,createTime,actId)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId})")
     int insertUser(ActivityUser user);//初始化用户
 
-    @Select("select * from wt_protect_history where userId = #{userId} and unlocked =#{unlocked}")
+    @Select("select * from wt_trade_history where userId = #{userId} and unlocked =#{unlocked}")
     ActivityUserHistory selectActivityUserHistoryByUnlocked(@Param("userId")String userId, @Param("unlocked")int unlocked);
 
-    @Insert("insert into wt_protect_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,activityId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{activityId})")
+    @Insert("insert into wt_trade_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,activityId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{activityId})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
-    @Update("update wt_protect_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
+    @Update("update wt_trade_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
     int updateHistory(ActivityUserHistory history);//更新接口状态
+
+    @Update("update activity_configuration set Amount= Amount-1 where id = #{id} and Amount > 0")
+    int updateActivityConfigurationAmount(int id);
 
 }
