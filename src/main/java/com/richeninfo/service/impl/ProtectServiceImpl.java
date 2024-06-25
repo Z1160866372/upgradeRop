@@ -101,6 +101,7 @@ public class ProtectServiceImpl implements ProtectService {
             for (ActivityConfiguration config : pro_config) {
                 userHistory=protectMapper.selectActivityUserHistoryByUnlocked(mobile,config.getUnlocked());
                 if(userHistory!=null){//已报名
+                    config.setValue(userHistory.getValue());
                     config.setStatus(2);
                 }else{//去报名
                     if(config.getAmount()>0){

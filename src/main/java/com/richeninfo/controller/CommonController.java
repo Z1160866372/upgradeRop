@@ -76,15 +76,17 @@ public class CommonController {
     SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd");
 
     @RequestMapping(value = "wtFree")
-    protected String wtFree(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId,@ApiParam(name = "ditch", value = "渠道", required = true) String ditch) throws ServletException, IOException {
+    protected String wtFree(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId,@ApiParam(name = "ditch", value = "渠道", required = true) String ditch,@ApiParam(name = "belongFlag", value = "异网标识", required = true) String belongFlag) throws ServletException, IOException {
         secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
         actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
         ditch = request.getParameter("ditch") == null ? "" : request.getParameter("ditch");
+        belongFlag = request.getParameter("belongFlag") == null ? "" : request.getParameter("belongFlag");
         log.info("微厅免登录接收secToken=="+secToken);
+        log.info("微厅免登录接收belongFlag=="+belongFlag);
         String url="";
         if(actId.equals("newcall")||actId.equals("finance")||actId.equals("schoolbaq")||actId.equals("consult")||actId.equals("fortune")
         ||actId.equals("migumonth")||actId.equals("miguxc")||actId.equals("proem")||actId.equals("plod")||actId.equals("miguflow")){
-            url="https://activity.sh.10086.cn/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
+            url="https://activity.sh.10086.cn/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch+"&belongFlag="+belongFlag;
         }else{
             Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
@@ -93,7 +95,7 @@ public class CommonController {
             if(month<10){
                 formattedMonth = String.format("%02d", month);
             }
-            url="https://activity.sh.10086.cn/"+context+"/"+year+"/"+formattedMonth+"/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch;
+            url="https://activity.sh.10086.cn/"+context+"/"+year+"/"+formattedMonth+"/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch+"&belongFlag="+belongFlag;
        }
         return "redirect:"+url+"";
     }
