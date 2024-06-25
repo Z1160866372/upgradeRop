@@ -79,6 +79,7 @@ public class ProtectServiceImpl implements ProtectService {
             new_user.setActId(user.getActId());
             new_user.setChannelId(user.getChannelId());
             new_user.setDitch(user.getDitch());
+            new_user.setBelongFlag(user.getBelongFlag());
             new_user.setCreateDate(day.format(new Date()));
             protectMapper.insertUser(new_user);
             user = new_user;
@@ -123,10 +124,10 @@ public class ProtectServiceImpl implements ProtectService {
         if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }
-        /*if(!commonService.checkUserIsChinaMobile(mobile,actId)){
+        if(!commonService.checkUserIsChinaMobile(mobile,actId)){
             object.put(Constant.MSG,"noShYd");
             return object;
-        }*/
+        }
         ActivityUserHistory userHistory  =protectMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
         if(userHistory!=null){
             object.put("history",userHistory);
