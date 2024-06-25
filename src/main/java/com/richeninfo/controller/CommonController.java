@@ -84,7 +84,9 @@ public class CommonController {
         log.info("微厅免登录接收secToken=="+secToken);
         log.info("微厅免登录接收belongFlag=="+belongFlag);
         String url="";
-        if(actId.equals("newcall")||actId.equals("finance")||actId.equals("schoolbaq")||actId.equals("consult")||actId.equals("fortune")
+        ActivityList activity = commonMapper.selectActivityByActId(actId);
+        url = activity.getAddress()+"?secToken="+secToken+"&ditch="+ditch+"&belongFlag="+belongFlag;
+       /* if(actId.equals("newcall")||actId.equals("finance")||actId.equals("schoolbaq")||actId.equals("consult")||actId.equals("fortune")
         ||actId.equals("migumonth")||actId.equals("miguxc")||actId.equals("proem")||actId.equals("plod")||actId.equals("miguflow")){
             url="https://activity.sh.10086.cn/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch+"&belongFlag="+belongFlag;
         }else{
@@ -96,7 +98,7 @@ public class CommonController {
                 formattedMonth = String.format("%02d", month);
             }
             url="https://activity.sh.10086.cn/"+context+"/"+year+"/"+formattedMonth+"/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch+"&belongFlag="+belongFlag;
-       }
+       }*/
         return "redirect:"+url+"";
     }
 
