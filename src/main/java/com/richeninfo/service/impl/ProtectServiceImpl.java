@@ -125,10 +125,17 @@ public class ProtectServiceImpl implements ProtectService {
         if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }
-        /*if(!commonService.checkUserIsChinaMobile(mobile,actId)){
+        ActivityUser select_user = protectMapper.selectUserByCreateDate(mobile,actId);
+        if(select_user.getBelongFlag().equals("1")){
             object.put(Constant.MSG,"noShYd");
             return object;
-        }*/
+        }
+        if(select_user.getBelongFlag().isEmpty()){
+            if(!commonService.checkUserIsChinaMobile(mobile,actId)){
+                object.put(Constant.MSG,"noShYd");
+                return object;
+            }
+        }
         ActivityUserHistory userHistory  =protectMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked,actId);
         if(userHistory!=null){
             object.put("history",userHistory);
