@@ -24,14 +24,14 @@ import org.springframework.stereotype.Repository;
 public interface ProtectMapper {
 
 
-    @Select("select * from wt_trade_user where userId = #{userId}")
-    ActivityUser selectUserByCreateDate(@Param("userId") String userId);//查找用户记录
+    @Select("select * from wt_trade_user where userId = #{userId} and actId=#{actId}")
+    ActivityUser selectUserByCreateDate(@Param("userId") String userId,@Param("actId") String actId);//查找用户记录
 
     @Insert("insert into wt_trade_user(userId,channelId,secToken,createDate,createTime,actId,belongFlag)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{belongFlag})")
     int insertUser(ActivityUser user);//初始化用户
 
-    @Select("select * from wt_trade_history where userId = #{userId} and unlocked =#{unlocked}")
-    ActivityUserHistory selectActivityUserHistoryByUnlocked(@Param("userId")String userId, @Param("unlocked")int unlocked);
+    @Select("select * from wt_trade_history where userId = #{userId} and unlocked =#{unlocked} and actId=#{actId}")
+    ActivityUserHistory selectActivityUserHistoryByUnlocked(@Param("userId")String userId, @Param("unlocked")int unlocked,@Param("actId") String actId);
 
     @Insert("insert into wt_trade_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,activityId)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{activityId})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);

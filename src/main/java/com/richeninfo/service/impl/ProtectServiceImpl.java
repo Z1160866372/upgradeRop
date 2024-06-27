@@ -71,7 +71,7 @@ public class ProtectServiceImpl implements ProtectService {
      * @return
      */
     public ActivityUser insertUser(ActivityUser user) {
-        ActivityUser select_user = protectMapper.selectUserByCreateDate(user.getUserId());
+        ActivityUser select_user = protectMapper.selectUserByCreateDate(user.getUserId(),user.getActId());
         if (select_user == null) {
             ActivityUser new_user = new ActivityUser();
             new_user.setSecToken(user.getSecToken());
@@ -100,7 +100,7 @@ public class ProtectServiceImpl implements ProtectService {
                 mobile= commonService.getMobile(secToken,channelId);
             }
             for (ActivityConfiguration config : pro_config) {
-                userHistory=protectMapper.selectActivityUserHistoryByUnlocked(mobile,config.getUnlocked());
+                userHistory=protectMapper.selectActivityUserHistoryByUnlocked(mobile,config.getUnlocked(),actId);
                 if(userHistory!=null){//已报名
                     config.setValue(userHistory.getValue());
                     config.setStatus(2);
@@ -128,7 +128,7 @@ public class ProtectServiceImpl implements ProtectService {
             object.put(Constant.MSG,"noShYd");
             return object;
         }*/
-        ActivityUserHistory userHistory  =protectMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
+        ActivityUserHistory userHistory  =protectMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked,actId);
         if(userHistory!=null){
             object.put("history",userHistory);
             object.put(Constant.MSG,"ylq");
@@ -136,7 +136,7 @@ public class ProtectServiceImpl implements ProtectService {
             config = commonMapper.selectActivityConfiguration(actId,unlocked);
             boolean result =  saveHistory(actId,channelId,mobile,config,ditch,name);
             if(result){
-                userHistory  =protectMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
+                userHistory  =protectMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked,actId);
                 //userHistory.setUserId(userHistory.getUserId().substring(0, 3) + "****" + userHistory.getUserId().substring(7));
                 object.put("history",userHistory);
                 object.put(Constant.MSG,Constant.SUCCESS);
