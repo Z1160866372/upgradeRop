@@ -195,7 +195,7 @@ public class FoodieServiceImpl implements FoodietService {
             result = JSON.parseObject(message,Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
             String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");*/
-            String res = "0000";
+            String res = "1234";
             if(Constant.SUCCESS_CODE.equals(res)){
                 transact_result = true;
                 history.setStatus(Constant.STATUS_RECEIVED);
@@ -209,7 +209,7 @@ public class FoodieServiceImpl implements FoodietService {
             history.setCode(JSON.toJSONString(packet));
            /* object.put("res", res);
             object.put("DoneCode", DoneCode);*/
-            object.put("res", "0000");
+            object.put("res", "1234");
             object.put("DoneCode", "9999");
             object.put("update_history", JSON.toJSONString(history));
             foodieMapper.updateHistory(history);

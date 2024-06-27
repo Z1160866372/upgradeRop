@@ -402,7 +402,7 @@ public class CommonServiceImpl implements CommonService {
                 operationLog.setName(commonMapper.selectActivityByActId(operationLog.getActId()).getName());
                 String keyword = "wt_" + operationLog.getActId() + "_operationLog";
                 commonMapper.insertOperationLog(operationLog, keyword);
-                object.put("operationLog", operationLog);
+                //object.put("operationLog", operationLog);
                 object.put(Constant.MSG, Constant.SUCCESS);
             } else {
                 object.put(Constant.MSG, "noMobile");

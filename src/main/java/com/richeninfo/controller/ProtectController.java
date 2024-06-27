@@ -55,11 +55,12 @@ public class ProtectController {
     @PostMapping(value = "/initialize")
     public @ResponseBody
     void initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId
-            , @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws IOException {
+            , @ApiParam(name = "ditch", value = "触点", required = true) String ditch,@ApiParam(name = "belongFlag", value = "异网标识", required = true) String belongFlag) throws IOException {
         ActivityUser user = new ActivityUser();
         JSONObject object = new JSONObject();
         secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
         channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
+        belongFlag = request.getParameter("belongFlag") == null ? "" : request.getParameter("belongFlag");
         if (secToken.isEmpty()) {
             object.put(Constant.MSG, "login");
         } else {
@@ -72,6 +73,7 @@ public class ProtectController {
                 user.setChannelId(channelId);
                 user.setActId(actId);
                 user.setDitch(ditch);
+                user.setBelongFlag(belongFlag);
                 user.setCreateDate(day.format(new Date()));
                 user = protectService.insertUser(user);
                 object.put(Constant.MSG, Constant.SUCCESS);

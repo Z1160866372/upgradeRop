@@ -7,8 +7,12 @@
 package com.richeninfo.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.richeninfo.entity.mapper.entity.OpenapiLog;
+import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.pojo.Constant;
+import com.richeninfo.pojo.Packet;
 import com.richeninfo.util.DateUtil;
+import com.richeninfo.util.Des3SSL;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +26,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -39,6 +44,9 @@ import java.util.TreeMap;
 public class UniapiTokenValidateService {
     /*   static String tokenValidateUrl = "http://120.197.235.102/api/uniTokenValidate/";*/
     static String tokenValidateUrl = "https://token.cmpassport.com:8300/uniapi/uniTokenValidate";
+
+    @Resource
+    private CommonMapper commonMapper;
 
     public JSONObject getPhoneByToken(String token) {
         JSONObject jsonObject = new JSONObject();
@@ -81,6 +89,7 @@ public class UniapiTokenValidateService {
         //生成新的请求报文
         String createSign = UniapiTokenValidateService.createSign("5", appid, idType, appKey, new Date().getTime() + "", DateUtil.convertDateToString(new Date(), Constant.YYYYMMDDHH24MMSSSSS), token, "1.0", userInformation);
         String response = null;
+        String mobile=null;
         try {
             response = postMethod(createSign);
             jsonObject.put(Constant.MSG, Constant.SUCCESS);
@@ -88,10 +97,13 @@ public class UniapiTokenValidateService {
             if (resultJson.containsKey("header") && resultJson.getJSONObject("header").getString("resultcode").equals("103000")) {
                 try {
                     log.info("msisdn=========" + resultJson.getJSONObject("body").getString("msisdn"));
-                    String mobile = AES.deCodeAES(resultJson.getJSONObject("body").getString("msisdn"), Constant.APP_KEY);
+                     mobile = AES.deCodeAES(resultJson.getJSONObject("body").getString("msisdn"), Constant.APP_KEY);
                     log.info(resultJson.getJSONObject("body").getString("msisdnmask"));
-
                     log.info("mobile=========" + mobile);
+                    String key = commonMapper.selectTheDayKey().getSecretKey();
+                    String secToken=  Des3SSL.encodeDC(mobile,key);
+                    System.out.println(secToken);
+                    jsonObject.put("secToken", secToken);
                     jsonObject.put(Constant.KEY_MOBILE, resultJson.getJSONObject("body").getString("msisdnmask"));
                     session.setAttribute("userId", mobile);
                 } catch (Exception e) {
@@ -104,8 +116,21 @@ public class UniapiTokenValidateService {
             // e.printStackTrace();
             jsonObject.put(Constant.MSG, Constant.FAILURE);
         } finally {
+            saveOpenapiLog(createSign, response, mobile,"");//保存用户调用记录
             return jsonObject;
         }
+    }
+
+    public void saveOpenapiLog(String message, String response, String userId, String actId) {
+        OpenapiLog log = new OpenapiLog();
+        //log.setAddress(request.getLocalAddr() + ":" + request.getLocalPort());
+        log.setAppCode("智能登录");
+        log.setApiCode("");
+        log.setCode(message);
+        log.setMessage(response);
+        log.setUserId(userId);
+        log.setActId(actId);
+        commonMapper.insertOpenapiLog(log);
     }
 
     /**

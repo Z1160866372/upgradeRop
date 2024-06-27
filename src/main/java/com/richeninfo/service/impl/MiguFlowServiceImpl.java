@@ -80,7 +80,6 @@ public class MiguFlowServiceImpl implements MiguFlowService {
     public JSONObject getActGift(String userId, String secToken, String channelId, String actId, String randCode, String wtAcId, String wtAc, String ditch) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser user = miguFlowMapper.findCurMonthUserInfo(userId);
-        JSONObject newJsonObject = new JSONObject();
         if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1 && user.getUserType() < 1) {
             //查询是否领取过当月的礼包
             ActivityUserHistory history = miguFlowMapper.findCurYwHistory(userId);
@@ -102,10 +101,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 history = miguFlowMapper.findCurYwHistory(userId);
                 try {
                     if (status > 0) {//业务发放
-                        newJsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
-                        Boolean ywStatus = newJsonObject.getBoolean("transact_result");
-                        jsonObject.put("msg", ywStatus);
-                        jsonObject.put("newJsonObject", newJsonObject);
+                        jsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -114,10 +110,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 if (history.getStatus() == 3) {
                     jsonObject.put("msg", "ybl");
                 } else {
-                    newJsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
-                    Boolean ywStatus = newJsonObject.getBoolean("transact_result");
-                    jsonObject.put("msg", ywStatus);
-                    jsonObject.put("newJsonObject", newJsonObject);
+                    jsonObject= transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
                 }
             }
         } else {

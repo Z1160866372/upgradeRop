@@ -155,8 +155,8 @@ public class HealthDayServiceImpl implements HealthDayService {
                         saveHistory(actId, channelId, object, mobile, activityConfiguration,ditch);
                         String content=activityConfiguration.getRemark().replace("code",activityCardList.getCouponCode());
                         log.info("content=="+content);
-                       /* Packet packet = packetHelper.getCommitPacket1638(mobile, content);
-                        JSON.parseObject(ropService.execute(packet, mobile,actId), Result.class);*/
+                        Packet packet = packetHelper.getCommitPacket1638(mobile, content);
+                        JSON.parseObject(ropService.execute(packet, mobile,actId), Result.class);
                     }else{
                         object.put(Constant.MSG,"noDate");
                     }

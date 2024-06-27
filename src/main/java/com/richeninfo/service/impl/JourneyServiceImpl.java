@@ -130,6 +130,10 @@ public class JourneyServiceImpl implements JourneyService {
         if (!StringUtils.isEmpty(secToken)) {
             try {
                 mobile= commonService.getMobile(secToken,channelId);
+                if (mobile==null||mobile.isEmpty()) {
+                    object.put(Constant.MSG, "login");
+                    return  object;
+                }
             }catch (Exception e){
                 object.put(Constant.MSG,"loginError");
                 return object;

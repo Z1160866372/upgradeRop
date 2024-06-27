@@ -42,7 +42,7 @@ public class UniapiTokenValidateController {
      * @param session
      * @return
      */
-    @RequestMapping(value = "/uniapiTokenValidate.do")
+    @RequestMapping(value = "/uniapiTokenValidate")
     public @ResponseBody Object   UniapiTokenValidate(HttpServletRequest request, HttpServletResponse response, HttpSession session){
         String token = request.getParameter("token") == null ? "" : request.getParameter("token");
         String userInformation = request.getParameter("userInformation") == null ? "" : request.getParameter("userInformation");
@@ -50,14 +50,14 @@ public class UniapiTokenValidateController {
     }
 
 
-    @RequestMapping(value = "/sim/login.do")
+    @RequestMapping(value = "/sim/login")
     public @ResponseBody Object   simLogin(HttpServletRequest request, HttpServletResponse response, HttpSession session){
         String phone = request.getParameter("phone") == null ? "" : request.getParameter("phone");
         return this.simValidateService.getAuthMsg(phone);
     }
 
 
-    @RequestMapping(value = "/encryptedRsa.do")
+    @RequestMapping(value = "/encryptedRsa")
     public @ResponseBody Object  encryptedRsa(HttpServletRequest request, HttpServletResponse response, HttpSession session){
         JSONObject jsonObject = new JSONObject();
         String sign = request.getParameter("sign") == null ? "" : request.getParameter("sign");
@@ -79,7 +79,7 @@ public class UniapiTokenValidateController {
      * @param session
      * @return
      */
-    @RequestMapping(value = "/login/out.do")
+    @RequestMapping(value = "/login/out")
     public void  logout(HttpServletRequest request, HttpServletResponse response, HttpSession session){
         session.invalidate();
     }

@@ -76,16 +76,22 @@ public class CommonController {
     SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd");
 
     @RequestMapping(value = "wtFree")
-    protected String wtFree(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId,@ApiParam(name = "ditch", value = "渠道", required = true) String ditch,@ApiParam(name = "belongFlag", value = "异网标识", required = true) String belongFlag) throws ServletException, IOException {
+    protected String wtFree(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,
+                            @ApiParam(name = "actId", value = "活动标识", required = true) String actId,
+                            @ApiParam(name = "ditch", value = "渠道", required = true) String ditch,
+                            @ApiParam(name = "openid", value = "渠道", required = true) String openid,
+                            @ApiParam(name = "belongFlag", value = "异网标识", required = true) String belongFlag) throws ServletException, IOException {
         secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
         actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
         ditch = request.getParameter("ditch") == null ? "" : request.getParameter("ditch");
+        openid = request.getParameter("openid") == null ? "" : request.getParameter("openid");
         belongFlag = request.getParameter("belongFlag") == null ? "" : request.getParameter("belongFlag");
-        log.info("微厅免登录接收secToken=="+secToken);
-        log.info("微厅免登录接收belongFlag=="+belongFlag);
-        String url="";
+        log.info("微厅免登录接收secToken==" + secToken);
+        log.info("微厅免登录接收belongFlag==" + belongFlag);
+        log.info("微厅免登录接收openid==" + openid);
+        String url = "";
         ActivityList activity = commonMapper.selectActivityByActId(actId);
-        url = activity.getAddress()+"?secToken="+secToken+"&ditch="+ditch+"&belongFlag="+belongFlag;
+        url = activity.getAddress() + "?secToken=" + secToken + "&ditch=" + ditch + "&belongFlag=" + belongFlag+ "&openid=" + openid;
        /* if(actId.equals("newcall")||actId.equals("finance")||actId.equals("schoolbaq")||actId.equals("consult")||actId.equals("fortune")
         ||actId.equals("migumonth")||actId.equals("miguxc")||actId.equals("proem")||actId.equals("plod")||actId.equals("miguflow")){
             url="https://activity.sh.10086.cn/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch+"&belongFlag="+belongFlag;
@@ -99,7 +105,7 @@ public class CommonController {
             }
             url="https://activity.sh.10086.cn/"+context+"/"+year+"/"+formattedMonth+"/"+actId+"/index.html?secToken="+secToken+"&ditch="+ditch+"&belongFlag="+belongFlag;
        }*/
-        return "redirect:"+url+"";
+        return "redirect:" + url + "";
     }
 
     @GetMapping("/img-verify-code")
@@ -111,11 +117,11 @@ public class CommonController {
         //第一个参数是生成的验证码，第二个参数是生成的图片
         Object[] objs = imageUtil.createImage();
         //将验证码存入redis
-        redisUtil.set(""+objs[0]+"", objs[0]);
+        redisUtil.set("" + objs[0] + "", objs[0]);
         //将图片转正base64
         BufferedImage image = (BufferedImage) objs[1];
         //转base64
-       // BASE64Encoder encoder = new BASE64Encoder();
+        // BASE64Encoder encoder = new BASE64Encoder();
         Base64.Encoder encoder = Base64.getEncoder();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();//io流
         ImageIO.write(image, "png", baos);//写入流中
@@ -133,7 +139,7 @@ public class CommonController {
     @PostMapping(value = "/newSendMsg")
     @ApiOperation("获取短信验证码")
     public @ResponseBody
-    Object sendMsg(@ApiParam(name = "smsRandom", value = "图形验证码", required = true) String smsRandom, @ApiParam(name = "mobilePhone", value = "用户号码", required = true) String mobilePhone,@ApiParam(name = "actId", value = "活动标识", required = true) String actId) throws Exception {
+    Object sendMsg(@ApiParam(name = "smsRandom", value = "图形验证码", required = true) String smsRandom, @ApiParam(name = "mobilePhone", value = "用户号码", required = true) String mobilePhone, @ApiParam(name = "actId", value = "活动标识", required = true) String actId) throws Exception {
         log.info("获取：" + redisUtil.get(smsRandom));
         Cookie[] cookies = request.getCookies();
         smsRandom = request.getParameter(Constant.SMS_RANDOM) == null ? "" : request.getParameter(Constant.SMS_RANDOM);
@@ -148,11 +154,11 @@ public class CommonController {
         if (!mobilePhone.isEmpty()) {
             mobilePhone = rsaUtils.decryptByPriKey(mobilePhone).trim();
         }
-        if (!commonService.checkUserIsChinaMobile(mobilePhone,actId)) {
+        if (!commonService.checkUserIsChinaMobile(mobilePhone, actId)) {
             resultObj.put(Constant.MSG, Constant.ERROR);
             return resultObj;
         }
-        return this.commonService.sendMsgCode(mobilePhone,actId);
+        return this.commonService.sendMsgCode(mobilePhone, actId);
     }
 
     @PostMapping(value = "/login_check")
@@ -173,7 +179,7 @@ public class CommonController {
         boolean isMatched = false;
         isMatched = this.commonService.valSendMsgCode(mobilePhone, keyCode);
         if (isMatched) {
-            redisUtil.set(Constant.KEY_MOBILE,mobilePhone);
+            redisUtil.set(Constant.KEY_MOBILE, mobilePhone);
             String key = commonMapper.selectTheDayKey().getSecretKey();
             String secToken = Des3SSL.encodeDC(mobilePhone, key);
             log.info("生成secToken:" + secToken);
@@ -195,8 +201,8 @@ public class CommonController {
     @ApiOperation("活动校验(时间||白名单||WAP20用户)")
     @PostMapping(value = "/verityActive")
     public @ResponseBody
-    Object getActiveStatus(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId, @ApiParam(name = "isTestWhite", value = "是否加白名单验证", required = true) boolean isTestWhite) throws Exception {
-        return this.commonService.verityActive(secToken,actId, isTestWhite, channelId);
+    Object getActiveStatus(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId, @ApiParam(name = "isTestWhite", value = "是否加白名单验证", required = true) boolean isTestWhite) throws Exception {
+        return this.commonService.verityActive(secToken, actId, isTestWhite, channelId);
     }
 
 
@@ -204,11 +210,11 @@ public class CommonController {
     @PostMapping(value = "/sendSms5956")
     public @ResponseBody
     Object sendSms5956(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) int unlocked) throws IOException {
-        Object object=  commonObject(secToken,channelId,actId).getString(Constant.MSG);
-        if(object.equals(Constant.SUCCESS)){
-            return  commonService.sendSms5956(commonObject(secToken,channelId,actId).getString(Constant.KEY_MOBILE),actId,unlocked);
+        Object object = commonObject(secToken, channelId, actId).getString(Constant.MSG);
+        if (object.equals(Constant.SUCCESS)) {
+            return commonService.sendSms5956(commonObject(secToken, channelId, actId).getString(Constant.KEY_MOBILE), actId, unlocked);
         }
-        return  object;
+        return object;
     }
 
     /**
@@ -227,12 +233,13 @@ public class CommonController {
 
     /**
      * 提取公共内容
+     *
      * @param secToken
      * @param channelId
      * @param actId
      * @return
      */
-    public  JSONObject commonObject(String secToken, String channelId, String actId){
+    public JSONObject commonObject(String secToken, String channelId, String actId) {
         JSONObject object = new JSONObject();
         secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
         channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
@@ -242,7 +249,7 @@ public class CommonController {
             String mobile = commonService.getMobile(secToken, channelId);
             if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
-            }else{
+            } else {
                 object.put(Constant.MSG, Constant.SUCCESS);
                 object.put(Constant.KEY_MOBILE, mobile);
             }
@@ -261,7 +268,7 @@ public class CommonController {
         resp.getWriter().write(JSON.toJSONString(config));
     }
 
-    static void getParameter(HttpServletRequest request,String actId,String channelId,int unlocked,String ditch){
+    static void getParameter(HttpServletRequest request, String actId, String channelId, int unlocked, String ditch) {
         actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
         channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
         unlocked = request.getParameter("unlocked") == null ? 0 : Integer.parseInt(request.getParameter("unlocked"));
@@ -270,6 +277,7 @@ public class CommonController {
 
     /**
      * 保存用户操作记录
+     *
      * @return
      */
     @ApiOperation("保存用户操作记录")
@@ -281,6 +289,7 @@ public class CommonController {
 
     /**
      * 保存用户分享记录
+     *
      * @return
      */
     @ApiOperation("保存用户分享记录")
@@ -296,32 +305,33 @@ public class CommonController {
     public @ResponseBody
     Object dataReissue(@ApiParam(name = "createTime", value = "截止日期", required = true) String createTime, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws Exception {
         JSONObject object = new JSONObject();
-        String keyword = "wt_"+actId+"_history";
-        List<ActivityUserHistory> activityUserHistoryList = commonMapper.selectActivityUserHistory(createTime,keyword);
-        if(!activityUserHistoryList.isEmpty()){
-            for (ActivityUserHistory history: activityUserHistoryList) {
-                if(history.getActivityId()!=null&&history.getUserId()!=null){
+        String keyword = "wt_" + actId + "_history";
+        List<ActivityUserHistory> activityUserHistoryList = commonMapper.selectActivityUserHistory(createTime, keyword);
+        if (!activityUserHistoryList.isEmpty()) {
+            for (ActivityUserHistory history : activityUserHistoryList) {
+                if (history.getActivityId() != null && history.getUserId() != null) {
                     String mqMsg = commonService.issueReward(history);
                     log.info("4147请求信息：" + mqMsg);
-                    jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
+                    jmsMessagingTemplate.convertAndSend("commonQueue", mqMsg);
                 }
             }
-            object.put("objectList",activityUserHistoryList);
-            object.put(Constant.MSG,"yesData");
-        }else{
-            object.put(Constant.MSG,"noData");
+            object.put("objectList", activityUserHistoryList);
+            object.put(Constant.MSG, "yesData");
+        } else {
+            object.put(Constant.MSG, "noData");
         }
         return object;
     }
 
     /**
      * 附件上传(仅支持CSV)
+     *
      * @param file
      */
     @ResponseBody
     @RequestMapping("attachmentUpload")
-    public void attachmentUpload(@RequestParam(value = "file", required = false) MultipartFile file){
-        fileUtil.attachmentUpload(request,response,file);
+    public void attachmentUpload(@RequestParam(value = "file", required = false) MultipartFile file) {
+        fileUtil.attachmentUpload(request, response, file);
     }
 
     @ApiOperation(value = "初始化用户", httpMethod = "POST")
@@ -336,9 +346,9 @@ public class CommonController {
             object.put(Constant.MSG, "login");
         } else {
             String mobile = commonService.getMobile(secToken, channelId);
-            if (mobile==null||mobile.isEmpty()) {
+            if (mobile == null || mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
-            }else{
+            } else {
                 user.setUserId(mobile);
                 user.setSecToken(secToken);
                 user.setChannelId(channelId);
