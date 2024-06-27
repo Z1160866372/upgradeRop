@@ -104,6 +104,7 @@ public class ProtectServiceImpl implements ProtectService {
                 if(userHistory!=null){//已报名
                     config.setValue(userHistory.getValue());
                     config.setStatus(2);
+
                 }else{//去报名
                     if(config.getAmount()>0){
                         config.setStatus(0);
@@ -137,7 +138,7 @@ public class ProtectServiceImpl implements ProtectService {
             boolean result =  saveHistory(actId,channelId,mobile,config,ditch,name);
             if(result){
                 userHistory  =protectMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked,actId);
-                //userHistory.setUserId(userHistory.getUserId().substring(0, 3) + "****" + userHistory.getUserId().substring(7));
+                userHistory.setUserId(userHistory.getUserId().substring(0, 3) + "****" + userHistory.getUserId().substring(7));
                 object.put("history",userHistory);
                 object.put(Constant.MSG,Constant.SUCCESS);
             }else{
