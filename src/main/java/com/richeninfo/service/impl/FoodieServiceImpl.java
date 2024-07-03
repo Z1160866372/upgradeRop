@@ -80,8 +80,8 @@ public class FoodieServiceImpl implements FoodietService {
             new_user.setChannelId(user.getChannelId());
             new_user.setDitch(user.getDitch());
             new_user.setCreateDate(day.format(new Date()));
-            List<ActivityRoster> selectRoster = commonMapper.selectRoster(user.getUserId(),"foodie","wt_foodie_roster",1);
-            if(!CollectionUtils.isEmpty(selectRoster)){
+            List<ActivityRoster> selectRoster = commonMapper.selectRoster(user.getUserId(),"newcomerGift","wt_newcomerGift_roster",1);
+            if(CollectionUtils.isEmpty(selectRoster)){
                 new_user.setUserType(1);
             }
             foodieMapper.insertUser(new_user);
@@ -110,9 +110,9 @@ public class FoodieServiceImpl implements FoodietService {
                             config.setStatus(3);
                         }else{
                             userHistory=foodieMapper.selectActivityUserHistoryByUnlocked(mobile,config.getUnlocked());
-                            if(userHistory!=null&&userHistory.getStatus()==3){//已办理
+                            if(userHistory!=null){//已领取
                                 config.setStatus(2);
-                            }else{//去办理
+                            }else{//去领取
                                 if(config.getAmount()>0){
                                     config.setStatus(0);
                                 }else{//已抢完
@@ -142,108 +142,35 @@ public class FoodieServiceImpl implements FoodietService {
                 object.put(Constant.MSG,"blackList");
                 return object;
             }
+            if(("1").equals(select_user.getBelongFlag())){
+                object.put(Constant.MSG,"noShYd");
+                return object;
+            }
+            if(select_user.getBelongFlag().isEmpty()){
+                /*if(!commonService.checkUserIsChinaMobile(mobile,actId)){
+                    object.put(Constant.MSG,"noShYd");
+                    return object;
+                }*/
+            }
         }
-       /* if(!commonService.checkUserIsChinaMobile(mobile,actId)){
-            object.put(Constant.MSG,"noShYd");
-            return object;
-        }*/
         ActivityUserHistory userHistory  =foodieMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
         if(userHistory!=null){
-            if(userHistory.getStatus()==3){//已办理
-                object.put(Constant.MSG,"ybl");
-            }else{
-                config = commonMapper.selectActivityConfiguration(actId,unlocked);
-                object = transact3066Business(userHistory,config,randCode,channelId,wtAcId,wtAc,ditch);
-            }
+            object.put("history",userHistory);
+            object.put(Constant.MSG,"ylq");
         }else{
             config = commonMapper.selectActivityConfiguration(actId,unlocked);
             boolean result =  saveHistory(actId,channelId,mobile,config,ditch);
             if(result){
                 userHistory  =foodieMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
-                object = transact3066Business(userHistory,config,randCode,channelId,wtAcId,wtAc,ditch);
+                userHistory.setUserId(userHistory.getUserId().substring(0, 3) + "****" + userHistory.getUserId().substring(7));
+                object.put("history",userHistory);
+                object.put(Constant.MSG,Constant.SUCCESS);
             }else{
                 object.put(Constant.MSG,"noNum");
             }
         }
         return object;
     }
-
-    public JSONObject transact3066Business(ActivityUserHistory history,ActivityConfiguration config,String randCode,String channelId,String wtAcId, String wtAc,String ditch) {
-        JSONObject object = new JSONObject();
-        boolean transact_result = false;
-        Result result = new Result();
-        try {
-            List<VasOfferInfo> offerList = new ArrayList<VasOfferInfo>();
-            if(config.getActivityId().contains(",")){
-                for (int i = 0; i < config.getActivityId().split(",").length; i++) {
-                    VasOfferInfo vasOfferInfo = new VasOfferInfo();
-                    vasOfferInfo.setOfferId(config.getActivityId().split(",")[i]);
-                    vasOfferInfo.setEffectiveType("0");
-                    vasOfferInfo.setOperType("0");
-                    offerList.add(vasOfferInfo);
-                }
-            }else{
-                VasOfferInfo vasOfferInfo = new VasOfferInfo();
-                vasOfferInfo.setOfferId(config.getActivityId());
-                vasOfferInfo.setEffectiveType("0");
-                vasOfferInfo.setOperType("0");
-                offerList.add(vasOfferInfo);
-            }
-            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
-            /*String message = ropService.execute(packet,history.getUserId(),history.getActId());
-            message = ReqWorker.replaceMessage(message);
-            result = JSON.parseObject(message,Result.class);
-            String res = result.getResponse().getErrorInfo().getCode();
-            String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");*/
-            String res = "1234";
-            if(Constant.SUCCESS_CODE.equals(res)){
-                transact_result = true;
-                history.setStatus(Constant.STATUS_RECEIVED);
-                object.put(Constant.MSG, Constant.SUCCESS);
-            }else{
-                transact_result = false;
-                history.setStatus(Constant.STATUS_RECEIVED_ERROR);
-                object.put(Constant.MSG, Constant.FAILURE);
-            }
-            history.setMessage(JSON.toJSONString(result));
-            history.setCode(JSON.toJSONString(packet));
-           /* object.put("res", res);
-            object.put("DoneCode", DoneCode);*/
-            object.put("res", "1234");
-            object.put("DoneCode", "9999");
-            object.put("update_history", JSON.toJSONString(history));
-            foodieMapper.updateHistory(history);
-            if (transact_result) {
-                //业务办理成功 接口上报
-                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
-                System.out.println(new_packet.toString());
-                String result_String="";
-               /* try {
-                    result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
-                }catch (Exception e){
-                    result_String="ERROR";
-                }*/
-                ActivityOrder order = new ActivityOrder();
-                order.setName(commonMapper.selectActivityByActId(config.getActId()).getName());
-                String packetThirdTradeId= packet.getPost().getPubInfo().getTransactionId();
-                order.setThirdTradeId(packetThirdTradeId);
-                order.setOrderItemId("JYRZ"+packetThirdTradeId.substring(packetThirdTradeId.length()-21));
-                order.setBossId(config.getActivityId());
-                order.setCommodityName(config.getName());
-                order.setUserId(history.getUserId());
-                order.setCode(JSON.toJSONString(new_packet));
-                order.setMessage(result_String);
-               // order.setMessage("");
-                order.setChannelId(channelId);
-                commonMapper.insertActivityOrder(order);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        object.put("transact_result", transact_result);
-        return object;
-    }
-
     private boolean saveHistory(String actId, String channelId, String mobile, ActivityConfiguration activityConfiguration,String ditch) {
         boolean result=false;
         if(activityConfiguration.getAmount()>0){
@@ -263,9 +190,13 @@ public class FoodieServiceImpl implements FoodietService {
                 newHistory.setDitch(ditch);
                 newHistory.setActivityId(activityConfiguration.getActivityId());
                 foodieMapper.insertActivityUserHistory(newHistory);
+                if(activityConfiguration.getTypeId()==0){
+                    String mqMsg = commonService.issueReward(newHistory);
+                    log.info("4147请求信息：" + mqMsg);
+                   // jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
+                }
             }
         }
-
         return result;
     }
 

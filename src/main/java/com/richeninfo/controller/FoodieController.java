@@ -35,8 +35,8 @@ import java.util.Date;
  * @create 2024/4/29 15:04
  */
 @Controller
-@Api(value = "24元领40元吃货代金券", tags = {"24元领40元吃货代金券"})
-@RequestMapping("/2024/06/foodie")
+@Api(value = "中国移动APP新享礼遇", tags = {"中国移动APP新享礼遇"})
+@RequestMapping("/2024/07/newcomerGift")
 @Slf4j
 public class FoodieController {
     @Resource
