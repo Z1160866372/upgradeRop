@@ -25,7 +25,7 @@ public interface FoodieMapper {
     @Select("select * from wt_newcomerGift_user where userId = #{userId}")
     ActivityUser selectUserByCreateDate(@Param("userId") String userId);//查找用户记录
 
-    @Insert("insert into wt_newcomerGift_user(userId,channelId,secToken,createDate,createTime,actId,belongFlag)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{belongFlag})")
+    @Insert("insert into wt_newcomerGift_user(userId,channelId,secToken,createDate,createTime,actId,belongFlag,userType)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{belongFlag},#{userType})")
     int insertUser(ActivityUser user);//初始化用户
 
     @Select("select * from wt_newcomerGift_history where userId = #{userId} and unlocked =#{unlocked}")

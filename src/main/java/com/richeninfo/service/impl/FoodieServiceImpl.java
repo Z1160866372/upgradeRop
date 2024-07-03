@@ -103,25 +103,22 @@ public class FoodieServiceImpl implements FoodietService {
                 mobile= commonService.getMobile(secToken,channelId);
             }
             for (ActivityConfiguration config : pro_config) {
-                if(config.getTypeId()==1){
-                    ActivityUser select_user = foodieMapper.selectUserByCreateDate(mobile);
-                    if(select_user!=null){
-                        if(select_user.getUserType()>0){//黑名单
-                            config.setStatus(3);
-                        }else{
-                            userHistory=foodieMapper.selectActivityUserHistoryByUnlocked(mobile,config.getUnlocked());
-                            if(userHistory!=null){//已领取
-                                config.setStatus(2);
-                            }else{//去领取
-                                if(config.getAmount()>0){
-                                    config.setStatus(0);
-                                }else{//已抢完
-                                    config.setStatus(1);
-                                }
+                ActivityUser select_user = foodieMapper.selectUserByCreateDate(mobile);
+                if(select_user!=null){
+                    if(select_user.getUserType()>0){//黑名单
+                        config.setStatus(3);
+                    }else{
+                        userHistory=foodieMapper.selectActivityUserHistoryByUnlocked(mobile,config.getUnlocked());
+                        if(userHistory!=null){//已领取
+                            config.setStatus(2);
+                        }else{//去领取
+                            if(config.getAmount()>0){
+                                config.setStatus(0);
+                            }else{//已抢完
+                                config.setStatus(1);
                             }
                         }
                     }
-
                 }
             }
         }
