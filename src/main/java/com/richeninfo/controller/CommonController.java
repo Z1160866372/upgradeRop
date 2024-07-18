@@ -84,7 +84,7 @@ public class CommonController {
         secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
         actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
         ditch = request.getParameter("ditch") == null ? "" : request.getParameter("ditch");
-        openid = request.getParameter("openid") == null ? "" : request.getParameter("openid");
+        openid = request.getParameter("openid") == null ? "" : "1";
         belongFlag = request.getParameter("belongFlag") == null ? "" : request.getParameter("belongFlag");
         log.info("微厅免登录接收secToken==" + secToken);
         log.info("微厅免登录接收belongFlag==" + belongFlag);
@@ -204,6 +204,23 @@ public class CommonController {
     Object getActiveStatus(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId, @ApiParam(name = "isTestWhite", value = "是否加白名单验证", required = true) boolean isTestWhite) throws Exception {
         return this.commonService.verityActive(secToken, actId, isTestWhite, channelId);
     }
+
+    /**
+     * 上海移动手机号校验
+     *
+     * @param actId
+     * @return
+     * @throws Exception
+     */
+    @ApiOperation("异网用户校验")
+    @PostMapping(value = "/verityFlag")
+    public @ResponseBody
+    Object verityFlag(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId, @ApiParam(name = "isTestWhite", value = "是否加白名单验证", required = true) boolean isTestWhite) throws Exception {
+       String userId=commonService.getMobile(secToken, channelId);
+       log.info("异网用户校验userId="+userId);
+        return this.commonService.checkUserIsChinaMobile(userId, actId);
+    }
+
 
 
     @ApiOperation(value = "二次短信下发", httpMethod = "POST")

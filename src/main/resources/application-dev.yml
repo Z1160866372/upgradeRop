@@ -2,7 +2,7 @@ spring:
   redis:
     host: 10.102.75.24
     password: Jy*Rds&$8
-    port: 6379
+    port: 6399
   master:
     datasource:
       driver-class-name: com.mysql.jdbc.Driver
@@ -12,7 +12,7 @@ spring:
       password: Jy#BC8&%
   #activemq配置
   activemq:
-    broker-url: tcp://10.102.75.24:61616  #activeMQ的ip和端口号
+    broker-url: tcp://10.102.75.24:61618  #activeMQ的ip和端口号
     user: admin   #activeMq账号
     password: Jy*Mq&$8 #activeMq密码
     non-blocking-redelivery: false # 是否在回滚回滚消息之前停止消息传递。这意味着当启用此命令时，消息顺序不会被保留。
@@ -27,10 +27,11 @@ spring:
 #能开平台相关配置信息
 #测试地址test
 nengKai:
-  ip: 10.10.140.76
+  ip: 10.196.77.178
   config_context: /secret
-  appCode: A0001547
-  apk_new: znoZXkO1wlsEEOl2VP5Flx9rYc7T0Kuh
-  apk: gBPWtWgf4Gvpnu+8xJTEDYAT1rVoH+Br
-  securityUrl: http://10.10.140.76/open/security
-  openapiUrl: http://10.10.140.76/open/service
+  appCode: A0000479
+  apk_new: ZK2KFvG5wn/pXtUEAeUsv7DWks2eXbU+
+  apk: KbYv6fJRH4pUruNM+2HvTCm2L+nyUR+K
+  securityUrl: http://10.196.77.178/open/security
+  openapiUrl: http://10.196.77.178/open/service
+context: sandbox

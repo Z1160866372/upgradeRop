@@ -1,14 +1,17 @@
 spring:
   redis:
-    host: 106.14.45.62
-    password: pujing666.
+    host: 127.0.0.1
     port: 6379
   master:
     datasource:
-      driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://106.14.45.62:3306/weixin?characterEncoding=utf8&allowMultiQueries=true&useSSL=false
+      #url: jdbc:mysql://106.14.45.62:3306/weixin?characterEncoding=utf8&allowMultiQueries=true #url
+      #username: root
+      #password: pujing666
+      #driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/weixin
       username: root
-      password: pujing666
+      password: root123.
+      driver-class-name: com.mysql.cj.jdbc.Driver
   #activemq配置
 #  activemq:
 #    broker-url: tcp://116.62.152.74:61616 #activeMQ的ip和端口号
@@ -33,6 +36,7 @@ nengKai:
   apk: gBPWtWgf4Gvpnu+8xJTEDYAT1rVoH+Br
   securityUrl: http://10.10.140.76/open/security
   openapiUrl: http://10.10.140.76/open/service
+context: sandbox
 
 
 
