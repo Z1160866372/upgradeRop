@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.MiguFlowService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,7 @@ import java.io.IOException;
  */
 @Controller
 @RequestMapping("/miguflow")
+@Api(value = "咪咕视频流量版", tags = {"咪咕视频流量版"})
 public class MiguFlowController {
 
     @Resource

@@ -13,6 +13,7 @@ import com.richeninfo.entity.mapper.mapper.master.PlentifulMapper;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.PlentifulService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -30,6 +31,7 @@ import java.io.IOException;
 
 @Controller
 @RequestMapping("/plentiful")
+@Api(value = "欢乐扭蛋", tags = {"欢乐扭蛋"})
 public class PlentifulController {
 
     @Resource

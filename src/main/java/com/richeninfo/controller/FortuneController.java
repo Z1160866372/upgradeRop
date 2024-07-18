@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.FortuneService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -28,7 +29,9 @@ import java.io.IOException;
  */
 
 @Controller
+
 @RequestMapping("/fortune")
+@Api(value = "好运龙龙送好礼", tags = {"好运龙龙送好礼"})
 public class FortuneController {
 
     @Resource
