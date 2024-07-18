@@ -80,7 +80,11 @@ public class GsmShareServiceImpl implements GsmShareService {
     public JSONObject getActGift(String userId, String secToken, String channelId, String actId,String ditch) {
         JSONObject jsonObject = new JSONObject();
         ActivityUser user = gsmShareMapper.findUserInfo(userId);
-        if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1) {
+        if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1 ) {
+               if( !commonService.checkUserIsChinaMobile(userId,actId)){
+                   jsonObject.put(Constant.MSG,"noShYd");
+                   return jsonObject;
+               }
             String code="";
                     ActivityConfiguration gift=new ActivityConfiguration();
                     int lostPlayNum=gsmShareMapper.lostPlayNum(userId);
@@ -254,8 +258,8 @@ public class GsmShareServiceImpl implements GsmShareService {
             result = JSON.parseObject(message, Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
             String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");
-           /* String res="0000";
-            String DoneCode="11111";*/
+            history.setMessage(message);
+               history.setCode(JSONObject.toJSONString(packet));
             if (Constant.SUCCESS_CODE.equals(res)) {
                 transact_result = true;
                 gsmShareMapper.updateUnlocked(history.getUserId());
@@ -266,10 +270,14 @@ public class GsmShareServiceImpl implements GsmShareService {
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
             }
-            history.setCode(JSONObject.toJSONString(packet));
-            history.setMessage(message);
             object.put("res", res);
             object.put("DoneCode", DoneCode);
+      /*      object.put("res", "0000");
+            object.put("DoneCode", "11111");
+            transact_result = true;
+            object.put(Constant.MSG, Constant.SUCCESS);
+            history.setStatus(Constant.STATUS_RECEIVED);
+            gsmShareMapper.updateUnlocked(history.getUserId());*/
             object.put("update_history", JSON.toJSONString(history));
             gsmShareMapper.updateHistory(history);
             if (transact_result) {

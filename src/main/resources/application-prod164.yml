@@ -3,7 +3,7 @@ spring:
     #host: 10.102.75.11
     host: 10.102.75.6
     password: Jy*Rds&$8
-    port: 6379
+    port: 6399
   master:
     datasource:
       driver-class-name: com.mysql.jdbc.Driver
@@ -13,7 +13,7 @@ spring:
       password: Jy#BC8&%
   #activemq配置
   activemq:
-    broker-url: tcp://10.102.75.6:61616  #activeMQ的ip和端口号
+    broker-url: tcp://10.102.75.6:61618  #activeMQ的ip和端口号
     #broker-url: tcp://10.102.75.6:61616  #activeMQ的ip和端口号
     user: admin   #activeMq账号
     password: Jy*Mq&$8 #activeMq密码
@@ -34,8 +34,11 @@ nengKai:
   appCode: A0000479
   apk_new: ZK2KFvG5wn/pXtUEAeUsv7DWks2eXbU+
   apk: KbYv6fJRH4pUruNM+2HvTCm2L+nyUR+K
-  securityUrl: http://40.40.40.115/open/security
-  openapiUrl: http://40.40.40.115/open/service
+  securityUrl: http://40.40.42.21/open/security
+  openapiUrl: http://40.40.42.22/open/service
+  #securityUrl: http://40.40.40.115/open/security
+  #openapiUrl: http://40.40.40.115/open/service
+context: environment
 
 
 

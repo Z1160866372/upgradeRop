@@ -12,22 +12,23 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.*;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
-import com.richeninfo.entity.mapper.mapper.master.MiguFlowMapper;
-import com.richeninfo.pojo.*;
+import com.richeninfo.entity.mapper.mapper.master.MiguDJMapper;
+import com.richeninfo.pojo.Constant;
+import com.richeninfo.pojo.Packet;
+import com.richeninfo.pojo.Result;
+import com.richeninfo.pojo.VasOfferInfo;
 import com.richeninfo.service.CommonService;
-import com.richeninfo.service.MiguFlowService;
+import com.richeninfo.service.MiguDJService;
 import com.richeninfo.util.PacketHelper;
 import com.richeninfo.util.ReqWorker;
 import com.richeninfo.util.RopServiceManager;
 import lombok.extern.log4j.Log4j;
-import net.sf.json.JSONArray;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @auth sunxiaolei
@@ -35,10 +36,10 @@ import java.util.Map;
  */
 @Log4j
 @Service
-public class MiguFlowServiceImpl implements MiguFlowService {
+public class MiguDJServiceImpl implements MiguDJService {
 
     @Resource
-    private MiguFlowMapper miguFlowMapper;
+    private MiguDJMapper miguDJMapper;
     @Resource
     private CommonService commonService;
 
@@ -53,69 +54,109 @@ public class MiguFlowServiceImpl implements MiguFlowService {
     @Override
     public JSONObject initializeUser(String userId, String secToken, String channelId, String actId, String ditch) {
         JSONObject jsonObject = new JSONObject();
-        ActivityUser activityUser = miguFlowMapper.findCurMonthUserInfo(userId);
+        ActivityUser activityUser = miguDJMapper.findCurMonthUserInfo(userId);
         if (activityUser == null) {
             activityUser = new ActivityUser();
             activityUser.setUserId(userId);
             activityUser.setAward(0);
-            activityUser.setUserType(isBlack(userId));
+            activityUser.setUserType(0);
             activityUser.setDitch(ditch);
             activityUser.setChannelId(channelId);
-            miguFlowMapper.saveUser(activityUser);
+            miguDJMapper.saveUser(activityUser);
         }
+        jsonObject.put(Constant.MSG, Constant.SUCCESS);
         activityUser.setSecToken(secToken);
+        activityUser.setUserId(Base64.getEncoder().encodeToString(activityUser.getUserId().getBytes()));
         jsonObject.put("user", activityUser);
         return jsonObject;
     }
 
     @Override
     public JSONObject selectVideoList(String secToken, String channelId, String actId) {
+        List<ActivityConfiguration> list = miguDJMapper.findGiftByTypeId(actId);
         JSONObject jsonObject = new JSONObject();
-        List<ActivityConfiguration> list = miguFlowMapper.findGiftByTypeId(actId);
-
-        jsonObject.put("list", list);
+        Map<Integer, List<ActivityConfiguration>>groups = list.stream().collect(Collectors.groupingBy(ActivityConfiguration::getUserType));
+        log.info(groups.toString());
+       // jsonObject.put("list",groups);
+        jsonObject.put("Newlist",list);
+        log.info(groups.size());
         return jsonObject;
     }
 
+
     @Override
-    public JSONObject getActGift(String userId, String secToken, String channelId, String actId, String randCode, String wtAcId, String wtAc, String ditch) {
+    public Map<Integer,List<ActivityConfiguration>> selectVideoListNew(String secToken, String channelId, String actId) {
+        List<ActivityConfiguration> list = miguDJMapper.findGiftByTypeId(actId);
         JSONObject jsonObject = new JSONObject();
-        ActivityUser user = miguFlowMapper.findCurMonthUserInfo(userId);
-        if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1 && user.getUserType() < 1) {
-            //查询是否领取过当月的礼包
-            ActivityUserHistory history = miguFlowMapper.findCurYwHistory(userId);
-            ActivityConfiguration gift = miguFlowMapper.findGiftByUnlocked(0, actId);
-            if (history == null) {
-                //查询活动配置礼包
-                history = new ActivityUserHistory();
-                history.setUserId(userId);
-                history.setRewardName(gift.getName());
-                history.setUnlocked(gift.getUnlocked());
-                history.setActId(actId);
-                history.setKeyword(actId);
-                history.setTypeId(gift.getTypeId());
-                history.setChannelId(channelId);
-                history.setDitch(ditch);
-                history.setActivityId(gift.getActivityId());
-                history.setItemId(gift.getItemId());
-                int status = miguFlowMapper.saveHistory(history);
-                history = miguFlowMapper.findCurYwHistory(userId);
+        Map<Integer, List<ActivityConfiguration>>groups = list.stream().collect(Collectors.groupingBy(ActivityConfiguration::getUserType));
+        return groups;
+    }
+
+    @Override
+    public JSONObject getActGift( String secToken, String channelId, String actId, String randCode, String wtAcId, String wtAc, String ditch) {
+        JSONObject jsonObject = new JSONObject();
+        String userId="";
+        if(commonService.verityTime(actId).equals("underway")) {
+            if (!StringUtils.isEmpty(secToken)) {
                 try {
-                    if (status > 0) {//业务发放
-                        jsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
+                    userId = commonService.getMobile(secToken, channelId);
+                    if (userId == null || userId.isEmpty()) {
+                        jsonObject.put(Constant.MSG, "login");
+                        return jsonObject;
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    jsonObject.put(Constant.MSG, "loginError");
+                    return jsonObject;
                 }
             } else {
-                if (history.getStatus() == 3) {
-                    jsonObject.put("msg", "ybl");
-                } else {
-                    jsonObject= transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
-                }
+                jsonObject.put(Constant.MSG, "login");
+                return jsonObject;
             }
-        } else {
-            jsonObject.put("msg", "error");
+            ActivityUser user = miguDJMapper.findCurMonthUserInfo(userId);
+            if (user != null  && user.getAward() < 1) {
+                //查询是否领取当前业务
+                ActivityUserHistory history = miguDJMapper.findCurYwHistory(userId);
+                ActivityConfiguration gift = miguDJMapper.findGiftByUnlocked(0, actId);
+                if (history == null) {
+                    //查询活动配置礼包
+                    history = new ActivityUserHistory();
+                    history.setUserId(userId);
+                    history.setRewardName(gift.getName());
+                    history.setUnlocked(gift.getUnlocked());
+                    history.setActId(actId);
+                    history.setKeyword(actId);
+                    history.setTypeId(gift.getTypeId());
+                    history.setChannelId(channelId);
+                    history.setDitch(ditch);
+                    history.setActivityId(gift.getActivityId());
+                    history.setItemId(gift.getItemId());
+                    int status = miguDJMapper.saveHistory(history);
+                    history = miguDJMapper.findCurYwHistory(userId);
+                    try {
+                        if (status > 0) {//业务发放
+                            jsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId,ditch);
+                            Boolean ywStatus = jsonObject.getBoolean("transact_result");
+                            jsonObject.put("msg", ywStatus);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    if (history.getStatus() == 3) {
+                        jsonObject.put("msg", "ybl");
+                    } else {
+                        jsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId,ditch);
+                        Boolean ywStatus = jsonObject.getBoolean("transact_result");
+                        jsonObject.put("msg", ywStatus);
+                    }
+                }
+            } else {
+                jsonObject.put("msg", "error");
+            }
+
+        }else{
+            jsonObject.put(Constant.MSG, "ActError");
+            return jsonObject;
         }
         return jsonObject;
     }
@@ -127,7 +168,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
         return jsonObject;
     }
 
-    public JSONObject transact3066Business(ActivityUserHistory history, ActivityConfiguration config, String randCode, String channelId, String wtAcId, String wtAc, String actId) {
+    public JSONObject transact3066Business(ActivityUserHistory history, ActivityConfiguration config, String randCode, String channelId, String wtAcId, String wtAc, String actId,String ditch) {
         JSONObject object = new JSONObject();
         boolean transact_result = false;
         Result result = new Result();
@@ -148,15 +189,18 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 vasOfferInfo.setOperType("0");
                 offerList.add(vasOfferInfo);
             }
-            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId, history.getDitch());
-            String message = ropServiceManager.execute(packet, history.getUserId(), actId);
+            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId, ditch);
+         /*   String message = ropServiceManager.execute(packet, history.getUserId(), actId);
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message, Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
-            String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");
+            String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");*/
+            String res="0000";
+            String DoneCode="9999";
+            String message="测试";
             if (Constant.SUCCESS_CODE.equals(res)) {
                 transact_result = true;
-                miguFlowMapper.updateUserAward(history.getUserId());
+                miguDJMapper.updateUserAward(history.getUserId());
                 history.setStatus(Constant.STATUS_RECEIVED);
                 object.put(Constant.MSG, Constant.SUCCESS);
             } else {
@@ -169,8 +213,8 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 history.setMessage(message);
                 object.put("DoneCode", DoneCode);
                 object.put("update_history", JSON.toJSONString(history));
-                miguFlowMapper.updateHistory(history);
-            if (transact_result) {
+                miguDJMapper.updateHistory(history);
+            /*if (transact_result) {
                 Packet new_packet = packetHelper.orderReporting(config, packet, wtAcId, wtAc);
                 System.out.println(new_packet.toString());
                 String result_String = ropServiceManager.executes(new_packet, history.getUserId(), actId);
@@ -186,7 +230,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 order.setMessage(result_String);
                 order.setChannelId(channelId);
                 commonMapper.insertActivityOrder(order);
-            }
+            }*/
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -219,7 +263,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
     //更新黑名单
     public int isBlack(String userId) {
         int balck = 0;
-        List<String> isBlack = miguFlowMapper.findIsBlack(userId);
+        List<String> isBlack = miguDJMapper.findIsBlack(userId);
         balck = null == isBlack || isBlack.isEmpty() ? 0 : 1;
         log.info("balck===" + balck);
         return balck;

@@ -42,7 +42,7 @@ public interface CommonMapper {
     @Update("update activity_configuration set Amount= Amount-1 where id = #{id} and Amount > 0")
     int updateAmount(int id);//更新奖励数量
 
-    @Select("select * from ${keyword} where userId = #{userId} and actId =#{actId}")
+    @Select("select * from ${keyword} where userId = #{userId} and actId =#{actId} and createDate= curdate()")
     ActivityUser selectUser(@Param("userId") String userId, @Param("actId") String actId, @Param("keyword") String keyword);//查找用户记录
 
     @Select("select * from ${keyword} where userId = #{userId} and actId =#{actId} and createDate=#{createDate}")
