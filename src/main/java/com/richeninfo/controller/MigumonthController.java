@@ -13,6 +13,7 @@ import com.richeninfo.entity.mapper.entity.ActivityUser;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.MigumonthService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,7 @@ import java.io.IOException;
  */
 @Controller
 @RequestMapping(value = "/migumonth")
+@Api(value = "咪咕视频50G", tags = {"咪咕视频50G"})
 public class MigumonthController {
 
     @Resource

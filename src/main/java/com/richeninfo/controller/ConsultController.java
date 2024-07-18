@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.ConsultService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,7 @@ import java.io.IOException;
  */
 
 @Controller
+@Api(value = "服务体验意见咨询", tags = {"服务体验意见咨询"})
 @RequestMapping("/consult")
 public class ConsultController {
 

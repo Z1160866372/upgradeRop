@@ -14,6 +14,7 @@ import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.MiguDJService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -30,10 +31,11 @@ import java.util.Map;
 
 /**
  * @auth sunxiaolei
- * @date 2024/4/26 11:16
+ * @date 2024/7/16 11:16
  */
 @Controller
 @RequestMapping("/2024/07/migudj")
+@Api(value = "咪咕视频短剧版", tags = {"咪咕视频短剧版"})
 public class MiguDJController {
 
     @Resource

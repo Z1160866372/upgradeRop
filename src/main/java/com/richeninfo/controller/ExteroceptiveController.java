@@ -15,6 +15,7 @@ import com.richeninfo.entity.mapper.mapper.master.ExteroceptiveMapper;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.ExteroceptiveService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -31,6 +32,7 @@ import java.io.IOException;
  */
 
 @Controller
+@Api(value = "心级体验官", tags = {"心级体验官"})
 @RequestMapping(value = "/proem")
 public class ExteroceptiveController {
 

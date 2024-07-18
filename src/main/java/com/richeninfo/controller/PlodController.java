@@ -16,6 +16,7 @@ import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.PlodService;
 import com.richeninfo.util.RSAUtils;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -33,6 +34,7 @@ import java.io.*;
 
 @Controller
 @RequestMapping("/plod")
+@Api(value = "劳动知识竞赛", tags = {"劳动知识竞赛"})
 public class PlodController {
 
     @Resource
