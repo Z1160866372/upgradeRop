@@ -552,6 +552,8 @@ public class CommonServiceImpl implements CommonService {
         String keyword = "wt_" + actId + "_history";
         JSONObject object = new JSONObject();
         String mobile="";
+        boolean result = false;
+        int number=0;
         if (!StringUtils.isEmpty(secToken)) {
             try {
                 mobile= getMobile(secToken,channelId);
@@ -560,6 +562,19 @@ public class CommonServiceImpl implements CommonService {
             }
         }
         List<ActivityUserHistory> historyList = commonMapper.selectHistoryList(unlocked,actId,keyword);
+        if(historyList.size()>0){
+            for (ActivityUserHistory activityUserHistory:historyList){
+                number+=1;
+                if(mobile.equals(activityUserHistory.getUserId())){
+                    result = true;
+                    object.put("number",number);
+                }
+                activityUserHistory.setUserId(activityUserHistory.getUserId().substring(0, 3) + "****" + activityUserHistory.getUserId().substring(7));
+
+            }
+        }
+        object.put("result",result);
+        object.put("mobile",mobile.substring(0, 3) + "****" + mobile.substring(7));
         object.put(Constant.ObjectList,historyList);
         return object;
     }
