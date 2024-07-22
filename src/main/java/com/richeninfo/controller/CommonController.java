@@ -386,4 +386,27 @@ public class CommonController {
     void getConf(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws Exception {
         CommonController.getActId(request, commonService.getConfiguration(secToken, actId, channelId), resp, secToken);
     }
+
+    @ApiOperation("用户点击领取｜游戏结束得分")
+    @PostMapping("/draw")
+    public @ResponseBody
+    JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked, @ApiParam(name = "ditch", value = "触点", required = true) String ditch
+            , @ApiParam(name = "grade", value = "得分", required = true) Integer grade) throws Exception {
+        CommonController.getParameter(request, actId, channelId,unlocked,ditch);
+        return this.commonService.submit(secToken, actId, unlocked, channelId,ditch,grade);
+    }
+
+    /**
+     * 我的奖励｜排行榜
+     * @param actId
+     * @param channelId
+     * @return
+     */
+    @ApiOperation("我的奖励｜排行榜")
+    @PostMapping(value = "/getMyReward")
+    public @ResponseBody
+    Object getMyReward(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId
+            , @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked){
+        return this.commonService.getMyReward(secToken,channelId,actId,unlocked);
+    }
 }

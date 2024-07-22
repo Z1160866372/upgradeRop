@@ -145,4 +145,22 @@ public interface CommonService {
      */
     List<ActivityConfiguration> getConfiguration(String secToken, String actId, String channelId) throws Exception;
 
+    /**
+     * 用户点击领取
+     *
+     * @param secToken
+     * @param actId
+     * @param unlocked
+     * @return
+     * @throws Exception
+     */
+    JSONObject submit(String secToken, String actId, int unlocked, String channelId,String ditch,int grade) throws Exception;
+
+    /**
+     * 我的奖励｜排行榜
+     * @param channelId
+     * @param actId
+     * @return
+     */
+    JSONObject getMyReward(String secToken,String channelId,String actId, int unlocked);
 }

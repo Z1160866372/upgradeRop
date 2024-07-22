@@ -481,4 +481,86 @@ public class CommonServiceImpl implements CommonService {
         List<ActivityConfiguration> pro_config = commonMapper.selectActivityConfigurationByActId(actId);
         return pro_config;
     }
+
+    @Override
+    public JSONObject submit(String secToken, String actId, int unlocked, String channelId,String ditch,int grade) throws Exception {
+        JSONObject object = new JSONObject();
+        String mobile="";
+        if (!StringUtils.isEmpty(secToken)) {
+            try {
+                mobile= getMobile(secToken,channelId);
+                if (mobile==null||mobile.isEmpty()) {
+                    object.put(Constant.MSG, "login");
+                    return  object;
+                }
+            }catch (Exception e){
+                object.put(Constant.MSG,"loginError");
+                return object;
+            }
+        }else{
+            object.put(Constant.MSG,"login");
+            return object;
+        }
+        String keyword = "wt_" + actId + "_history";
+        ActivityUserHistory userHistory  = commonMapper.selectHistoryByUnlocked(mobile,unlocked,actId,keyword);
+        ActivityConfiguration config =commonMapper.selectActivityConfiguration(actId,unlocked);
+        if(userHistory==null){
+            config.setValue(String.valueOf(grade));
+            saveHistory( actId,  channelId,  object,  mobile, config, ditch);
+        }else{
+            if(grade>new Integer(userHistory.getValue())){
+                config.setValue(String.valueOf(grade));
+                userHistory.setValue(String.valueOf(grade));
+                commonMapper.updateHistoryByUnlocked(userHistory,keyword);
+            }
+        }
+        object.put("config",config);
+        object.put(Constant.MSG,Constant.SUCCESS);
+        return object;
+    }
+
+    private void saveHistory(String actId, String channelId, JSONObject object, String mobile, ActivityConfiguration activityConfiguration,String ditch) {
+        String keyword = "wt_" + actId + "_history";
+        ActivityUserHistory newHistory = new ActivityUserHistory();
+        newHistory.setUserId(mobile);
+        newHistory.setChannelId(channelId);
+        newHistory.setRewardName(activityConfiguration.getName());
+        newHistory.setTypeId(activityConfiguration.getTypeId());
+        newHistory.setUnlocked(activityConfiguration.getUnlocked());
+        newHistory.setCreateDate(day.format(new Date()));
+        newHistory.setCreateTime(df.format(new Date()));
+        newHistory.setValue(activityConfiguration.getValue());
+        newHistory.setActId(actId);
+        newHistory.setDitch(ditch);
+        newHistory.setActivityId(activityConfiguration.getActivityId());
+        newHistory.setItemId(activityConfiguration.getItemId());
+        newHistory.setImgSrc(activityConfiguration.getImgSrc());
+        newHistory.setWinSrc(activityConfiguration.getWinSrc());
+        newHistory.setRemark(activityConfiguration.getRemark());
+        newHistory.setModule(activityConfiguration.getModule());
+        commonMapper.insertActivityUserHistory(newHistory,keyword);
+    }
+
+    /**
+     * 我的奖励｜排行榜
+     * @param channelId
+     * @param actId
+     * @return
+     */
+    @Override
+    public JSONObject getMyReward(String secToken,String channelId, String actId, int unlocked) {
+        String keyword = "wt_" + actId + "_history";
+        JSONObject object = new JSONObject();
+        String mobile="";
+        if (!StringUtils.isEmpty(secToken)) {
+            try {
+                mobile= getMobile(secToken,channelId);
+            }catch (Exception e){
+                object.put(Constant.MSG,"loginError");
+            }
+        }
+        List<ActivityUserHistory> historyList = commonMapper.selectHistoryList(unlocked,actId,keyword);
+        object.put(Constant.ObjectList,historyList);
+        return object;
+    }
 }

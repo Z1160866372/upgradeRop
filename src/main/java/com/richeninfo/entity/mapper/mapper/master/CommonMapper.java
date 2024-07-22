@@ -96,4 +96,13 @@ public interface CommonMapper {
     @Select("select * from ${keyword} where (`status` !=3 or status is null) and (message not like '%地市%' or message is null) and createTime < #{createTime} and createTime>'2024-05-26 00:00:00' and typeId = 0")
     List<ActivityUserHistory> selectActivityUserHistory(@Param("createTime") String createTime, @Param("keyword") String keyword);
 
+    @Insert("insert into ${keyword}(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark,winSrc,imgSrc)values(#{history.userId},#{history.unlocked},#{history.typeId},#{history.rewardName},#{history.value},#{history.channelId},#{history.createDate},#{history.createTime},#{history.actId},#{history.ditch},#{history.activityId},#{history.itemId},#{history.module},#{history.remark},#{history.winSrc},#{history.imgSrc})")
+    void insertActivityUserHistory(ActivityUserHistory history, @Param("keyword") String keyword);
+
+    @Update("update ${keyword} set value=#{history.value} where id=#{history.id}")
+    int updateHistoryByUnlocked(ActivityUserHistory history, @Param("keyword") String keyword);//更新排行榜
+
+    @Select("select * from ${keyword} where unlocked =#{unlocked} and actId =#{actId} order by value desc limit 50")
+    List<ActivityUserHistory> selectHistoryList(@Param("unlocked") int unlocked, @Param("actId") String actId, @Param("keyword") String keyword);//排行榜
+
 }
