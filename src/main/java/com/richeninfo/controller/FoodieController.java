@@ -8,6 +8,7 @@
 
 package com.richeninfo.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
 import com.richeninfo.pojo.Constant;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
@@ -35,8 +37,8 @@ import java.util.Date;
  * @create 2024/4/29 15:04
  */
 @Controller
-@Api(value = "中国移动APP新享礼遇", tags = {"中国移动APP新享礼遇"})
-@RequestMapping("/2024/07/newcomerGift")
+@Api(value = "“向上 向善 大家谈”主题活动", tags = {"“向上 向善 大家谈”主题活动"})
+@RequestMapping("2024/08/meliorist")
 @Slf4j
 public class FoodieController {
     @Resource
@@ -81,21 +83,31 @@ public class FoodieController {
         resp.getWriter().write(object.toJSONString());
     }
 
-    @ApiOperation("获取奖励列表")
+    @ApiOperation("获取展示列表")
     @PostMapping("/getConf")
     public @ResponseBody
-    void getConf(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws IOException {
-        CommonController.getActId(request, foodietService.getConfiguration(secToken, actId, channelId), resp, secToken);
+    void getConf(@RequestParam(defaultValue = "1") Integer page,
+                 @RequestParam(defaultValue = "10") Integer limit, @ApiParam(name = "typeId", value = "提交|评论标识", required = true) Integer typeId,@ApiParam(name = "ip", value = "被点评用户标识", required = true) String ip
+            ,@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws IOException {
+        actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
+        channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
+        resp.getWriter().write(JSON.toJSONString(foodietService.getActivityUserList(secToken, actId, channelId,page,limit,typeId,ip)));
     }
 
 
-    @ApiOperation("用户点击办理")
+    @ApiOperation("用户点击提交评论点赞")
     @PostMapping("/draw")
     public @ResponseBody
-    JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked
-    ,@ApiParam(name = "wtAcId", value = "wtAcId", required = true) String wtAcId, @ApiParam(name = "wtAc", value = "wtAc", required = true) String wtAc, @ApiParam(name = "randCode", value = "二次短信验证码", required = true) String randCode, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
-        CommonController.getParameter(request, actId, channelId,unlocked,ditch);
-        return this.foodietService.submit(secToken, actId, unlocked, channelId,wtAcId,wtAc,randCode,ditch);
+    JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "ip", value = "被点评用户标识", required = true) String ip, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "typeId", value = "提交点赞评论标识", required = true) Integer typeId,
+                        @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "code", value = "code", required = true) String code, @ApiParam(name = "message", value = "message", required = true) String message, @ApiParam(name = "remark", value = "提交内容", required = true) String remark, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
+        secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
+        actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
+        channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
+        ditch = request.getParameter("ditch") == null ? "" : request.getParameter("ditch");
+        code = request.getParameter("code") == null ? "" : request.getParameter("code");
+        message = request.getParameter("message") == null ? "" : request.getParameter("message");
+        remark = request.getParameter("remark") == null ? "" : request.getParameter("remark");
+        return this.foodietService.submit(secToken, actId, typeId,channelId,code,message,remark,ditch,ip);
     }
 
 }

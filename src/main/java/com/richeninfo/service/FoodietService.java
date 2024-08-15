@@ -11,6 +11,7 @@ package com.richeninfo.service;
 import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
+import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public interface FoodietService {
      * @param actId
      * @return
      */
-    List<ActivityConfiguration> getConfiguration(String secToken, String actId, String channelId);
+    List<ActivityUserHistory> getActivityUserList(String secToken, String actId, String channelId,int page,int limit,int typeId,String ip);
 
     /**
      * 用户点击确认办理
@@ -48,6 +49,6 @@ public interface FoodietService {
      * @return
      * @throws Exception
      */
-    JSONObject submit(String secToken, String actId, int unlocked, String channelId,String wtAcId, String wtAc,String randCode,String ditch) throws Exception;
+    JSONObject submit(String secToken, String actId, int unlocked, String channelId,String code, String message,String remark,String ditch,String ipScanner) throws Exception;
 
 }
