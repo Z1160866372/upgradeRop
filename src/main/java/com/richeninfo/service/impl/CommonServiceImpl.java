@@ -174,7 +174,10 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public boolean valSendMsgCode(String userId, String smsCode) {
         Object tmpCode = redisUtil.get(userId);
-        if (!Objects.isNull(tmpCode)) {
+        log.info("tmpCode===" + tmpCode.toString());
+        log.info("smsCode===" + smsCode);
+        log.info(String.valueOf(smsCode.equals(tmpCode.toString())));
+        if (!Objects.isNull(tmpCode) && smsCode.equals(tmpCode.toString())) {
             return true;
         }
         return false;
@@ -252,13 +255,13 @@ public class CommonServiceImpl implements CommonService {
         try {
             ActivityList activity = commonMapper.selectActivityByActId(actId);
             if (activity != null) {
-                log.info("当前时间"+new Date());
+                log.info("当前时间" + new Date());
                 Date nowTime = df.parse(df.format(new Date()));
-                log.info("当前时间"+nowTime.getTime());
+                log.info("当前时间" + nowTime.getTime());
                 Date startTime = df.parse(activity.getStartTime());
-                log.info("开始时间"+startTime.getTime());
+                log.info("开始时间" + startTime.getTime());
                 Date endTime = df.parse(activity.getEndTime());
-                 log.info("结束时间"+endTime.getTime());
+                log.info("结束时间" + endTime.getTime());
                 if (nowTime.getTime() < startTime.getTime()) {//活动还未开始
                     msg = "NotStarted";
                 } else {
@@ -298,10 +301,10 @@ public class CommonServiceImpl implements CommonService {
                 if (StringUtils.isEmpty(secToken)) {
                     object.put(Constant.MSG, "login");
                 } else {
-                    String mobilePhone ="";
-                    if(actId.equals("finance")){
+                    String mobilePhone = "";
+                    if (actId.equals("finance")) {
                         mobilePhone = rsaUtils.decryptByPriKey(secToken).trim();
-                    }else{
+                    } else {
                         mobilePhone = getMobile(secToken, channelId);
                     }
                     if (isTestWhite) {
@@ -393,9 +396,9 @@ public class CommonServiceImpl implements CommonService {
         JSONObject object = new JSONObject();
         try {
             if (!StringUtils.isEmpty(operationLog.getSecToken())) {
-                if(operationLog.getActId().equals("finance")){
+                if (operationLog.getActId().equals("finance")) {
                     operationLog.setUserId(rsaUtils.decryptByPriKey(operationLog.getSecToken()).trim());
-                }else{
+                } else {
                     operationLog.setUserId(getMobile(operationLog.getSecToken(), operationLog.getChannelId()));
                 }
                 operationLog.setAddress(IPUtil.getRealRequestIp(request));
@@ -457,8 +460,8 @@ public class CommonServiceImpl implements CommonService {
      * @return
      */
     public ActivityUser insertUser(ActivityUser user) {
-        String keyword="wt_"+user.getActId()+"_user";
-        ActivityUser select_user = commonMapper.selectUser(user.getUserId(),user.getActId(),keyword);
+        String keyword = "wt_" + user.getActId() + "_user";
+        ActivityUser select_user = commonMapper.selectUser(user.getUserId(), user.getActId(), keyword);
         if (select_user == null) {
             ActivityUser new_user = new ActivityUser();
             new_user.setSecToken(user.getSecToken());
@@ -467,7 +470,7 @@ public class CommonServiceImpl implements CommonService {
             new_user.setChannelId(user.getChannelId());
             new_user.setCreateDate(day.format(new Date()));
             new_user.setDitch(user.getDitch());
-            commonMapper.insertUser(new_user,keyword);
+            commonMapper.insertUser(new_user, keyword);
             user = new_user;
         } else {
             select_user.setSecToken(user.getSecToken());
@@ -477,49 +480,51 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public List<ActivityConfiguration>  getConfiguration(String secToken, String actId, String channelId) throws Exception {
+    public List<ActivityConfiguration> getConfiguration(String secToken, String actId, String channelId) throws Exception {
         List<ActivityConfiguration> pro_config = commonMapper.selectActivityConfigurationByActId(actId);
         return pro_config;
     }
 
     @Override
-    public JSONObject submit(String secToken, String actId, int unlocked, String channelId,String ditch,int grade) throws Exception {
+    public JSONObject submit(String secToken, String actId, int unlocked, String channelId, String ditch, int grade) throws Exception {
         JSONObject object = new JSONObject();
-        String mobile="";
+        String mobile = "";
         if (!StringUtils.isEmpty(secToken)) {
             try {
-                mobile= getMobile(secToken,channelId);
-                if (mobile==null||mobile.isEmpty()) {
+                mobile = getMobile(secToken, channelId);
+                if (mobile == null || mobile.isEmpty()) {
                     object.put(Constant.MSG, "login");
-                    return  object;
+                    return object;
                 }
-            }catch (Exception e){
-                object.put(Constant.MSG,"loginError");
+            } catch (Exception e) {
+                object.put(Constant.MSG, "loginError");
                 return object;
             }
-        }else{
-            object.put(Constant.MSG,"login");
+        } else {
+            object.put(Constant.MSG, "login");
             return object;
         }
         String keyword = "wt_" + actId + "_history";
-        ActivityUserHistory userHistory  = commonMapper.selectHistoryByUnlocked(mobile,unlocked,actId,keyword);
-        ActivityConfiguration config =commonMapper.selectActivityConfiguration(actId,unlocked);
-        if(userHistory==null){
+        ActivityUserHistory userHistory = commonMapper.selectHistoryByUnlocked(mobile, unlocked, actId, keyword);
+        ActivityConfiguration config = commonMapper.selectActivityConfiguration(actId, unlocked);
+        if (userHistory == null) {
             config.setValue(String.valueOf(grade));
-            saveHistory( actId,  channelId,  object,  mobile, config, ditch);
-        }else{
-            if(grade>new Integer(userHistory.getValue())){
+            saveHistory(actId, channelId, object, mobile, config, ditch);
+        } else {
+            if (grade > new Integer(userHistory.getValue())) {
                 config.setValue(String.valueOf(grade));
                 userHistory.setValue(String.valueOf(grade));
-                commonMapper.updateHistoryByUnlocked(userHistory,keyword);
+                commonMapper.updateHistoryByUnlocked(userHistory, keyword);
+            } else {
+                config.setValue(String.valueOf(userHistory.getValue()));
             }
         }
-        object.put("config",config);
-        object.put(Constant.MSG,Constant.SUCCESS);
+        object.put("config", config);
+        object.put(Constant.MSG, Constant.SUCCESS);
         return object;
     }
 
-    private void saveHistory(String actId, String channelId, JSONObject object, String mobile, ActivityConfiguration activityConfiguration,String ditch) {
+    private void saveHistory(String actId, String channelId, JSONObject object, String mobile, ActivityConfiguration activityConfiguration, String ditch) {
         String keyword = "wt_" + actId + "_history";
         ActivityUserHistory newHistory = new ActivityUserHistory();
         newHistory.setUserId(mobile);
@@ -538,44 +543,45 @@ public class CommonServiceImpl implements CommonService {
         newHistory.setWinSrc(activityConfiguration.getWinSrc());
         newHistory.setRemark(activityConfiguration.getRemark());
         newHistory.setModule(activityConfiguration.getModule());
-        commonMapper.insertActivityUserHistory(newHistory,keyword);
+        commonMapper.insertActivityUserHistory(newHistory, keyword);
     }
 
     /**
      * 我的奖励｜排行榜
+     *
      * @param channelId
      * @param actId
      * @return
      */
     @Override
-    public JSONObject getMyReward(String secToken,String channelId, String actId, int unlocked) {
+    public JSONObject getMyReward(String secToken, String channelId, String actId, int unlocked) {
         String keyword = "wt_" + actId + "_history";
         JSONObject object = new JSONObject();
-        String mobile="";
+        String mobile = "";
         boolean result = false;
-        int number=0;
+        int number = 0;
         if (!StringUtils.isEmpty(secToken)) {
             try {
-                mobile= getMobile(secToken,channelId);
-            }catch (Exception e){
-                object.put(Constant.MSG,"loginError");
+                mobile = getMobile(secToken, channelId);
+            } catch (Exception e) {
+                object.put(Constant.MSG, "loginError");
             }
         }
-        List<ActivityUserHistory> historyList = commonMapper.selectHistoryList(unlocked,actId,keyword);
-        if(historyList.size()>0){
-            for (ActivityUserHistory activityUserHistory:historyList){
-                number+=1;
-                if(mobile.equals(activityUserHistory.getUserId())){
+        List<ActivityUserHistory> historyList = commonMapper.selectHistoryList(unlocked, actId, keyword);
+        if (historyList.size() > 0) {
+            for (ActivityUserHistory activityUserHistory : historyList) {
+                number += 1;
+                if (mobile.equals(activityUserHistory.getUserId())) {
                     result = true;
-                    object.put("number",number);
+                    object.put("number", number);
                 }
                 activityUserHistory.setUserId(activityUserHistory.getUserId().substring(0, 3) + "****" + activityUserHistory.getUserId().substring(7));
 
             }
         }
-        object.put("result",result);
-        object.put("mobile",mobile.substring(0, 3) + "****" + mobile.substring(7));
-        object.put(Constant.ObjectList,historyList);
+        object.put("result", result);
+        object.put("mobile", mobile.substring(0, 3) + "****" + mobile.substring(7));
+        object.put(Constant.ObjectList, historyList);
         return object;
     }
 }

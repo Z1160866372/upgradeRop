@@ -205,7 +205,7 @@ public class HuiPlayServiceImpl implements HuiPlayService {
         if(activityConfiguration.getTypeId()==0){
             String mqMsg = commonService.issueReward(newHistory);
             log.info("4147请求信息：" + mqMsg);
-            //jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
+            jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
         }
         /*object.put("gift",activityConfiguration);
         object.put(Constant.MSG,Constant.SUCCESS);*/
@@ -233,7 +233,7 @@ public class HuiPlayServiceImpl implements HuiPlayService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
-        /*    String message = ropService.execute(packet,history.getUserId(),history.getActId());
+            String message = ropService.execute(packet,history.getUserId(),history.getActId());
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message,Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
@@ -250,12 +250,12 @@ public class HuiPlayServiceImpl implements HuiPlayService {
             history.setMessage(JSON.toJSONString(result));
             history.setCode(JSON.toJSONString(packet));
             object.put("res", res);
-            object.put("DoneCode", DoneCode);*/
-            object.put("res", "0000");
+            object.put("DoneCode", DoneCode);
+         /*   object.put("res", "0000");
             object.put("DoneCode", "9999");
             history.setStatus(Constant.STATUS_RECEIVED);
             object.put(Constant.MSG, Constant.SUCCESS);
-            transact_result=true;
+            transact_result=true;*/
             object.put("update_history", JSON.toJSONString(history));
             HuiPlayMapper.updateHistory(history);
             if (transact_result) {
@@ -311,6 +311,14 @@ public class HuiPlayServiceImpl implements HuiPlayService {
     }
 
     @Override
+    public JSONObject getTitle() {
+        JSONObject object = new JSONObject();
+      List<ActivityConfiguration>  activityConfigurationList= HuiPlayMapper.selectActivityConfigurationTitle();
+      object.put("Title",activityConfigurationList);
+        return object;
+    }
+
+    @Override
     public JSONObject transaction(String secToken, String actId, int unlocked, String channelId,String wtAcId, String wtAc,String randCode,String ditch) throws Exception {
         JSONObject object = new JSONObject();
         String mobile="";
@@ -318,10 +326,10 @@ public class HuiPlayServiceImpl implements HuiPlayService {
         if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }
-      /*  if(!commonService.checkUserIsChinaMobile(mobile,actId)){//非上海移动
+        if(!commonService.checkUserIsChinaMobile(mobile,actId)){//非上海移动
             object.put(Constant.MSG,"noShYd");
             return object;
-        }*/
+        }
         ActivityUserHistory userHistory  =HuiPlayMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
         if(userHistory!=null){
             if(userHistory.getTypeId()==1){

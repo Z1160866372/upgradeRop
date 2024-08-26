@@ -98,49 +98,7 @@ public class MiguDJController {
     @PostMapping(value = "/videoList")
     public @ResponseBody
     JSONObject videoList( @ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
-       // resp.getWriter().write(JSON.toJSONString(miguDJService.selectVideoList(secToken, channelId, actId)));
       return  miguDJService.selectVideoList(secToken, channelId, actId);
     }
 
-    /**
-     * 视频展示数据
-     *
-     * @param secToken
-     * @param channelId
-     * @param actId
-     * @return
-     * @throws IOException
-     */
-    @PostMapping(value = "/videoListNew")
-    public @ResponseBody
-    Map<Integer, List<ActivityConfiguration>> videoListNew(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
-        return  miguDJService.selectVideoListNew(secToken, channelId, actId);
-    }
-
-    /**
-     * 短信下发接口
-     *
-     * @param secToken
-     * @param channelId
-     * @param actId
-     * @return
-     * @throws IOException
-     */
-    @PostMapping(value = "/sendMessage5956")
-    public @ResponseBody
-    JSONObject sendMessage5956(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
-        JSONObject object = new JSONObject();
-        if (StringUtils.isEmpty(secToken)) {
-            object.put(Constant.MSG, "login");
-        } else {
-            String mobile = commonService.getMobile(secToken, channelId);
-            if (mobile.isEmpty()) {
-                object.put(Constant.MSG, "channelId_error");
-            } else {
-                JSONObject object1 = miguDJService.sendMessage5956(mobile, secToken, channelId, actId);
-                object.put("data", object1);
-            }
-        }
-        return object;
-    }
 }

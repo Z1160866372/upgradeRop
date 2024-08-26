@@ -12,20 +12,19 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.*;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
-import com.richeninfo.entity.mapper.mapper.master.FinanceMapper;
 import com.richeninfo.entity.mapper.mapper.master.JourneyMapper;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.pojo.Packet;
 import com.richeninfo.pojo.Result;
 import com.richeninfo.pojo.VasOfferInfo;
 import com.richeninfo.service.CommonService;
-import com.richeninfo.service.FinanceService;
 import com.richeninfo.service.JourneyService;
 import com.richeninfo.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Service;
+import java.util.Base64;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -34,10 +33,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @Author : zhouxiaohu
- * @create 2024/4/30 14:04
- */
 @Service
 @Slf4j
 public class JourneyServiceImpl implements JourneyService {
@@ -45,7 +40,7 @@ public class JourneyServiceImpl implements JourneyService {
     @Resource
     private CommonMapper commonMapper;
     @Resource
-    private JourneyMapper journeyMapper;
+    private JourneyMapper JourneyMapper;
     @Resource
     private PacketHelper packetHelper;
     @Resource
@@ -70,7 +65,7 @@ public class JourneyServiceImpl implements JourneyService {
      * @return
      */
     public ActivityUser insertUser(ActivityUser user) {
-        ActivityUser select_user = journeyMapper.selectUserByCreateDate(user.getUserId());
+        ActivityUser select_user = JourneyMapper.selectUserByCreateDate(user.getUserId());
         if (select_user == null) {
             ActivityUser new_user = new ActivityUser();
             new_user.setSecToken(user.getSecToken());
@@ -79,12 +74,13 @@ public class JourneyServiceImpl implements JourneyService {
             new_user.setChannelId(user.getChannelId());
             new_user.setCreateDate(day.format(new Date()));
             new_user.setDitch(user.getDitch());
-            journeyMapper.insertUser(new_user);
+            JourneyMapper.insertUser(new_user);
             user = new_user;
         } else {
             select_user.setSecToken(user.getSecToken());
             user = select_user;
         }
+        user.setUserId(Base64.getEncoder().encodeToString(user.getUserId().getBytes()));
         return user;
     }
 
@@ -98,7 +94,7 @@ public class JourneyServiceImpl implements JourneyService {
                 mobile= commonService.getMobile(secToken,channelId);
             }
             for (ActivityConfiguration config : pro_config) {
-                userHistory=journeyMapper.selectActivityUserHistoryByUnlocked(mobile,config.getUnlocked());
+                userHistory=JourneyMapper.selectActivityUserHistoryByUnlocked(mobile,config.getUnlocked());
                 if(userHistory!=null){
                     config.setName(userHistory.getRewardName());
                     config.setTypeId(userHistory.getTypeId());
@@ -106,6 +102,7 @@ public class JourneyServiceImpl implements JourneyService {
                     config.setWinSrc(userHistory.getWinSrc());
                     config.setImgSrc(userHistory.getImgSrc());
                     config.setRemark(userHistory.getRemark());
+                    config.setValue(userHistory.getValue());
                     if(userHistory.getTypeId()==1){
                         if(userHistory.getStatus()==3){//已办理
                             config.setStatus(2);
@@ -127,68 +124,60 @@ public class JourneyServiceImpl implements JourneyService {
     public JSONObject submit(String secToken, String actId, int unlocked, String channelId,String ditch) throws Exception {
         JSONObject object = new JSONObject();
         String mobile="";
-        if (!StringUtils.isEmpty(secToken)) {
-            try {
-                mobile= commonService.getMobile(secToken,channelId);
-                if (mobile==null||mobile.isEmpty()) {
-                    object.put(Constant.MSG, "login");
-                    return  object;
-                }
-            }catch (Exception e){
-                object.put(Constant.MSG,"loginError");
-                return object;
-            }
-        }else{
-            object.put(Constant.MSG,"login");
-            return object;
-        }
-        ActivityUserHistory userHistory  = journeyMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
-        if(userHistory==null){
-            ActivityConfiguration config =null;
-            String  keyword = "wt_"+actId+"_roster";
-            if(unlocked==0){//5元话费
-                List<ActivityRoster> rosterList = commonMapper.selectRoster(mobile,actId,keyword,0);
-                if(!rosterList.isEmpty()){//送话费
-                    config=journeyMapper.selectActivityConfigurationList(actId,unlocked,0).get(0);
-                    if(config.getAmount()==0){
-                        object.put(Constant.MSG,"noData");
+        if(commonService.verityTime(actId).equals("underway")) {
+            if (!StringUtils.isEmpty(secToken)) {
+                try {
+                    mobile = commonService.getMobile(secToken, channelId);
+                    if (mobile == null || mobile.isEmpty()) {
+                        object.put(Constant.MSG, "login");
                         return object;
                     }
-                }else{
-                        object.put(Constant.MSG,"noData");
+                   /* if( !commonService.checkUserIsChinaMobile(mobile,actId)){
+                        object.put(Constant.MSG,"noShYd");
                         return object;
+                    }*/
+                } catch (Exception e) {
+                    object.put(Constant.MSG, "loginError");
+                    return object;
                 }
-            }else if(unlocked==3){//惠玩包
-                List<ActivityRoster> rosterList = commonMapper.selectRoster(mobile,actId,keyword,unlocked*10);
-                if(!rosterList.isEmpty()){//取外链
-                    config=journeyMapper.selectActivityConfigurationList(actId,unlocked,1).get(0);
-                }else{
-                    config=journeyMapper.selectActivityConfigurationList(actId,unlocked,0).get(0);
-                }
-            }else if(unlocked==6){//流量&外链
-                List<ActivityRoster> rosterList = commonMapper.selectRoster(mobile,actId,keyword,unlocked*10);
-                if(!rosterList.isEmpty()){//取外链
-                    config=journeyMapper.selectActivityConfigurationList(actId,unlocked,0).get(0);
-                }else{
-                    config= CommonUtil.randomGift(journeyMapper.selectActivityConfigurationList(actId,unlocked,1));
-                }
-            }else{
-                config=journeyMapper.selectActivityConfigurationList(actId,unlocked,0).get(0);
+            } else {
+                object.put(Constant.MSG, "login");
+                return object;
             }
-            saveHistory( actId,  channelId,  object,  mobile, config, ditch);
-            object.put("config",config);
-            object.put(Constant.MSG,Constant.SUCCESS);
-        }else{
-            ActivityConfiguration config = new ActivityConfiguration();
-            config.setName(userHistory.getRewardName());
-            config.setTypeId(userHistory.getTypeId());
-            config.setUnlocked(userHistory.getUnlocked());
-            config.setWinSrc(userHistory.getWinSrc());
-            config.setImgSrc(userHistory.getImgSrc());
-            object.put("config",config);
-            object.put(Constant.MSG,Constant.YLQ);
+            ActivityUserHistory userHistory = JourneyMapper.selectActivityUserHistoryByUnlocked(mobile, unlocked);
+            if (userHistory == null) {
+                ActivityConfiguration config = null;
+                String keyword = "wt_" + actId + "_roster";
+                if (unlocked == 4||unlocked == 2) {//5GB+1GB流量
+                    config = JourneyMapper.selectActivityConfigurationList(actId, unlocked, 0).get(0);
+                } else if (unlocked == 6) {//流量&外链
+                    List<ActivityRoster> rosterList = commonMapper.selectRoster(mobile, actId, keyword, unlocked * 10);
+                    if (!rosterList.isEmpty()) {//取外链
+                        config = JourneyMapper.selectActivityConfigurationList(actId, unlocked, 0).get(0);
+                    } else {
+                        config = CommonUtil.randomGift(JourneyMapper.selectActivityConfigurationList(actId, unlocked, 1));
+                    }
+                } else {
+                    config = JourneyMapper.selectActivityConfigurationList(actId, unlocked, 0).get(0);
+                }
+                saveHistory(actId, channelId, object, mobile, config, ditch);
+                object.put("config", config);
+                object.put(Constant.MSG, Constant.SUCCESS);
+            } else {
+                ActivityConfiguration config = new ActivityConfiguration();
+                config.setName(userHistory.getRewardName());
+                config.setTypeId(userHistory.getTypeId());
+                config.setUnlocked(userHistory.getUnlocked());
+                config.setWinSrc(userHistory.getWinSrc());
+                config.setImgSrc(userHistory.getImgSrc());
+                object.put("config", config);
+                object.put(Constant.MSG, Constant.YLQ);
+            }
+            return object;
+        }else {
+            object.put(Constant.MSG, "ActError");
+            return object;
         }
-        return object;
     }
 
     private void saveHistory(String actId, String channelId, JSONObject object, String mobile, ActivityConfiguration activityConfiguration,String ditch) {
@@ -203,18 +192,19 @@ public class JourneyServiceImpl implements JourneyService {
         newHistory.setValue(activityConfiguration.getValue());
         newHistory.setActId(actId);
         newHistory.setDitch(ditch);
+        newHistory.setIpScanner(activityConfiguration.getNoProContent());
         newHistory.setActivityId(activityConfiguration.getActivityId());
         newHistory.setItemId(activityConfiguration.getItemId());
         newHistory.setImgSrc(activityConfiguration.getImgSrc());
         newHistory.setWinSrc(activityConfiguration.getWinSrc());
         newHistory.setRemark(activityConfiguration.getRemark());
         newHistory.setModule(activityConfiguration.getModule());
-        journeyMapper.insertActivityUserHistory(newHistory);
-        if(activityConfiguration.getTypeId()==0){
+        JourneyMapper.insertActivityUserHistory(newHistory);
+        /*if(activityConfiguration.getTypeId()==0){
             String mqMsg = commonService.issueReward(newHistory);
             log.info("4147请求信息：" + mqMsg);
             jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
-        }
+        }*/
         /*object.put("gift",activityConfiguration);
         object.put(Constant.MSG,Constant.SUCCESS);*/
     }
@@ -240,8 +230,8 @@ public class JourneyServiceImpl implements JourneyService {
                 vasOfferInfo.setOperType("0");
                 offerList.add(vasOfferInfo);
             }
-            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
-             String message = ropService.execute(packet,history.getUserId(),history.getActId());
+           Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
+            /* String message = ropService.execute(packet,history.getUserId(),history.getActId());
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message,Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
@@ -258,11 +248,14 @@ public class JourneyServiceImpl implements JourneyService {
             history.setMessage(JSON.toJSONString(result));
             history.setCode(JSON.toJSONString(packet));
             object.put("res", res);
-            object.put("DoneCode", DoneCode);
-           /* object.put("res", "0000");
-            object.put("DoneCode", "9999");*/
+            object.put("DoneCode", DoneCode);*/
+           object.put("res", "0000");
+            object.put("DoneCode", "9999");
+            history.setStatus(Constant.STATUS_RECEIVED);
+            object.put(Constant.MSG, Constant.SUCCESS);
+            transact_result=true;
             object.put("update_history", JSON.toJSONString(history));
-            journeyMapper.updateHistory(history);
+            JourneyMapper.updateHistory(history);
             if (transact_result) {
                 //业务办理成功 接口上报
                 Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
@@ -310,8 +303,16 @@ public class JourneyServiceImpl implements JourneyService {
                 object.put(Constant.MSG,"loginError");
             }
         }
-        List<ActivityUserHistory> historyList = journeyMapper.selectActivityUserHistoryList(mobile,actId);
+        List<ActivityUserHistory> historyList = JourneyMapper.selectActivityUserHistoryList(mobile,actId);
         object.put(Constant.ObjectList,historyList);
+        return object;
+    }
+
+    @Override
+    public JSONObject getTitle() {
+        JSONObject object = new JSONObject();
+        List<ActivityConfiguration>  activityConfigurationList= JourneyMapper.selectActivityConfigurationTitle();
+        object.put("Title",activityConfigurationList);
         return object;
     }
 
@@ -327,7 +328,7 @@ public class JourneyServiceImpl implements JourneyService {
             object.put(Constant.MSG,"noShYd");
             return object;
         }
-        ActivityUserHistory userHistory  =journeyMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
+        ActivityUserHistory userHistory  =JourneyMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
         if(userHistory!=null){
             if(userHistory.getTypeId()==1){
                 if(userHistory.getStatus()==3){//已办理
@@ -336,7 +337,7 @@ public class JourneyServiceImpl implements JourneyService {
                     config = commonMapper.selectActivitySomeConfigurationByTYpeId(actId,unlocked);
                     object = transact3066Business(userHistory,config,randCode,channelId,wtAcId,wtAc,ditch);
                     if(object.getString("transact_result")=="true"){
-                        config = journeyMapper.selectActivityConfigurationByModule(actId,unlocked,10);
+                        config = JourneyMapper.selectActivityConfigurationByModule(actId,unlocked,10);
                         if(config!=null){
                             saveHistory( actId,  channelId,  object,  mobile, config, ditch);
                         }

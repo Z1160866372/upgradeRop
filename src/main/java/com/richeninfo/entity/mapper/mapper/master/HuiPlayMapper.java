@@ -32,6 +32,8 @@ public interface HuiPlayMapper {
     @Select("select * from wt_huiplay_history where userId = #{userId} and module=1")
     List<ActivityUserHistory> selectActivityUserHistoryList(@Param("userId")String userId,@Param("actId") String actId);
 
+    @Select("select * FROM activity_configuration WHERE actId='term_title' and  startTime < NOW() and  endTime >NOW()")
+    List<ActivityConfiguration> selectActivityConfigurationTitle();
     @Insert("insert into wt_huiplay_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark,winSrc,imgSrc,ipScanner)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId},#{itemId},#{module},#{remark},#{winSrc},#{imgSrc},#{ipScanner})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 

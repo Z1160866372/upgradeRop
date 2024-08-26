@@ -18,7 +18,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * @create 2022/11/17 15:27
  */
 @Configuration
-@EnableSwagger2
+//@EnableSwagger2
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override

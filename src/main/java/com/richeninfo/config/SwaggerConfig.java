@@ -7,6 +7,7 @@
 
 package com.richeninfo.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,6 +31,7 @@ import static com.google.common.collect.Lists.newArrayList;
  */
 
 @Configuration
+@ConditionalOnProperty(name = "swagger.enabled", havingValue = "true", matchIfMissing = true)
 @EnableSwagger2
 public class SwaggerConfig {
     @Bean

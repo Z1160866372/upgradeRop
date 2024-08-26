@@ -55,6 +55,13 @@ public interface HuiPlayService {
      */
     JSONObject getMyReward(String secToken,String channelId,String actId);
 
+
+    /**
+     * 活动title
+     * @return
+     */
+    JSONObject getTitle();
+
     /**
      * 业务办理
      * @param secToken

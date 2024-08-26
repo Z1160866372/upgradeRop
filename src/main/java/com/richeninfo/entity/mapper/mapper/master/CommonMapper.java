@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author : zhouxiaohu
@@ -44,6 +45,10 @@ public interface CommonMapper {
 
     @Select("select * from ${keyword} where userId = #{userId} and actId =#{actId} and createDate= curdate()")
     ActivityUser selectUser(@Param("userId") String userId, @Param("actId") String actId, @Param("keyword") String keyword);//查找用户记录
+
+    @Select("select * FROM activity_openapilog WHERE message like '%verify request error%'  and  left(createTime,10)=curdate() ")
+    List<OpenapiLog> selectCurDateList();//查找用户记录
+
 
     @Select("select * from ${keyword} where userId = #{userId} and actId =#{actId} and createDate=#{createDate}")
     ActivityUser selectUserByCreateDate(@Param("userId") String userId, @Param("actId") String actId, @Param("keyword") String keyword, @Param("createDate") String createDate);//查找用户记录
@@ -99,10 +104,16 @@ public interface CommonMapper {
     @Insert("insert into ${keyword}(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark,winSrc,imgSrc)values(#{history.userId},#{history.unlocked},#{history.typeId},#{history.rewardName},#{history.value},#{history.channelId},#{history.createDate},#{history.createTime},#{history.actId},#{history.ditch},#{history.activityId},#{history.itemId},#{history.module},#{history.remark},#{history.winSrc},#{history.imgSrc})")
     void insertActivityUserHistory(ActivityUserHistory history, @Param("keyword") String keyword);
 
-    @Update("update ${keyword} set value=#{history.value} where id=#{history.id}")
+    @Update("update ${keyword} set value=#{history.value} ,createTime=now() where id=#{history.id}")
     int updateHistoryByUnlocked(ActivityUserHistory history, @Param("keyword") String keyword);//更新排行榜
 
-    @Select("select * from ${keyword} where unlocked =#{unlocked} and actId =#{actId} order by value desc limit 50")
+    @Select("select * from ${keyword} where unlocked =#{unlocked} and actId =#{actId} order by CAST(`value` As SIGNED)   desc ,createTime  limit 50")
     List<ActivityUserHistory> selectHistoryList(@Param("unlocked") int unlocked, @Param("actId") String actId, @Param("keyword") String keyword);//排行榜
+    @Select("select * from activity_warning where type=1")
+    ActivityRecord selectWarning();//查询预警详情
+
+    @Select("select * from activity_warning where type=2")
+    List<ActivityRecord> selectWarningUser();//查询预警人
+
 
 }

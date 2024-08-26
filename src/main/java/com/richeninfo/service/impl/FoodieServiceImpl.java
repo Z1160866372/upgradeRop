@@ -81,8 +81,8 @@ public class FoodieServiceImpl implements FoodietService {
             new_user.setChannelId(user.getChannelId());
             new_user.setDitch(user.getDitch());
             new_user.setCreateDate(day.format(new Date()));
-            List<ActivityRoster> selectRoster = commonMapper.selectRoster(user.getUserId(),"meliorist","wt_meliorist_roster",1);
-            if(!CollectionUtils.isEmpty(selectRoster)){
+            List<ActivityRoster> selectRoster = commonMapper.selectRoster(user.getUserId(), "meliorist", "wt_meliorist_roster", 1);
+            if (!CollectionUtils.isEmpty(selectRoster)) {
                 new_user.setUserType(1);
             }
             foodieMapper.insertUser(new_user);
@@ -95,38 +95,38 @@ public class FoodieServiceImpl implements FoodietService {
     }
 
     @Override
-    public List<ActivityUserHistory>  getActivityUserList(String secToken, String actId, String channelId,int page,int limit,int typeId,String ip) {
-        List<ActivityUserHistory> userList =null;
-        if(typeId==0||typeId==1){//查询所有提交列表||查询当前用户提交列表
-            String mobile="";
+    public List<ActivityUserHistory> getActivityUserList(String secToken, String actId, String channelId, int page, int limit, int typeId, String ip) {
+        List<ActivityUserHistory> userList = null;
+        if (typeId == 0 || typeId == 1) {//查询所有提交列表||查询当前用户提交列表
+            String mobile = "";
             if (!StringUtils.isEmpty(secToken)) {
-                mobile= commonService.getMobile(secToken,channelId);
+                mobile = commonService.getMobile(secToken, channelId);
             }
-            if(typeId==0){
-                userList = foodieMapper.selectUserList((page-1)*limit,limit);
-            }else{
-                userList = foodieMapper.selectUserListByUserId(mobile,(page-1)*limit,limit);
+            if (typeId == 0) {
+                userList = foodieMapper.selectUserList(mobile, (page - 1) * limit, limit);
+            } else {
+                userList = foodieMapper.selectUserListByUserId(mobile, (page - 1) * limit, limit);
             }
-           if(userList.size()>0){
-               ActivityUserHistory userHistory=null;
-               String key = commonMapper.selectTheDayKey().getSecretKey();
-               for (ActivityUserHistory userFor : userList) {
-                   userHistory=foodieMapper.selectActivity(mobile, userFor.getId()+"", 1);
-                   if(userHistory!=null){//当前用户已点赞
-                       userFor.setUserType(1);
-                   }
-                   userHistory=foodieMapper.selectActivity(mobile, userFor.getId()+"", 2);
-                   if(userHistory!=null){//当前用户已评论
-                       userFor.setStatus(1);
-                   }
-                   userFor.setUserId(userFor.getUserId().substring(0, 3) + "****" + userFor.getUserId().substring(7));
-                   userFor.setSecToken(Des3SSL.encodeDC(userFor.getUserId(), key));
-               }
-           }
-       }
-        if(typeId==2){//查询当前提交内容的评论列表
-            userList = foodieMapper.selectUserListByTypeId(ip,(page-1)*limit,limit);
-            if(userList.size()>0){
+            if (userList.size() > 0) {
+                ActivityUserHistory userHistory = null;
+                String key = commonMapper.selectTheDayKey().getSecretKey();
+                for (ActivityUserHistory userFor : userList) {
+                    userHistory = foodieMapper.selectActivity(mobile, userFor.getId() + "", 1);
+                    if (userHistory != null) {//当前用户已点赞
+                        userFor.setUserType(1);
+                    }
+                    userHistory = foodieMapper.selectActivity(mobile, userFor.getId() + "", 2);
+                    if (userHistory != null) {//当前用户已评论
+                        userFor.setStatus(1);
+                    }
+                    userFor.setUserId(userFor.getUserId().substring(0, 3) + "****" + userFor.getUserId().substring(7));
+                    userFor.setSecToken(Des3SSL.encodeDC(userFor.getUserId(), key));
+                }
+            }
+        }
+        if (typeId == 2) {//查询当前提交内容的评论列表
+            userList = foodieMapper.selectUserListByTypeId(ip, (page - 1) * limit, limit);
+            if (userList.size() > 0) {
                 for (ActivityUserHistory userFor : userList) {
                     userFor.setUserId(userFor.getUserId().substring(0, 3) + "****" + userFor.getUserId().substring(7));
                 }
@@ -136,35 +136,36 @@ public class FoodieServiceImpl implements FoodietService {
     }
 
     @Override
-    public JSONObject submit(String secToken, String actId, int typeId, String channelId,String code, String message,String remark,String ditch,String ip) throws Exception {
+    public JSONObject submit(String secToken, String actId, int typeId, String channelId, String code, String message, String remark, String ditch, String ip) throws Exception {
         JSONObject object = new JSONObject();
-        String mobile="";
-        ActivityConfiguration config =null;
+        String mobile = "";
+        ActivityConfiguration config = null;
         if (!StringUtils.isEmpty(secToken)) {
-            mobile= commonService.getMobile(secToken,channelId);
+            mobile = commonService.getMobile(secToken, channelId);
         }
         ActivityUser select_user = foodieMapper.selectUserByCreateDate(mobile);
-        if(select_user!=null){
-            if(select_user.getUserType()>0){
-                object.put(Constant.MSG,"blackList");
+        if (select_user != null) {
+            if (select_user.getUserType() != 1) {
+                object.put(Constant.MSG, "blackList");
                 return object;
             }
-            if(("1").equals(select_user.getBelongFlag())){
-                object.put(Constant.MSG,"noShYd");
+            if (("1").equals(select_user.getBelongFlag())) {
+                object.put(Constant.MSG, "noShYd");
                 return object;
             }
-            if(select_user.getBelongFlag()!=null&&select_user.getBelongFlag().isEmpty()){
+            if (select_user.getBelongFlag() != null && select_user.getBelongFlag().isEmpty()) {
                 /*if(!commonService.checkUserIsChinaMobile(mobile,actId)){
                     object.put(Constant.MSG,"noShYd");
                     return object;
                 }*/
             }
         }
-        object= saveHistory(object,actId,channelId,mobile,typeId,code,message,remark,ditch,ip);
+        object = saveHistory(object, actId, channelId, mobile, typeId, code, message, remark, ditch, ip);
         return object;
     }
-    private JSONObject saveHistory(JSONObject object,String actId, String channelId, String mobile, int typeId,String code, String message,String remark,String ditch,String ip) {
-        boolean result =false;
+
+    private JSONObject saveHistory(JSONObject object, String actId, String channelId, String mobile, int typeId, String code, String message, String remark, String ditch, String ip) {
+        boolean result = false;
         ActivityUserHistory newHistory = new ActivityUserHistory();
         newHistory.setUserId(mobile);
         newHistory.setChannelId(channelId);
@@ -173,34 +174,34 @@ public class FoodieServiceImpl implements FoodietService {
         newHistory.setTypeId(typeId);
         newHistory.setActId(actId);
         newHistory.setDitch(ditch);
-        if(typeId==0){//提交信息
+        if (typeId == 0) {//提交信息
             newHistory.setCode(code);
             newHistory.setMessage(message);
             newHistory.setRemark(remark);
-            result =true;
+            result = true;
         }
-        if(typeId==1){//点赞
-            ActivityUserHistory userHistory=foodieMapper.selectActivity(mobile, ip, 1);
-            if(userHistory==null){//当前用户未点赞
-                result =true;
+        if (typeId == 1) {//点赞
+            ActivityUserHistory userHistory = foodieMapper.selectActivity(mobile, ip, 1);
+            if (userHistory == null) {//当前用户未点赞
+                result = true;
                 newHistory.setIp(ip);
                 foodieMapper.updateHistoryModule(new Integer(ip));
             }
         }
-        if(typeId==2){//评论
-            ActivityUserHistory userHistory=foodieMapper.selectActivity(mobile, ip, 2);
-            if(userHistory==null){//当前用户位评论
-                result =true;
+        if (typeId == 2) {//评论
+            ActivityUserHistory userHistory = foodieMapper.selectActivity(mobile, ip, 2);
+            if (userHistory == null) {//当前用户位评论
+                result = true;
                 newHistory.setIp(ip);
                 newHistory.setRemark(remark);
                 foodieMapper.updateHistoryUnlocked(new Integer(ip));
             }
         }
-        if(result){
-            object.put(Constant.MSG,"success");
+        if (result) {
+            object.put(Constant.MSG, "success");
             foodieMapper.insertActivityUserHistory(newHistory);
-        }else{
-            object.put(Constant.MSG,"error");
+        } else {
+            object.put(Constant.MSG, "error");
         }
         return object;
     }

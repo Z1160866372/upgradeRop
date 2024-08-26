@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import java.util.List;
 
 /**
- * @Author : zhouxiaohu
- * @create 2024/4/29 14:54
+ * @Author : sxl
+ * @create 2024/8/20 14:54
  */
 public interface JourneyService {
 
@@ -57,6 +57,13 @@ public interface JourneyService {
      * @return
      */
     JSONObject getMyReward(String secToken,String channelId,String actId);
+
+
+    /**
+     * 活动title
+     * @return
+     */
+    JSONObject getTitle();
 
     /**
      * 业务办理

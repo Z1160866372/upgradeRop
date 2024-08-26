@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
-import com.richeninfo.service.FinanceService;
+import com.richeninfo.service.JourneyService;
 import com.richeninfo.service.JourneyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,18 +31,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * @Author : zhouxiaohu
- * @create 2024/4/29 15:04
+ * @author sunxilei
+ * @create 2024/8/20 10:04
  */
 @Controller
-@Api(value = "智享5G新风尚-年中狂欢GO", tags = {"5G新风尚"})
-@RequestMapping("/2024/06/journey")
+@Api(value = "5G新生代第四期", tags = {"5G新生代"})
+@RequestMapping("/2024/09/term")
 @Slf4j
 public class JourneyController {
     @Resource
     private CommonService commonService;
     @Resource
-    private JourneyService journeyService;
+    private JourneyService JourneyService;
     @Resource
     private HttpServletRequest request;
     @Resource
@@ -72,7 +72,7 @@ public class JourneyController {
                 user.setActId(actId);
                 user.setCreateDate(day.format(new Date()));
                 user.setDitch(ditch);
-                user = journeyService.insertUser(user);
+                user = JourneyService.insertUser(user);
                 object.put(Constant.MSG, Constant.SUCCESS);
                 object.put("user", user);
             }
@@ -84,7 +84,7 @@ public class JourneyController {
     @PostMapping("/getConf")
     public @ResponseBody
     void getConf(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws Exception {
-        CommonController.getActId(request, journeyService.getConfiguration(secToken, actId, channelId), resp, secToken);
+        CommonController.getActId(request, JourneyService.getConfiguration(secToken, actId, channelId), resp, secToken);
     }
 
     @ApiOperation("用户点击领取")
@@ -92,7 +92,7 @@ public class JourneyController {
     public @ResponseBody
     JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
         CommonController.getParameter(request, actId, channelId,unlocked,ditch);
-        return this.journeyService.submit(secToken, actId, unlocked, channelId,ditch);
+        return this.JourneyService.submit(secToken, actId, unlocked, channelId,ditch);
     }
 
     /**
@@ -105,7 +105,14 @@ public class JourneyController {
     @PostMapping(value = "/getMyReward")
     public @ResponseBody
     Object getMyReward(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId){
-        return this.journeyService.getMyReward(secToken,channelId,actId);
+        return this.JourneyService.getMyReward(secToken,channelId,actId);
+    }
+
+    @ApiOperation("活动标题")
+    @PostMapping(value = "/getTitle")
+    public @ResponseBody
+    Object getTitle(){
+        return this.JourneyService.getTitle();
     }
 
     @ApiOperation("用户点击办理")
@@ -114,6 +121,6 @@ public class JourneyController {
     JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked
             ,@ApiParam(name = "wtAcId", value = "wtAcId", required = true) String wtAcId, @ApiParam(name = "wtAc", value = "wtAc", required = true) String wtAc, @ApiParam(name = "randCode", value = "二次短信验证码", required = true) String randCode, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
         CommonController.getParameter(request, actId, channelId,unlocked,ditch);
-        return this.journeyService.transaction(secToken, actId, unlocked, channelId,wtAcId,wtAc,randCode,ditch);
+        return this.JourneyService.transaction(secToken, actId, unlocked, channelId,wtAcId,wtAc,randCode,ditch);
     }
 }

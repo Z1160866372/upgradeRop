@@ -87,6 +87,7 @@ public class ProtectServiceImpl implements ProtectService {
             select_user.setSecToken(user.getSecToken());
             user = select_user;
         }
+        user.setUserId(user.getUserId().substring(0, 3) + "****" + user.getUserId().substring(7));
         return user;
     }
 

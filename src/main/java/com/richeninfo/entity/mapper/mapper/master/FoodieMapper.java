@@ -30,8 +30,8 @@ public interface FoodieMapper {
     @Insert("insert into wt_meliorist_user(userId,channelId,secToken,createDate,createTime,actId,belongFlag,userType)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{belongFlag},#{userType})")
     int insertUser(ActivityUser user);//初始化用户
 
-    @Select("select * from wt_meliorist_history where typeId=0 order by createTime desc limit #{pageBegin},#{pageSize}")
-    List<ActivityUserHistory> selectUserList(@Param("pageBegin")int pageBegin,@Param("pageSize")int pageSize);//查找提交用户集合
+    @Select("select * from wt_meliorist_history where typeId=0  and userId !=#{userId} order by createTime desc limit #{pageBegin},#{pageSize}")
+    List<ActivityUserHistory> selectUserList(@Param("userId") String userId,@Param("pageBegin")int pageBegin,@Param("pageSize")int pageSize);//查找提交用户集合
 
     @Select("select * from wt_meliorist_history where userId=#{userId} and typeId=0 order by createTime desc limit #{pageBegin},#{pageSize}")
     List<ActivityUserHistory> selectUserListByUserId(@Param("userId") String userId,@Param("pageBegin")int pageBegin,@Param("pageSize")int pageSize);//查找提交用户集合

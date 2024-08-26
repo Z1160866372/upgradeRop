@@ -163,4 +163,5 @@ public interface CommonService {
      * @return
      */
     JSONObject getMyReward(String secToken,String channelId,String actId, int unlocked);
+
 }

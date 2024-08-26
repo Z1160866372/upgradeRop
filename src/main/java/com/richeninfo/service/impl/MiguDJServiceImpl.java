@@ -84,13 +84,7 @@ public class MiguDJServiceImpl implements MiguDJService {
     }
 
 
-    @Override
-    public Map<Integer,List<ActivityConfiguration>> selectVideoListNew(String secToken, String channelId, String actId) {
-        List<ActivityConfiguration> list = miguDJMapper.findGiftByTypeId(actId);
-        JSONObject jsonObject = new JSONObject();
-        Map<Integer, List<ActivityConfiguration>>groups = list.stream().collect(Collectors.groupingBy(ActivityConfiguration::getUserType));
-        return groups;
-    }
+
 
     @Override
     public JSONObject getActGift( String secToken, String channelId, String actId, String randCode, String wtAcId, String wtAc, String ditch) {
@@ -160,14 +154,6 @@ public class MiguDJServiceImpl implements MiguDJService {
         }
         return jsonObject;
     }
-
-    @Override
-    public JSONObject sendMessage5956(String userId, String secToken, String channelId, String actId) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject = commonService.sendSms5956(userId, actId, 0);
-        return jsonObject;
-    }
-
     public JSONObject transact3066Business(ActivityUserHistory history, ActivityConfiguration config, String randCode, String channelId, String wtAcId, String wtAc, String actId,String ditch) {
         JSONObject object = new JSONObject();
         boolean transact_result = false;
@@ -238,27 +224,6 @@ public class MiguDJServiceImpl implements MiguDJService {
         return object;
     }
 
-    /**
-     * 用户记录操作
-     *
-     * @param caozuo
-     * @param userId
-     */
-    @Override
-    public void actRecord(String caozuo, String actId, String userId) {
-        log.info("userId:" + userId + ",caozuo" + caozuo);
-        Map<String, Object> map = new HashMap<>();
-        OperationLog record = new OperationLog();
-        record.setInstructions(caozuo);
-        record.setUserId(userId);
-        record.setActId(actId);
-        record.setUserId(userId);
-        try {
-            commonMapper.insertOperationLog(record, "wt_miguflow_operationLog");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     //更新黑名单
     public int isBlack(String userId) {

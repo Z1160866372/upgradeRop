@@ -107,6 +107,13 @@ public class HuiPlayController {
         return this.HuiPlayService.getMyReward(secToken,channelId,actId);
     }
 
+    @ApiOperation("活动标题")
+    @PostMapping(value = "/getTitle")
+    public @ResponseBody
+    Object getTitle(){
+        return this.HuiPlayService.getTitle();
+    }
+
     @ApiOperation("用户点击办理")
     @PostMapping("/transaction")
     public @ResponseBody

@@ -13,10 +13,12 @@ import com.chinamobile.cn.openapi.sdk.v2.model.OpenapiResponse;
 import com.chinamobile.cn.openapi.sdk.v2.model.ResponseStatus;
 import com.chinamobile.cn.openapi.sdk.v2.util.ConfSerializeUtil;
 import com.chinamobile.cn.openapi.sdk.v2.util.JsonUtil;
+import com.richeninfo.entity.mapper.entity.ActivityRecord;
 import com.richeninfo.entity.mapper.entity.OpenapiLog;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.pojo.Packet;
 import com.richeninfo.pojo.Post;
+import com.richeninfo.pojo.Result;
 import lombok.extern.slf4j.Slf4j;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.IOUtils;
@@ -34,8 +36,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import javax.net.ssl.*;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,6 +60,9 @@ public class OpenapiHttpCilent {
     private String securityUrl;
     @Value("${nengKai.openapiUrl}")
     private String openapiUrl;
+
+    @Value("${newNengKai.httpUrl}")
+    private String httpUrl;
     @Value("${nengKai.apk_new}")
     private String apk_new;
     private CloseableHttpClient client = HttpClients.createDefault();
@@ -58,7 +70,10 @@ public class OpenapiHttpCilent {
 
     @Resource
     private CommonMapper commonMapper;
-
+    @Resource
+    private PacketHelper packetHelper;
+    @Resource
+    private RopServiceManager ropService;
 
     /**
      * @param appCode 应用编码
@@ -83,6 +98,9 @@ public class OpenapiHttpCilent {
         String userId="";
         if(apiCode.equals("exchange")){
             userId=JSONObject.parseObject(requestBody).getString("phone");
+        }else if(apiCode.equals("addOrder")){
+            String busInfo = JSON.parseObject(requestBody).getString("busInfo");
+            userId=JSON.parseObject(busInfo).getString("customerId");
         }else{
             Post post = JSON.parseObject(requestBody, Post.class);
             String busiCode=post.getRequest().getBusiCode();
@@ -217,9 +235,113 @@ public class OpenapiHttpCilent {
         log.info("securityUrl::" + securityUrl);
         log.info("openapiUrl::" + openapiUrl);
         /*Map<String, String> properties = new ConfSerializeUtil().readConfig("openapi.property");
-
         this.securityUrl = properties.get("security_server_url");
         this.openapiUrl = properties.get("openapi_server_url");*/
+    }
 
+    public String  HttpsURLConnection(String apiCode, String transactionId, String requestBody)  throws Exception{
+        String response = null;
+        log.info("call----requestBody"+requestBody);
+        String userId="";
+        if(apiCode.equals("exchange")){
+            userId=JSONObject.parseObject(requestBody).getString("phone");
+        }else if(apiCode.equals("addOrder")){
+            String busInfo = JSON.parseObject(requestBody).getString("busInfo");
+            userId=JSON.parseObject(busInfo).getString("customerId");
+        }else{
+            Post post = JSON.parseObject(requestBody, Post.class);
+            String busiCode=post.getRequest().getBusiCode();
+            if(busiCode.equals("PT-SH-FS-OI4147")){
+                userId=post.getRequest().getBusiParams().getString("bill_id");
+            }else if(busiCode.equals("PT-SH-FS-OI3066")){
+                userId=post.getRequest().getBusiParams().getString("billid");
+            }else if(busiCode.equals("PT-SH-FS-OI5956")||busiCode.equals("PT-SH-FS-OI002329")){
+                userId=post.getRequest().getBusiParams().getString("billId");
+            }else if(busiCode.equals("PT-SH-FS-OI0808")){
+                userId=post.getRequest().getBusiParams().getString("strBillId");
+            }else if(busiCode.equals("getCommitPacket1638")){
+                userId=post.getRequest().getBusiParams().getString("DestNum");
+            }
+        }
+        log.info("call----userId"+userId);
+        OpenapiLog openapiLog = new OpenapiLog();
+        // 忽略证书验证的SSLSocketFactory
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                    }
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    }
+                }
+        };
+        SSLContext sc = SSLContext.getInstance("SSL");
+        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+        // 忽略主机名验证的HostnameVerifier
+        HostnameVerifier allHostsValid = new HostnameVerifier() {
+            public boolean verify(String hostname, SSLSession session) {
+                return true;
+            }
+        };
+        // 设置自定义的SSLSocketFactory和HostnameVerifier
+        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        // 发送HTTPS POST请求
+        URL url = new URL(httpUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
+        connection.setRequestProperty("appCode", appCode);
+        connection.setRequestProperty("apiCode", apiCode);
+        connection.setRequestProperty("transactionId", transactionId);
+        connection.setRequestProperty("accessToken", "");
+        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        try (OutputStream os = connection.getOutputStream()) {
+            byte[] inputBytes = requestBody.getBytes("utf-8");
+            os.write(inputBytes, 0, inputBytes.length);
+        }
+        try (InputStream responseStream = connection.getInputStream()) {
+            BufferedReader responseStreamReader = new BufferedReader(new InputStreamReader(responseStream, "utf-8"));
+            String line;
+            StringBuilder responseBuilder = new StringBuilder();
+
+            while ((line = responseStreamReader.readLine()) != null) {
+                responseBuilder.append(line).append("\n");
+            }
+            System.out.println(responseBuilder.toString());
+            response = responseBuilder.toString();
+            log.info("call=====result=="+response);
+            openapiLog.setCode(connection.toString());
+            openapiLog.setUserId(userId);
+            openapiLog.setMessage(response);
+            openapiLog.setApiCode(apiCode);
+            commonMapper.insertOpenapiLog(openapiLog);
+        }catch (Exception e){
+            e.printStackTrace();
+            openapiLog.setCode(e.getMessage());
+            List<OpenapiLog>  openapiLogList=commonMapper.selectCurDateList();
+            ActivityRecord activityRecord=commonMapper.selectWarning();
+            if(openapiLogList.size()==activityRecord.getStatus()){
+                List<ActivityRecord> activityRecordList=commonMapper.selectWarningUser();
+                for(ActivityRecord record :activityRecordList){
+                    sendNote(record.getUserId(),activityRecord.getActionName());
+                }
+            }
+            commonMapper.insertOpenapiLog(openapiLog);
+        }
+        return  response;
+    }
+
+    public void sendNote(String userId,String message) {
+        log.info("短信内容："+message);
+        try {
+            Packet packet = packetHelper.getCommitPacket1638(userId,message);
+            Result result = JSON.parseObject(ropService.execute(packet, userId, "gsmshare"), Result.class);
+            log.info("短信返回："+result.getResponse().toString());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

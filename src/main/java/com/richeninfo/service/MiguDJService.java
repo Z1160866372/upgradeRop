@@ -39,15 +39,6 @@ public interface MiguDJService {
     JSONObject selectVideoList( String secToken, String channelId, String actId);
 
     /**
-     * 多媒体展示
-     * @param secToken
-     * @param channelId
-     * @param actId
-     * @return
-     */
-    Map<Integer, List<ActivityConfiguration>> selectVideoListNew(String secToken, String channelId, String actId);
-
-    /**
      * 领取礼包
      * @param secToken
      * @param channelId
@@ -58,14 +49,4 @@ public interface MiguDJService {
 
 
 
-    /**
-     * 办理业务短信下发
-     * @param userId
-     * @param secToken
-     * @param channelId
-     * @param actId
-     * @return
-     */
-    JSONObject sendMessage5956(String userId, String secToken, String channelId, String actId);
-    void actRecord(String caozuo,String actId, String userId);
 }

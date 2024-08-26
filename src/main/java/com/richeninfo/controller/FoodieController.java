@@ -91,6 +91,7 @@ public class FoodieController {
             ,@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws IOException {
         actId = request.getParameter("actId") == null ? "" : request.getParameter("actId");
         channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
+        resp.setContentType("text/html; charset=UTF-8");
         resp.getWriter().write(JSON.toJSONString(foodietService.getActivityUserList(secToken, actId, channelId,page,limit,typeId,ip)));
     }
 

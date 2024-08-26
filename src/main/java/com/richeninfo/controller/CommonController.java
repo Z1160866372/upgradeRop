@@ -173,6 +173,7 @@ public class CommonController {
             return resultObj;
         }
         if (!mobilePhone.isEmpty()) {
+            log.info("解析mobilePhone==="+mobilePhone);
             mobilePhone = rsaUtils.decryptByPriKey(mobilePhone).trim();
         }
         //校验验证码

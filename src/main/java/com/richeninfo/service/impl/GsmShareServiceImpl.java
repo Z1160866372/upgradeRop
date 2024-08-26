@@ -272,7 +272,7 @@ public class GsmShareServiceImpl implements GsmShareService {
             }
             object.put("res", res);
             object.put("DoneCode", DoneCode);
-      /*      object.put("res", "0000");
+          /*object.put("res", "0000");
             object.put("DoneCode", "11111");
             transact_result = true;
             object.put(Constant.MSG, Constant.SUCCESS);
