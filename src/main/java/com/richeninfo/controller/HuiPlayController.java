@@ -34,8 +34,8 @@ import java.util.Date;
  * @create 2024/7/01 10:04
  */
 @Controller
-@Api(value = "5G新生代惠玩“移”夏", tags = {"5G新生代"})
-@RequestMapping("/2024/07/huiplay")
+@Api(value = "宝藏之旅·上海旅游节", tags = {"宝藏之旅·上海旅游节"})
+@RequestMapping("/2024/09/treasure")
 @Slf4j
 public class HuiPlayController {
     @Resource
@@ -92,26 +92,6 @@ public class HuiPlayController {
     JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
         CommonController.getParameter(request, actId, channelId,unlocked,ditch);
         return this.HuiPlayService.submit(secToken, actId, unlocked, channelId,ditch);
-    }
-
-    /**
-     * 我的奖励
-     * @param actId
-     * @param channelId
-     * @return
-     */
-    @ApiOperation("我的奖励")
-    @PostMapping(value = "/getMyReward")
-    public @ResponseBody
-    Object getMyReward(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId){
-        return this.HuiPlayService.getMyReward(secToken,channelId,actId);
-    }
-
-    @ApiOperation("活动标题")
-    @PostMapping(value = "/getTitle")
-    public @ResponseBody
-    Object getTitle(){
-        return this.HuiPlayService.getTitle();
     }
 
     @ApiOperation("用户点击办理")

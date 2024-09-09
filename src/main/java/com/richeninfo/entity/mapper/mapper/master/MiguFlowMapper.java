@@ -8,6 +8,7 @@
 
 package com.richeninfo.entity.mapper.mapper.master;
 
+import com.richeninfo.entity.mapper.entity.ActivityCardList;
 import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
 import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
@@ -22,75 +23,34 @@ import java.util.List;
 @Mapper
 public interface MiguFlowMapper {
 
-   /**
-    * 查询用户信息
-    * @param userId
-    * @return
-    */
-   @Select("select * from wt_miguflow_user where userId = #{userId} ")
-   ActivityUser findCurMonthUserInfo(@Param("userId") String userId);
+   @Select("select * from wt_reunite_user where userId = #{userId}")
+   ActivityUser selectUserByCreateDate(@Param("userId") String userId);//查找用户记录
 
-   /**
-    * 初始化用户信息
-    * @param user
-    */
-   @Insert("INSERT INTO wt_miguflow_user (userId,level,award,playNum,channelId,grade,answerNum,mark,blowNum,weekTime,createTime,createDate,secToken,ditch,userType) value (#{userId},#{level},#{award},#{playNum},#{channelId},#{grade},#{answerNum},#{mark},#{blowNum},now(),now(),curdate(),#{secToken},#{ditch},#{userType})")
-   void saveUser(ActivityUser user);
+   @Insert("insert into wt_reunite_user(userId,channelId,secToken,createDate,createTime,actId,ditch)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{ditch})")
+   int insertUser(ActivityUser user);//初始化用户
 
-   /**
-    * 查询是否有当月获取记录
-    * @param userId
-    * @return
-    */
-   @Select("select * from wt_miguflow_history where userId = #{userId} and unlocked=0  ")
-   ActivityUserHistory findCurYwHistory(@Param("userId") String userId);
+   @Select("select * from wt_reunite_history where userId = #{userId} and unlocked =#{unlocked} and module=0")
+   ActivityUserHistory selectActivityUserHistoryByUnlocked(@Param("userId")String userId, @Param("unlocked")int unlocked);
 
-   /**
-    * 查询奖品
-    * @param unlocked
-    * @param actId
-    * @return
-    */
-   @Select("select * from activity_configuration where unlocked=#{unlocked} and actId=#{actId} limit 1")
-   ActivityConfiguration findGiftByUnlocked(int unlocked, String actId);
+   @Select("select * from wt_reunite_history where userId = #{userId} and module=0")
+   List<ActivityUserHistory> selectActivityUserHistoryList(@Param("userId")String userId,@Param("actId") String actId);
 
-   /**
-    * 更新用户secToken
-    * @param userId
-    * @param secToken
-    * @return
-    */
-   @Update("update  wt_miguflow_user set secToken=#{secToken}  where userId=#{userId} ")
-   int updateUserSecToken(@Param("userId") String userId, @Param("secToken") String secToken);
+   @Select("select * FROM activity_configuration WHERE actId='term_title' and  startTime < NOW() and  endTime >NOW()")
+   List<ActivityConfiguration> selectActivityConfigurationTitle();
 
+   @Insert("insert into wt_reunite_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark,winSrc,imgSrc,ipScanner)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId},#{itemId},#{module},#{remark},#{winSrc},#{imgSrc},#{ipScanner})")
+   void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
-   /**
-    * 新增用户获取奖品
-    * @param history
-    * @return
-    */
-   @Insert("INSERT INTO wt_miguflow_history (userId,rewardName,typeId,unlocked,belongFlag,status,code,message,secToken,channelId,createTime,createDate,actId,winSrc,remark,activityId,itemId,ditch) value (#{userId},#{rewardName},#{typeId},#{unlocked},#{belongFlag},#{status},#{code},#{message},#{secToken},#{channelId},now(),curdate(),#{actId},#{winSrc},#{remark},#{activityId},#{itemId},#{ditch})")
-   int saveHistory(ActivityUserHistory history);
-
-   /**
-    * 更新用户award
-    * @param userId
-    * @return
-    */
-   @Update("update  wt_miguflow_user set award=1 where userId=#{userId} ")
-   int updateUserAward(@Param("userId") String userId);
-
-   /**
-    * 多媒体展示
-    * @param actId
-    * @return
-    */
-   @Select("select * from activity_configuration where typeId=5 and actId=#{actId}")
-   List<ActivityConfiguration> findGiftByTypeId(String actId);
-
-   @Update("update wt_miguflow_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
+   @Update("update wt_reunite_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
    int updateHistory(ActivityUserHistory history);//更新接口状态
 
-   @Select("SELECT `userId` FROM  `wt_flowmigu_black` WHERE userId=#{userId} ")
-   List<String > findIsBlack(String userId);
+   @Update("update wt_reunite_history set remark=#{remark} where id=#{id}")
+   int updateHistoryRemark(ActivityUserHistory history);//更新卡券信息
+
+   @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and userType=#{userType}")
+   List<ActivityConfiguration> selectActivityConfigurationList(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("userType") Integer userType);
+
+   @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and module=#{module}")
+   ActivityConfiguration selectActivityConfigurationByModule(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("module") Integer module);
+
 }

@@ -24,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
 import java.util.Base64;
 
 import javax.annotation.Resource;
@@ -81,7 +83,6 @@ public class HuiPlayServiceImpl implements HuiPlayService {
             user = select_user;
         }
         user.setUserId(Base64.getEncoder().encodeToString(user.getUserId().getBytes()));
-       // user.setUserId(user.getUserId().substring(0, 3) + "****" + user.getUserId().substring(7));
         return user;
     }
 
@@ -133,11 +134,10 @@ public class HuiPlayServiceImpl implements HuiPlayService {
                         object.put(Constant.MSG, "login");
                         return object;
                     }
-
-                    if( !commonService.checkUserIsChinaMobile(mobile,actId)){
+                   /* if( !commonService.checkUserIsChinaMobile(mobile,actId)){
                         object.put(Constant.MSG,"noShYd");
-                         return object;
-                  }
+                        return object;
+                    }*/
                 } catch (Exception e) {
                     object.put(Constant.MSG, "loginError");
                     return object;
@@ -150,18 +150,14 @@ public class HuiPlayServiceImpl implements HuiPlayService {
             if (userHistory == null) {
                 ActivityConfiguration config = null;
                 String keyword = "wt_" + actId + "_roster";
-                if (unlocked == 4) {//5GB+1GB流量
-                    config = HuiPlayMapper.selectActivityConfigurationList(actId, unlocked, 0).get(0);
-                } else if (unlocked == 6) {//流量&外链
-                    List<ActivityRoster> rosterList = commonMapper.selectRoster(mobile, actId, keyword, unlocked * 10);
-                    if (!rosterList.isEmpty()) {//取外链
-                        config = HuiPlayMapper.selectActivityConfigurationList(actId, unlocked, 0).get(0);
-                    } else {
-                        config = CommonUtil.randomGift(HuiPlayMapper.selectActivityConfigurationList(actId, unlocked, 1));
+                if (unlocked == 4||unlocked == 5) {
+                    List<ActivityRoster> selectRoster = commonMapper.selectRoster(mobile, actId, keyword, unlocked);
+                    if (!CollectionUtils.isEmpty(selectRoster)) {
+                        object.put(Constant.MSG, "blackList");
+                        return object;
                     }
-                } else {
-                    config = HuiPlayMapper.selectActivityConfigurationList(actId, unlocked, 0).get(0);
                 }
+                config = HuiPlayMapper.selectActivityConfigurationByModule(actId, unlocked, 0);
                 saveHistory(actId, channelId, object, mobile, config, ditch);
                 object.put("config", config);
                 object.put(Constant.MSG, Constant.SUCCESS);
@@ -175,11 +171,10 @@ public class HuiPlayServiceImpl implements HuiPlayService {
                 object.put("config", config);
                 object.put(Constant.MSG, Constant.YLQ);
             }
-            return object;
         }else {
             object.put(Constant.MSG, "ActError");
-            return object;
         }
+        return object;
     }
 
     private void saveHistory(String actId, String channelId, JSONObject object, String mobile, ActivityConfiguration activityConfiguration,String ditch) {
@@ -199,16 +194,8 @@ public class HuiPlayServiceImpl implements HuiPlayService {
         newHistory.setItemId(activityConfiguration.getItemId());
         newHistory.setImgSrc(activityConfiguration.getImgSrc());
         newHistory.setWinSrc(activityConfiguration.getWinSrc());
-        newHistory.setRemark(activityConfiguration.getRemark());
         newHistory.setModule(activityConfiguration.getModule());
         HuiPlayMapper.insertActivityUserHistory(newHistory);
-        if(activityConfiguration.getTypeId()==0){
-            String mqMsg = commonService.issueReward(newHistory);
-            log.info("4147请求信息：" + mqMsg);
-            jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
-        }
-        /*object.put("gift",activityConfiguration);
-        object.put(Constant.MSG,Constant.SUCCESS);*/
     }
 
     public JSONObject transact3066Business(ActivityUserHistory history,ActivityConfiguration config,String randCode,String channelId,String wtAcId, String wtAc,String ditch) {
@@ -233,7 +220,7 @@ public class HuiPlayServiceImpl implements HuiPlayService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
-            String message = ropService.execute(packet,history.getUserId(),history.getActId());
+            /*String message = ropService.execute(packet,history.getUserId(),history.getActId());
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message,Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
@@ -250,18 +237,41 @@ public class HuiPlayServiceImpl implements HuiPlayService {
             history.setMessage(JSON.toJSONString(result));
             history.setCode(JSON.toJSONString(packet));
             object.put("res", res);
-            object.put("DoneCode", DoneCode);
-         /*   object.put("res", "0000");
-            object.put("DoneCode", "9999");
-            history.setStatus(Constant.STATUS_RECEIVED);
-            object.put(Constant.MSG, Constant.SUCCESS);
-            transact_result=true;*/
+            object.put("DoneCode", DoneCode);*/
+            if(true){
+                object.put("res", "0000");
+                object.put("DoneCode", "9999");
+                history.setStatus(Constant.STATUS_RECEIVED);
+                object.put(Constant.MSG, Constant.SUCCESS);
+                transact_result=true;
+            }
             object.put("update_history", JSON.toJSONString(history));
             HuiPlayMapper.updateHistory(history);
             if (transact_result) {
+                if(config.getAmount()>0){
+                    List<ActivityCardList> activityCardLists = HuiPlayMapper.selectActivityCardList(history.getActId(),history.getUnlocked(),month.format(new Date()));
+                    if(activityCardLists.size()>0){
+                        ActivityCardList activityCardList = HuiPlayMapper.selectActivityCardListByUnlocked(history.getActId(),history.getUnlocked(),month.format(new Date()));
+                        int card_result = HuiPlayMapper.updateActivityCardList(history.getUserId(),activityCardList.getId());
+                        if(card_result>0){
+                            commonMapper.updateAmount(config.getId());//更新卡券配置数量
+                            history.setRemark(activityCardList.getCouponCode());
+                            HuiPlayMapper.updateHistoryRemark(history);
+                            String content=config.getRemark().replace("code",activityCardList.getCouponCode());
+                            log.info("content:"+content);
+                            /* Packet card_packet = packetHelper.getCommitPacket1638(history.getUserId(), content);
+                            JSON.parseObject(ropService.execute(packet, history.getUserId(),history.getActId()), Result.class);*/
+                        }else{
+                            object.put(Constant.MSG,"noDate");
+                        }
+                    }else{
+                        object.put(Constant.MSG,"noDate");
+                    }
+                }else{
+                    object.put(Constant.MSG,"noDate");
+                }
                 //业务办理成功 接口上报
-                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
-                System.out.println(new_packet.toString());
+                /*Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
                 String result_String="";
                 try {
                     result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
@@ -279,42 +289,12 @@ public class HuiPlayServiceImpl implements HuiPlayService {
                 order.setCode(JSON.toJSONString(new_packet));
                 order.setMessage(result_String);
                 order.setChannelId(channelId);
-                commonMapper.insertActivityOrder(order);
+                commonMapper.insertActivityOrder(order);*/
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         object.put("transact_result", transact_result);
-        return object;
-    }
-
-    /**
-     * 我的奖励
-     * @param channelId
-     * @param actId
-     * @return
-     */
-    @Override
-    public JSONObject getMyReward(String secToken,String channelId, String actId) {
-        JSONObject object = new JSONObject();
-        String mobile="";
-        if (!StringUtils.isEmpty(secToken)) {
-            try {
-                mobile= commonService.getMobile(secToken,channelId);
-            }catch (Exception e){
-                object.put(Constant.MSG,"loginError");
-            }
-        }
-        List<ActivityUserHistory> historyList = HuiPlayMapper.selectActivityUserHistoryList(mobile,actId);
-        object.put(Constant.ObjectList,historyList);
-        return object;
-    }
-
-    @Override
-    public JSONObject getTitle() {
-        JSONObject object = new JSONObject();
-      List<ActivityConfiguration>  activityConfigurationList= HuiPlayMapper.selectActivityConfigurationTitle();
-      object.put("Title",activityConfigurationList);
         return object;
     }
 
@@ -326,10 +306,10 @@ public class HuiPlayServiceImpl implements HuiPlayService {
         if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }
-        if(!commonService.checkUserIsChinaMobile(mobile,actId)){//非上海移动
+      /*  if(!commonService.checkUserIsChinaMobile(mobile,actId)){//非上海移动
             object.put(Constant.MSG,"noShYd");
             return object;
-        }
+        }*/
         ActivityUserHistory userHistory  =HuiPlayMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
         if(userHistory!=null){
             if(userHistory.getTypeId()==1){
@@ -338,12 +318,6 @@ public class HuiPlayServiceImpl implements HuiPlayService {
                 }else{
                     config = commonMapper.selectActivitySomeConfigurationByTYpeId(actId,unlocked);
                     object = transact3066Business(userHistory,config,randCode,channelId,wtAcId,wtAc,ditch);
-                    if(object.getString("transact_result")=="true"){
-                        config = HuiPlayMapper.selectActivityConfigurationByModule(actId,unlocked,10);
-                        if(config!=null){
-                            saveHistory( actId,  channelId,  object,  mobile, config, ditch);
-                        }
-                    }
                 }
             }else{//不能办理
                 object.put(Constant.MSG,"noTransaction");

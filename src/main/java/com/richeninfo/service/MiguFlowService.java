@@ -9,6 +9,11 @@
 package com.richeninfo.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
+import com.richeninfo.entity.mapper.entity.ActivityUser;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+import java.util.List;
 
 /**
  * @auth sunxiaolei
@@ -16,44 +21,43 @@ import com.alibaba.fastjson.JSONObject;
  */
 public interface MiguFlowService {
     /**
-     * 初始化用户信息
-     * @param userId
-     * @param secToken
-     * @param channelId
-     * @param actId
+     * 初始化用户
+     *
+     * @param user
      * @return
      */
-    JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch);
+    ActivityUser insertUser(@ModelAttribute ActivityUser user);
 
     /**
-     * 多媒体展示
+     * 获取奖励列表
+     *
      * @param secToken
-     * @param channelId
      * @param actId
      * @return
      */
-    JSONObject selectVideoList( String secToken, String channelId, String actId);
+    List<ActivityConfiguration> getConfiguration(String secToken, String actId, String channelId) throws Exception;
 
     /**
-     * 领取礼包
-     * @param userId
+     * 用户点击领取
+     *
      * @param secToken
-     * @param channelId
      * @param actId
+     * @param unlocked
      * @return
+     * @throws Exception
      */
-    JSONObject getActGift(String userId, String secToken, String channelId, String actId,String randCode,String wtAcId, String wtAc,String ditch);
-
-
+    JSONObject submit(String secToken, String actId, int unlocked, String channelId,String ditch) throws Exception;
 
     /**
-     * 办理业务短信下发
-     * @param userId
+     * 业务办理
      * @param secToken
-     * @param channelId
      * @param actId
+     * @param unlocked
+     * @param channelId
+     * @param ditch
      * @return
+     * @throws Exception
      */
-    JSONObject sendMessage5956(String userId, String secToken, String channelId, String actId);
-    void actRecord(String caozuo,String actId, String userId);
+    JSONObject transaction(String secToken, String actId, int unlocked, String channelId,String wtAcId, String wtAc,String randCode,String ditch) throws Exception;
+
 }
