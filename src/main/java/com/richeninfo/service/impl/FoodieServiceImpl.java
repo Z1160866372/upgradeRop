@@ -199,7 +199,17 @@ public class FoodieServiceImpl implements FoodietService {
         }
         if (result) {
             object.put(Constant.MSG, "success");
-            foodieMapper.insertActivityUserHistory(newHistory);
+            if(typeId == 0){
+                if(newHistory.getMessage().contains("_")){
+                    for (int i = 0; i < newHistory.getMessage().split("_").length; i++) {
+                        newHistory.setMessage(message.split("_")[i]);
+                        newHistory.setRemark(remark.split("_")[i]);
+                        foodieMapper.insertActivityUserHistory(newHistory);
+                    }
+                }
+            }else{
+                foodieMapper.insertActivityUserHistory(newHistory);
+            }
         } else {
             object.put(Constant.MSG, "error");
         }

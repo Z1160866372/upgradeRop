@@ -38,7 +38,7 @@ import java.util.Date;
  */
 @Controller
 @Api(value = "“向上 向善 大家谈”主题活动", tags = {"“向上 向善 大家谈”主题活动"})
-@RequestMapping("2024/08/meliorist")
+@RequestMapping("2024/08/praxis")
 @Slf4j
 public class FoodieController {
     @Resource
