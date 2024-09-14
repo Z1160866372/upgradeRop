@@ -206,6 +206,8 @@ public class FoodieServiceImpl implements FoodietService {
                         newHistory.setRemark(remark.split("_")[i]);
                         foodieMapper.insertActivityUserHistory(newHistory);
                     }
+                }else{
+                    foodieMapper.insertActivityUserHistory(newHistory);
                 }
             }else{
                 foodieMapper.insertActivityUserHistory(newHistory);
