@@ -38,7 +38,7 @@ public interface FoodietService {
      * @param actId
      * @return
      */
-    List<ActivityUserHistory> getActivityUserList(String secToken, String actId, String channelId,int page,int limit,int typeId,String ip);
+    JSONObject getActivityUserList(String secToken, String actId, String channelId,int page,int limit,int typeId,String ip);
 
     /**
      * 用户点击确认办理

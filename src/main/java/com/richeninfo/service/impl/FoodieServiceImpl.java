@@ -95,7 +95,8 @@ public class FoodieServiceImpl implements FoodietService {
     }
 
     @Override
-    public List<ActivityUserHistory> getActivityUserList(String secToken, String actId, String channelId, int page, int limit, int typeId, String ip) {
+    public JSONObject getActivityUserList(String secToken, String actId, String channelId, int page, int limit, int typeId, String ip) {
+        JSONObject object =new JSONObject();
         List<ActivityUserHistory> userList = null;
         if (typeId == 0 || typeId == 1) {//查询所有提交列表||查询当前用户提交列表
             String mobile = "";
@@ -123,6 +124,7 @@ public class FoodieServiceImpl implements FoodietService {
                     userFor.setSecToken(Des3SSL.encodeDC(userFor.getUserId(), key));
                 }
             }
+            object.put("userListSize",foodieMapper.selectUserListAll(mobile).size());
         }
         if (typeId == 2) {//查询当前提交内容的评论列表
             userList = foodieMapper.selectUserListByTypeId(ip, (page - 1) * limit, limit);
@@ -132,7 +134,9 @@ public class FoodieServiceImpl implements FoodietService {
                 }
             }
         }
-        return userList;
+        object.put("userList",userList);
+
+        return object;
     }
 
     @Override
