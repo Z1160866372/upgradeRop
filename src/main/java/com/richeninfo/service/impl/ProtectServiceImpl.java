@@ -82,7 +82,7 @@ public class ProtectServiceImpl implements ProtectService {
             List<ActivityRoster> selectRoster = commonMapper.selectRoster(user.getUserId(), "meliorist", "wt_meliorist_roster", 1);
             if (!CollectionUtils.isEmpty(selectRoster)) {
                 new_user.setUserType(1);
-                new_user.setNote(selectRoster.get(0).getName());
+                new_user.setAnswerTitle(selectRoster.get(0).getName());
             }
             protectMapper.insertUser(new_user);
             user = new_user;
