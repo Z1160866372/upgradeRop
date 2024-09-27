@@ -32,4 +32,6 @@ public class ActivityRoster {
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private String createTime;
+    @ApiModelProperty(value = "姓名_部门")
+    private String name;
 }

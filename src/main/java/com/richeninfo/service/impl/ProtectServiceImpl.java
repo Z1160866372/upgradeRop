@@ -10,10 +10,7 @@ package com.richeninfo.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
-import com.richeninfo.entity.mapper.entity.ActivityOrder;
-import com.richeninfo.entity.mapper.entity.ActivityUser;
-import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
+import com.richeninfo.entity.mapper.entity.*;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.entity.mapper.mapper.master.ProtectMapper;
 import com.richeninfo.pojo.Constant;
@@ -29,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -81,6 +79,11 @@ public class ProtectServiceImpl implements ProtectService {
             new_user.setDitch(user.getDitch());
             new_user.setBelongFlag(user.getBelongFlag());
             new_user.setCreateDate(day.format(new Date()));
+            List<ActivityRoster> selectRoster = commonMapper.selectRoster(user.getUserId(), "meliorist", "wt_meliorist_roster", 1);
+            if (!CollectionUtils.isEmpty(selectRoster)) {
+                new_user.setUserType(1);
+                new_user.setNote(selectRoster.get(0).getName());
+            }
             protectMapper.insertUser(new_user);
             user = new_user;
         } else {
