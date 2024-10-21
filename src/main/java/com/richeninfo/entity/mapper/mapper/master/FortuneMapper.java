@@ -71,6 +71,15 @@ public interface FortuneMapper {
     @Update("update  wt_fortune_user set secToken=#{secToken}  where userId=#{userId} ")
     int updateUserSecToken(@Param("userId") String userId, @Param("secToken") String secToken);
 
+    /**
+     * 更新用户secToken
+     * @param userId
+     * @param answer
+     * @return
+     */
+    @Update("update  wt_fortune_user set answer=#{answer}  where userId=#{userId} ")
+    int updateUserAnswer(@Param("userId") String userId, @Param("answer") String answer);
+
 
     /**
      * 新增用户获取奖品

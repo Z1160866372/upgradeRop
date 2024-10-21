@@ -35,6 +35,15 @@ public interface GsmShareService {
      */
     JSONObject getActGift(String userId, String secToken, String channelId, String actId,String ditch);
 
+
+    /**
+     * 用户中奖详情
+     * @param userId
+     * @param channelId
+     * @param actId
+     * @return
+     */
+    JSONObject userList(String userId, String channelId, String actId,String ditch);
     /**
      * 办理业务短信下发
      * @param userId
@@ -48,13 +57,12 @@ public interface GsmShareService {
 
     /**
      *
-     * @param userId
      * @param secToken
      * @param channelId
      * @param actId
      * @param randCode
      * @return
      */
-    JSONObject transact(String userId, String secToken, String channelId, String actId,String randCode,String wtAcId, String wtAc,String ditch);
+    JSONObject transact(String secToken, String channelId, String actId,String randCode,String wtAcId, String wtAc,String ditch);
 
 }

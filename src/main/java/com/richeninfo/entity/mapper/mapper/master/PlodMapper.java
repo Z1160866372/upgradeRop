@@ -101,6 +101,13 @@ public interface PlodMapper {
     PlodPubUser findPubUserByUserId(String userId);
 
     /**
+     * 根据部门查询
+     * @return
+     */
+    @Select("select * from wt_plod_pubUser where departName=#{departName} ")
+    List<PlodPubUser> findPubUserByDepartName(String departName);
+
+    /**
      * 新增advice
      * @return
      */

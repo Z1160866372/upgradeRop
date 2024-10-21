@@ -12,6 +12,9 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.richeninfo.entity.mapper.entity.*;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.pojo.Constant;
+import com.richeninfo.pojo.Packet;
+import com.richeninfo.pojo.PacketMq;
+import com.richeninfo.pojo.Result;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.util.*;
 import io.swagger.annotations.Api;
@@ -69,6 +72,15 @@ public class CommonController {
     HttpServletResponse response;
     @Resource
     private FileUtil fileUtil;
+
+    @Resource
+    private RopServiceManager ropServiceManager;
+
+    @Resource
+    private CommonUtil commonUtil;
+
+    @Resource
+    private PacketHelper packetHelper;
     @Resource
     private JmsMessagingTemplate jmsMessagingTemplate;
     @Value("${context}")
@@ -249,6 +261,7 @@ public class CommonController {
         return this.commonService.verityOa(secToken, channelId);
     }
 
+
     /**
      * 提取公共内容
      *
@@ -341,6 +354,31 @@ public class CommonController {
         return object;
     }
 
+
+
+    @ApiOperation("41417礼包定向发放接口)")
+    @PostMapping(value = "/data4147")
+    public @ResponseBody
+    Object dataReissue(@ApiParam(name = "userId", value = "手机号", required = true) String userId,@ApiParam(name = "activityId", value = "活动促销项", required = true) String activityId, @ApiParam(name = "itemId", value = "活动编号", required = true) String itemId) throws Exception {
+        JSONObject object = new JSONObject();
+        ActivityUserHistory activityUserHistory=new ActivityUserHistory();
+        activityUserHistory.setUserId(userId);
+        activityUserHistory.setActivityId(activityId);
+        activityUserHistory.setItemId(itemId);
+                if (activityUserHistory.getActivityId() != null && activityUserHistory.getUserId() != null) {
+                    PacketMq mq = new PacketMq();
+                    String out_order_id = commonUtil.getRandomCode(14, 0);
+                    Packet packet = packetHelper.getCommitPacket4147(userId, activityId, itemId, out_order_id);
+                    String response_message = ropServiceManager.execute(packet, userId,"data4147");
+                    Result request = JSON.parseObject(response_message, Result.class);
+                    String code = request.getResponse().getErrorInfo().getCode();
+                    String resCode = request.getResponse().getRetInfo().getString("resultCode");
+                    object.put("code", code);
+                }
+            object.put("objectList", activityUserHistory);
+            object.put(Constant.MSG, "yesData");
+        return object;
+    }
     /**
      * 附件上传(仅支持CSV)
      *

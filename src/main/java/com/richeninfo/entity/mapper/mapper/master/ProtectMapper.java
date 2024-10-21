@@ -27,7 +27,7 @@ public interface ProtectMapper {
     @Select("select * from wt_trade_user where userId = #{userId} and actId=#{actId}")
     ActivityUser selectUserByCreateDate(@Param("userId") String userId,@Param("actId") String actId);//查找用户记录
 
-    @Insert("insert into wt_trade_user(userId,channelId,secToken,createDate,createTime,actId,belongFlag,answerTitle)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{belongFlag},#{answerTitle})")
+    @Insert("insert into wt_trade_user(userId,channelId,secToken,createDate,createTime,actId,belongFlag,answerTitle,userType)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{belongFlag},#{answerTitle},#{userType})")
     int insertUser(ActivityUser user);//初始化用户
 
     @Select("select * from wt_trade_history where userId = #{userId} and unlocked =#{unlocked} and actId=#{actId}")

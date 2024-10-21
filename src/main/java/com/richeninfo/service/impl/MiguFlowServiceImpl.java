@@ -135,10 +135,10 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                         object.put(Constant.MSG, "login");
                         return object;
                     }
-                   /* if( !commonService.checkUserIsChinaMobile(mobile,actId)){
+                    if( !commonService.checkUserIsChinaMobile(mobile,actId)){
                         object.put(Constant.MSG,"noShYd");
                         return object;
-                    }*/
+                    }
                 } catch (Exception e) {
                     object.put(Constant.MSG, "loginError");
                     return object;
@@ -151,7 +151,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
             if (userHistory == null) {
                 ActivityConfiguration config = null;
                 String keyword = "wt_" + actId + "_roster";
-                if (unlocked == 2) {
+                if (unlocked == 1) {
                     List<ActivityRoster> selectRoster = commonMapper.selectRoster(mobile, actId, keyword, unlocked);
                     if (!CollectionUtils.isEmpty(selectRoster)) {
                         object.put(Constant.MSG, "blackList");
@@ -221,7 +221,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
-            /*String message = ropService.execute(packet,history.getUserId(),history.getActId());
+          String message = ropService.execute(packet,history.getUserId(),history.getActId());
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message,Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
@@ -238,19 +238,19 @@ public class MiguFlowServiceImpl implements MiguFlowService {
             history.setMessage(JSON.toJSONString(result));
             history.setCode(JSON.toJSONString(packet));
             object.put("res", res);
-            object.put("DoneCode", DoneCode);*/
-            if(true){
+            object.put("DoneCode", DoneCode);
+           /* if(true){
                 object.put("res", "0000");
                 object.put("DoneCode", "9999");
                 history.setStatus(Constant.STATUS_RECEIVED);
                 object.put(Constant.MSG, Constant.SUCCESS);
                 transact_result=true;
-            }
+            }*/
             object.put("update_history", JSON.toJSONString(history));
             miguFlowMapper.updateHistory(history);
             if (transact_result) {
                 //业务办理成功 接口上报
-                /*Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
+                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
                 String result_String="";
                 try {
                     result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
@@ -268,7 +268,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 order.setCode(JSON.toJSONString(new_packet));
                 order.setMessage(result_String);
                 order.setChannelId(channelId);
-                commonMapper.insertActivityOrder(order);*/
+                commonMapper.insertActivityOrder(order);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -285,10 +285,10 @@ public class MiguFlowServiceImpl implements MiguFlowService {
         if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }
-      /*  if(!commonService.checkUserIsChinaMobile(mobile,actId)){//非上海移动
+        if(!commonService.checkUserIsChinaMobile(mobile,actId)){//非上海移动
             object.put(Constant.MSG,"noShYd");
             return object;
-        }*/
+        }
         ActivityUserHistory userHistory  =miguFlowMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
         if(userHistory!=null){
             if(userHistory.getTypeId()==1){

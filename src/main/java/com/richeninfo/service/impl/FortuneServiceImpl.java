@@ -15,6 +15,7 @@ import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
 import com.richeninfo.entity.mapper.entity.OperationLog;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.entity.mapper.mapper.master.FortuneMapper;
+import com.richeninfo.pojo.Constant;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.FortuneService;
 import com.richeninfo.util.CommonUtil;
@@ -23,6 +24,7 @@ import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,18 +58,25 @@ public class FortuneServiceImpl implements FortuneService {
          activityUseruser.setPlayNum(1);
          activityUseruser.setAward(0);
          activityUseruser.setDitch(ditch);
+         activityUseruser.setSecToken(secToken);
          activityUseruser.setChannelId(channelId);
          FortuneMapper.saveUser(activityUseruser);
+      }else {
+         activityUseruser.setSecToken(secToken);
       }
-      activityUseruser.setSecToken(secToken);
+      activityUseruser.setUserId(Base64.getEncoder().encodeToString(activityUseruser.getUserId().getBytes()));
       jsonObject.put("user", activityUseruser);
       return jsonObject;
    }
 
    @Override
-   public JSONObject getActGift(String userId, String secToken, String channelId, String actId,String ditch) {
+   public JSONObject getActGift(String userId, String secToken, String channelId, String actId,String ditch,String content) {
       JSONObject jsonObject = new JSONObject();
       ActivityUser user = FortuneMapper.findUserInfo(userId);
+      if( !commonService.checkUserIsChinaMobile(userId,actId)){
+         jsonObject.put(Constant.MSG,"noShYd");
+         return jsonObject;
+      }
       if (user != null && commonService.verityTime(actId).equals("underway") && user.getAward() < 1) {
          ActivityUserHistory history = new ActivityUserHistory();
             //查询活动配置礼包
@@ -79,22 +88,24 @@ public class FortuneServiceImpl implements FortuneService {
                history.setUserId(userId);
                history.setRewardName(gift.getName());
                history.setUnlocked(gift.getUnlocked());
-               history.setActId(actId);
+               history.setActId("fortune");
                history.setTypeId(gift.getTypeId());
                history.setDitch(ditch);
                history.setChannelId(channelId);
-               history.setDitch(ditch);
                history.setActivityId(gift.getActivityId());
                history.setItemId(gift.getItemId());
                int status = FortuneMapper.saveHistory(history);
                try {
                   log.info("status=======" + status);
                   if (status > 0) {//异步mq发放礼包
+                     FortuneMapper.updateUserAnswer(userId,content);
                      FortuneMapper.updateUserAward(userId);
+                     jsonObject.put("msg", "success");
+                     ActivityUser newUser = FortuneMapper.findUserInfo(userId);
+                     jsonObject.put("userInfo", newUser);
                      String mqMsg = commonService.issueReward(history);
                      log.info("4147请求信息：" + mqMsg);
                      jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
-                     jsonObject.put("msg", "success");
                   }
                } catch (Exception e) {
                   e.printStackTrace();

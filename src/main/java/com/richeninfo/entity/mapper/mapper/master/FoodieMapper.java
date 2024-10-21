@@ -33,10 +33,13 @@ public interface FoodieMapper {
     @Select("select * from wt_meliorist_history where typeId=0  and userId !=#{userId}")
     List<ActivityUserHistory> selectUserListAll(@Param("userId") String userId);//查找提交用户集合
 
+    @Select("select * from wt_meliorist_history where typeId=0  and userId =#{userId}")
+    List<ActivityUserHistory> selectUserListAllMySelf(@Param("userId") String userId);//查找提交用户集合
+
     @Select("select * from wt_meliorist_history where typeId=0  and userId !=#{userId} order by createTime desc limit #{pageBegin},#{pageSize}")
     List<ActivityUserHistory> selectUserList(@Param("userId") String userId,@Param("pageBegin")int pageBegin,@Param("pageSize")int pageSize);//查找提交用户集合
 
-    @Select("select * from wt_meliorist_history where userId=#{userId} and typeId=0 order by createTime desc limit #{pageBegin},#{pageSize}")
+    @Select("select * from wt_meliorist_history where userId =#{userId} and typeId=0 order by createTime desc limit #{pageBegin},#{pageSize}")
     List<ActivityUserHistory> selectUserListByUserId(@Param("userId") String userId,@Param("pageBegin")int pageBegin,@Param("pageSize")int pageSize);//查找提交用户集合
 
     @Select("select * from wt_meliorist_history where typeId=2 and ip=#{ip} order by createTime desc limit #{pageBegin},#{pageSize}")

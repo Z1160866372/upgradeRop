@@ -25,6 +25,7 @@ import com.richeninfo.util.ReqWorker;
 import com.richeninfo.util.RopServiceManager;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -75,7 +76,27 @@ public class GsmShareServiceImpl implements GsmShareService {
             jsonObject.put("user", activityUser);
             return jsonObject;
     }
-
+    @Override
+    public JSONObject userList(String userId,String channelId, String actId,String ditch) {
+        JSONObject jsonObject = new JSONObject();
+        ActivityUser user = gsmShareMapper.findUserInfo(userId);
+        if (user != null) {
+            if( !commonService.checkUserIsChinaMobile(userId,actId)){
+                jsonObject.put(Constant.MSG,"noShYd");
+                return jsonObject;
+            }
+            ActivityUserHistory userHistory=gsmShareMapper.findUserHistory(user.getUserId());
+            if(userHistory!=null){
+                ActivityConfiguration gift=gsmShareMapper.findGiftByUnlocked(userHistory.getUnlocked(),actId);
+                gift.setStatus(userHistory.getStatus());
+                gift.setValue(user.getNickName());
+                jsonObject.put("userGift", gift);
+            }
+        } else {
+            jsonObject.put("msg", "error");
+        }
+        return jsonObject;
+    }
     @Override
     public JSONObject getActGift(String userId, String secToken, String channelId, String actId,String ditch) {
         JSONObject jsonObject = new JSONObject();
@@ -119,8 +140,10 @@ public class GsmShareServiceImpl implements GsmShareService {
                                             if(updateBindUserId<1){
                                                 gift=gsmShareMapper.findGiftByUnlocked(7,actId);
                                             }else {
-                                                if(gift.getUnlocked()<6) {//需要发送短信
+                                                if(gift.getUnlocked()<6||gift.getUnlocked()>7) {//需要发送短信
+                                                    log.info(bindlist.get(0));
                                                     code=bindlist.get(0).getCouponCode();
+                                                    gift.setValue(code);
                                                     gsmShareMapper.updateUserNickName(code,userId);
                                                     String msg=gift.getRemark();
                                                     String message= msg.replace("code",code);
@@ -158,34 +181,36 @@ public class GsmShareServiceImpl implements GsmShareService {
     }
 
     @Override
-    public JSONObject transact(String userId, String secToken, String channelId, String actId,String randCode,String wtAcId, String wtAc, String ditch) {
-        JSONObject jsonObject = new JSONObject();
+    public JSONObject transact( String secToken, String channelId, String actId,String randCode,String wtAcId, String wtAc, String ditch) {
+        JSONObject object = new JSONObject();
+        String userId="";
+        ActivityConfiguration config =null;
+        if (!StringUtils.isEmpty(secToken)) {
+            userId= commonService.getMobile(secToken,channelId);
+        }
+        if(!commonService.checkUserIsChinaMobile(userId,actId)){//非上海移动
+            object.put(Constant.MSG,"noShYd");
+            return object;
+        }
         ActivityUser user = gsmShareMapper.findUserInfo(userId);
-        JSONObject newJsonObject = new JSONObject();
         if (user != null && commonService.verityTime(actId).equals("underway") && user.getUnlocked() < 1) {
             //查询是否领取过当月的礼包
             ActivityUserHistory history = gsmShareMapper.findCurYwHistory(userId);
             ActivityConfiguration gift = gsmShareMapper.findGiftByUnlocked(6, actId);
             if (history == null) {
                 history = gsmShareMapper.findSaveYwHistory(userId);
-                newJsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
-                Boolean ywStatus = newJsonObject.getBoolean("transact_result");
-                jsonObject.put("msg", ywStatus);
-                jsonObject.put("newJsonObject", newJsonObject);
+                object = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
             } else {
                 if (history.getStatus() == 3) {
-                    jsonObject.put("msg", "ybl");
+                    object.put("msg", "ybl");
                 } else {
-                    newJsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
-                    Boolean ywStatus = newJsonObject.getBoolean("transact_result");
-                    jsonObject.put("msg", ywStatus);
-                    jsonObject.put("newJsonObject", newJsonObject);
+                    object = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId);
                 }
             }
         } else {
-            jsonObject.put("msg", "error");
+            object.put("msg", "error");
         }
-        return jsonObject;
+        return object;
     }
 
     @Override
@@ -253,7 +278,7 @@ public class GsmShareServiceImpl implements GsmShareService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(), randCode, offerList, channelId, history.getDitch());
-            String message = ropService.execute(packet, history.getUserId(), actId);
+   /*         String message = ropService.execute(packet, history.getUserId(), actId);
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message, Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
@@ -271,13 +296,16 @@ public class GsmShareServiceImpl implements GsmShareService {
                 object.put(Constant.MSG, Constant.FAILURE);
             }
             object.put("res", res);
-            object.put("DoneCode", DoneCode);
-          /*object.put("res", "0000");
-            object.put("DoneCode", "11111");
-            transact_result = true;
-            object.put(Constant.MSG, Constant.SUCCESS);
+            object.put("DoneCode", DoneCode);*/
+            if(true){
+                object.put("res", "0000");
+                object.put("DoneCode", "9999");
+                history.setStatus(Constant.STATUS_RECEIVED);
+                object.put(Constant.MSG, Constant.SUCCESS);
+            }
             history.setStatus(Constant.STATUS_RECEIVED);
-            gsmShareMapper.updateUnlocked(history.getUserId());*/
+            gsmShareMapper.updateUnlocked(history.getUserId());
+
             object.put("update_history", JSON.toJSONString(history));
             gsmShareMapper.updateHistory(history);
             if (transact_result) {

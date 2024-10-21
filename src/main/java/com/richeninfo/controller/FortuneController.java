@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -30,8 +31,8 @@ import java.io.IOException;
 
 @Controller
 
-@RequestMapping("/fortune")
-@Api(value = "好运龙龙送好礼", tags = {"好运龙龙送好礼"})
+@RequestMapping("/appropriate")
+@Api(value = "适老产品调查问卷", tags = {"适老产品调查问卷活动"})
 public class FortuneController {
 
     @Resource
@@ -59,9 +60,7 @@ public class FortuneController {
             if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                JSONObject object1 = FortuneService.initializeUser(mobile, secToken, channelId, actId,ditch);
-                object.put(Constant.MSG, Constant.SUCCESS);
-                object.put("data", object1);
+                object = FortuneService.initializeUser(mobile, secToken, channelId, actId,ditch);
             }
         }
         return object;
@@ -77,7 +76,7 @@ public class FortuneController {
      */
     @PostMapping(value = "/getActGift")
     public @ResponseBody
-    JSONObject getActGift(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String ditch) throws IOException {
+    JSONObject getActGift(@RequestBody String body, @ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, String ditch, String content) throws IOException {
         JSONObject object = new JSONObject();
         if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
@@ -86,8 +85,7 @@ public class FortuneController {
             if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                JSONObject object1 = FortuneService.getActGift(mobile, secToken, channelId, actId,ditch);
-                object.put("data", object1);
+                object = FortuneService.getActGift(mobile, secToken, channelId, actId,ditch, body);
             }
         }
         return object;

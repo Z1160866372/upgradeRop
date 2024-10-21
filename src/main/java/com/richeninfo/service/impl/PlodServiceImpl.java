@@ -8,16 +8,21 @@
 
 package com.richeninfo.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
 import com.richeninfo.entity.mapper.entity.PlodAdvise;
 import com.richeninfo.entity.mapper.entity.PlodLoginUser;
 import com.richeninfo.entity.mapper.entity.PlodPubUser;
 import com.richeninfo.entity.mapper.mapper.master.PlodMapper;
+import com.richeninfo.pojo.Packet;
+import com.richeninfo.pojo.Result;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.PlodService;
 import com.richeninfo.util.CommonUtil;
 import com.richeninfo.util.DateUtil;
+import com.richeninfo.util.PacketHelper;
+import com.richeninfo.util.RopServiceManager;
 import io.netty.util.internal.StringUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +55,12 @@ public class PlodServiceImpl implements PlodService {
     private static String basePath = "/home/weihu/";
 
     private static String filePath = "/home/weihu/";
+
+    @Resource
+    private PacketHelper packetHelper;
+
+    @Resource
+    private RopServiceManager ropService;
 
     @Override
     public JSONObject initializeUser(String userId, String secToken, String channelId, String actId,String ditch) {
@@ -158,11 +169,32 @@ public class PlodServiceImpl implements PlodService {
             advise.setFileUrl(path);
             plodMapper.savePlodAdvise(advise);
             jsonObject.put("msg", "success");
+            if(pub.getDepartName().equals("领导班子")){
+                String message=pub.getUserName()+"领导，"+DateUtil.convertDateTimeToString(new Date()) +"提交了："+advise.getMsgText()+"建议";
+                List<PlodPubUser> listPub=  plodMapper.findPubUserByDepartName("短信发送");
+                log.info(listPub.toString());
+                for(PlodPubUser pubPhone :listPub){
+                    log.info(pubPhone);
+                    log.info(message);
+                    sendNote(pubPhone.getUserId(),message);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             jsonObject.put("msg", "error");
         }
         return jsonObject;
+    }
+
+    public void sendNote(String userId,String message) {
+        log.info("短信内容："+message);
+        try {
+            Packet packet = packetHelper.getCommitPacket1638(userId,message);
+            Result result = JSON.parseObject(ropService.execute(packet, userId, "gsmshare"), Result.class);
+            log.info("短信返回："+result.getResponse().toString());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

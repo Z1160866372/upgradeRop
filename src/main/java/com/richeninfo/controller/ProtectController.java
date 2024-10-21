@@ -80,6 +80,7 @@ public class ProtectController {
                 object.put("user", user);
             }
         }
+        resp.setContentType("text/html; charset=UTF-8");
         resp.getWriter().write(object.toJSONString());
     }
 

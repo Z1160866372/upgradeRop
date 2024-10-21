@@ -41,7 +41,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.Resource;
 import javax.net.ssl.*;
 import javax.servlet.http.HttpServletRequest;
@@ -87,8 +86,8 @@ public class RopServiceManager {
             log.info("apk:" + apk_new);
             String message = JSON.toJSONString(reqPack.getPost());
             log.info("Request:\n" + message);
-            //response=openapiHttpCilent.HttpsURLConnection(reqPack.getApiCode(), reqPack.getPost().getPubInfo().getTransactionId(), message);
-            response = openapiHttpCilent.call(reqPack.getApiCode(), reqPack.getPost().getPubInfo().getTransactionId(), message);
+            response=openapiHttpCilent.HttpsURLConnection(reqPack.getApiCode(), reqPack.getPost().getPubInfo().getTransactionId(), message);
+           // response = openapiHttpCilent.call(reqPack.getApiCode(), reqPack.getPost().getPubInfo().getTransactionId(), message);
             log.info("Response(" + reqPack.getPost().getRequest().getBusiCode() + "|" + reqPack.getPost().getRequest().getBusiParams().getString("billId") + "):\n" + response);
             String status = JSON.parseObject(response).getString("status");
             saveOpenapiLog(reqPack, message, response, userId, actId);//保存用户调用记录
@@ -196,7 +195,7 @@ public class RopServiceManager {
             HTTPClientPolicy policy = new HTTPClientPolicy();
             policy.setConnectionTimeout(20 * 1000);
             policy.setReceiveTimeout(120 * 1000);
-            contduit.setClient(policy);
+            contduit.setClient(policy);k
             String outxml = service.getAssertInfoByUID(xmlRequst);*/
             log.info("接口[sendPush]出参===" + outxml);
             String c = Security.getDecryptString(outxml);

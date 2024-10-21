@@ -35,7 +35,16 @@ public interface GsmShareMapper {
    @Insert("INSERT INTO wt_gsmshare_user (userId,level,award,playNum,channelId,grade,answerNum,mark,blowNum,weekTime,createTime,createDate,secToken,ditch,userType,unlocked) value (#{userId},#{level},#{award},#{playNum},#{channelId},#{grade},#{answerNum},#{mark},#{blowNum},now(),now(),curdate(),#{secToken},#{ditch},#{userType},#{unlocked})")
    void saveUser(ActivityUser user);
 
-   /**
+    /**
+     * 查询是否有当月获取记录
+     * @param userId
+     * @return
+     */
+    @Select("select * from wt_gsmshare_history where userId = #{userId}")
+    ActivityUserHistory findUserHistory(@Param("userId") String userId);
+
+
+    /**
     * 查询是否有当月获取记录
     * @param userId
     * @return
@@ -132,7 +141,7 @@ public interface GsmShareMapper {
    @Update("update activity_configuration set amount=amount-1 where id=#{id}")
    int lostGiftAmount(int id);
 
-   @Update("update wt_gsmshare_bind set userId=#{userId},status=1 where id=#{id}")
+   @Update("update wt_gsmshare_bind set userId=#{userId},status=1 where id=#{id} and status=0")
    int updateBindUserId(@Param("userId") String userId,@Param("id")int id);
     @Update("update wt_gsmshare_user set nickName=#{nickName} where userId=#{userId}")
     int updateUserNickName(@Param("nickName") String nickName,@Param("userId")String userId);

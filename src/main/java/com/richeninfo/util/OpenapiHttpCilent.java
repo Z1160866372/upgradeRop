@@ -60,14 +60,12 @@ public class OpenapiHttpCilent {
     private String securityUrl;
     @Value("${nengKai.openapiUrl}")
     private String openapiUrl;
-
-    @Value("${newNengKai.httpUrl}")
+    @Value("${nengKai.httpUrl}")
     private String httpUrl;
     @Value("${nengKai.apk_new}")
     private String apk_new;
     private CloseableHttpClient client = HttpClients.createDefault();
     private SecurityI securiytManager;
-
     @Resource
     private CommonMapper commonMapper;
     @Resource
