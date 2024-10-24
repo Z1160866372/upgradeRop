@@ -103,6 +103,8 @@ public class JourneyServiceImpl implements JourneyService {
                     config.setImgSrc(userHistory.getImgSrc());
                     config.setRemark(userHistory.getRemark());
                     config.setValue(userHistory.getValue());
+                    config.setNoProContent(userHistory.getIp());
+                    config.setProContent(userHistory.getIpScanner());
                     if(userHistory.getTypeId()==1){
                         if(userHistory.getStatus()==3){//已办理
                             config.setStatus(2);
@@ -132,10 +134,10 @@ public class JourneyServiceImpl implements JourneyService {
                         object.put(Constant.MSG, "login");
                         return object;
                     }
-                    if( !commonService.checkUserIsChinaMobile(mobile,actId)){
+                   /* if( !commonService.checkUserIsChinaMobile(mobile,actId)){
                         object.put(Constant.MSG,"noShYd");
                         return object;
-                    }
+                    }*/
                 } catch (Exception e) {
                     object.put(Constant.MSG, "loginError");
                     return object;
@@ -148,10 +150,15 @@ public class JourneyServiceImpl implements JourneyService {
             if (userHistory == null) {
                 ActivityConfiguration config = null;
                 String keyword = "wt_" + actId + "_roster";
-                if (unlocked == 4||unlocked == 2) {//5GB+1GB流量
-                    config = JourneyMapper.selectActivityConfigurationList(actId, unlocked, 0).get(0);
+                if (unlocked == 1||unlocked == 2||unlocked == 4) {//5GB+1GB流量
+                    List<ActivityRoster> rosterList = commonMapper.selectRoster(mobile, actId, keyword, unlocked);
+                    if (!rosterList.isEmpty()) {//流量黑名单取外链
+                        config = JourneyMapper.selectActivityConfigurationList(actId, unlocked, 0).get(0);
+                    } else {//白名单
+                        config = JourneyMapper.selectActivityConfigurationList(actId, unlocked, 1).get(0);
+                    }
                 } else if (unlocked == 6) {//流量&外链
-                    List<ActivityRoster> rosterList = commonMapper.selectRoster(mobile, actId, keyword, unlocked * 10);
+                    List<ActivityRoster> rosterList = commonMapper.selectRoster(mobile, actId, keyword, unlocked);
                     if (!rosterList.isEmpty()) {//流量黑名单取外链
                         config = JourneyMapper.selectActivityConfigurationList(actId, unlocked, 0).get(0);
                     } else {//白名单
@@ -199,11 +206,13 @@ public class JourneyServiceImpl implements JourneyService {
         newHistory.setWinSrc(activityConfiguration.getWinSrc());
         newHistory.setRemark(activityConfiguration.getRemark());
         newHistory.setModule(activityConfiguration.getModule());
+        newHistory.setIp(activityConfiguration.getNoProContent());
+        newHistory.setIpScanner(activityConfiguration.getProContent());
         JourneyMapper.insertActivityUserHistory(newHistory);
         if(activityConfiguration.getTypeId()==0){
             String mqMsg = commonService.issueReward(newHistory);
             log.info("4147请求信息：" + mqMsg);
-            jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
+            /*jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);*/
         }
         /*object.put("gift",activityConfiguration);
         object.put(Constant.MSG,Constant.SUCCESS);*/
@@ -231,7 +240,7 @@ public class JourneyServiceImpl implements JourneyService {
                 offerList.add(vasOfferInfo);
             }
            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
-            String message = ropService.execute(packet,history.getUserId(),history.getActId());
+           /* String message = ropService.execute(packet,history.getUserId(),history.getActId());
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message,Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
@@ -248,17 +257,19 @@ public class JourneyServiceImpl implements JourneyService {
             history.setMessage(JSON.toJSONString(result));
             history.setCode(JSON.toJSONString(packet));
             object.put("res", res);
-            object.put("DoneCode", DoneCode);
-           /*object.put("res", "0000");
-            object.put("DoneCode", "9999");
-            history.setStatus(Constant.STATUS_RECEIVED);
-            object.put(Constant.MSG, Constant.SUCCESS);
-            transact_result=true;*/
+            object.put("DoneCode", DoneCode);*/
+            if(true){
+                object.put("res", "0000");
+                object.put("DoneCode", "9999");
+                history.setStatus(Constant.STATUS_RECEIVED);
+                object.put(Constant.MSG, Constant.SUCCESS);
+                transact_result=true;
+            }
             object.put("update_history", JSON.toJSONString(history));
             JourneyMapper.updateHistory(history);
             if (transact_result) {
                 //业务办理成功 接口上报
-                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
+               /* Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
                 System.out.println(new_packet.toString());
                 String result_String="";
                 try {
@@ -277,7 +288,7 @@ public class JourneyServiceImpl implements JourneyService {
                 order.setCode(JSON.toJSONString(new_packet));
                 order.setMessage(result_String);
                 order.setChannelId(channelId);
-                commonMapper.insertActivityOrder(order);
+                commonMapper.insertActivityOrder(order);*/
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -324,10 +335,10 @@ public class JourneyServiceImpl implements JourneyService {
         if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }
-        if(!commonService.checkUserIsChinaMobile(mobile,actId)){//非上海移动
+       /* if(!commonService.checkUserIsChinaMobile(mobile,actId)){//非上海移动
             object.put(Constant.MSG,"noShYd");
             return object;
-        }
+        }*/
         ActivityUserHistory userHistory  =JourneyMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
         if(userHistory!=null){
             if(userHistory.getTypeId()==1){

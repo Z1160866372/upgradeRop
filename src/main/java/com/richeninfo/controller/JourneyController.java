@@ -35,8 +35,8 @@ import java.util.Date;
  * @create 2024/8/20 10:04
  */
 @Controller
-@Api(value = "5G新生代第四期", tags = {"5G新生代"})
-@RequestMapping("/2024/09/term")
+@Api(value = "5G新生代第四期&嗨翻11.11惠聚移动", tags = {"5G新生代&嗨翻11.11惠聚移动"})
+@RequestMapping("/2024/11/discounts")
 @Slf4j
 public class JourneyController {
     @Resource
