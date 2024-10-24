@@ -34,8 +34,8 @@ import java.util.Date;
  * @create 2024/7/01 10:04
  */
 @Controller
-@Api(value = "宝藏之旅·上海旅游节", tags = {"宝藏之旅·上海旅游节"})
-@RequestMapping("/2024/09/treasure")
+@Api(value = "宝藏之旅·上海旅游节&万圣节狂欢，畅享出行", tags = {"宝藏之旅·上海旅游节&万圣节狂欢，畅享出行"})
+@RequestMapping("/2024/11/enjoyTrip")
 @Slf4j
 public class HuiPlayController {
     @Resource

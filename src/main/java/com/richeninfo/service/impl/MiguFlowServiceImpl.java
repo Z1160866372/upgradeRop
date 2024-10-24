@@ -77,6 +77,12 @@ public class MiguFlowServiceImpl implements MiguFlowService {
             new_user.setChannelId(user.getChannelId());
             new_user.setCreateDate(day.format(new Date()));
             new_user.setDitch(user.getDitch());
+            List<ActivityRoster> selectRoster = miguFlowMapper.selectRoster(user.getUserId(), "luckRotary", "wt_luckRotary_roster");
+            if (!CollectionUtils.isEmpty(selectRoster)) {
+                new_user.setUserType(selectRoster.get(0).getUserType());
+            }else{
+                new_user.setUserType(8);
+            }
             miguFlowMapper.insertUser(new_user);
             user = new_user;
         } else {
@@ -90,6 +96,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
     @Override
     public List<ActivityConfiguration>  getConfiguration(String secToken, String actId, String channelId) throws Exception {
         List<ActivityConfiguration> pro_config = commonMapper.selectActivityConfigurationByActId(actId);
+        List<ActivityConfiguration> new_configList = new ArrayList<ActivityConfiguration>();
         String mobile="";
         ActivityUserHistory userHistory = null;
         if(pro_config.size()>0){
@@ -99,28 +106,30 @@ public class MiguFlowServiceImpl implements MiguFlowService {
             for (ActivityConfiguration config : pro_config) {
                 userHistory=miguFlowMapper.selectActivityUserHistoryByUnlocked(mobile,config.getUnlocked());
                 if(userHistory!=null){
-                    config.setName(userHistory.getRewardName());
-                    config.setTypeId(userHistory.getTypeId());
-                    config.setUnlocked(userHistory.getUnlocked());
-                    config.setWinSrc(userHistory.getWinSrc());
-                    config.setImgSrc(userHistory.getImgSrc());
-                    config.setRemark(userHistory.getRemark());
-                    config.setValue(userHistory.getValue());
+                    ActivityConfiguration new_config = new ActivityConfiguration();
+                    new_config.setName(userHistory.getRewardName());
+                    new_config.setTypeId(userHistory.getTypeId());
+                    new_config.setUnlocked(userHistory.getUnlocked());
+                    new_config.setWinSrc(userHistory.getWinSrc());
+                    new_config.setImgSrc(userHistory.getImgSrc());
+                    new_config.setRemark(userHistory.getRemark());
+                    new_config.setValue(userHistory.getValue());
                     if(userHistory.getTypeId()==1){
                         if(userHistory.getStatus()==3){//已办理
-                            config.setStatus(2);
+                            new_config.setStatus(2);
                         }else{//已领取 未办理
-                            config.setStatus(1);
+                            new_config.setStatus(1);
                         }
                     }else{//已领取
-                        config.setStatus(1);
+                        new_config.setStatus(1);
                     }
+                    new_configList.add(new_config);
                 }else{//去领取
                     config.setStatus(0);
                 }
             }
         }
-        return pro_config;
+        return new_configList;
     }
 
     @Override
@@ -135,10 +144,10 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                         object.put(Constant.MSG, "login");
                         return object;
                     }
-                    if( !commonService.checkUserIsChinaMobile(mobile,actId)){
+                   /* if( !commonService.checkUserIsChinaMobile(mobile,actId)){
                         object.put(Constant.MSG,"noShYd");
                         return object;
-                    }
+                    }*/
                 } catch (Exception e) {
                     object.put(Constant.MSG, "loginError");
                     return object;
@@ -147,18 +156,11 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 object.put(Constant.MSG, "login");
                 return object;
             }
+            ActivityUser select_user = miguFlowMapper.selectUserByCreateDate(mobile);
+            unlocked = select_user.getUserType();
             ActivityUserHistory userHistory = miguFlowMapper.selectActivityUserHistoryByUnlocked(mobile, unlocked);
             if (userHistory == null) {
-                ActivityConfiguration config = null;
-                String keyword = "wt_" + actId + "_roster";
-                if (unlocked == 1) {
-                    List<ActivityRoster> selectRoster = commonMapper.selectRoster(mobile, actId, keyword, unlocked);
-                    if (!CollectionUtils.isEmpty(selectRoster)) {
-                        object.put(Constant.MSG, "blackList");
-                        return object;
-                    }
-                }
-                config = miguFlowMapper.selectActivityConfigurationByModule(actId, unlocked, 0);
+                ActivityConfiguration config =  miguFlowMapper.selectActivityConfigurationByModule(actId, unlocked, 0);
                 saveHistory(actId, channelId, object, mobile, config, ditch);
                 object.put("config", config);
                 object.put(Constant.MSG, Constant.SUCCESS);
@@ -220,7 +222,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 vasOfferInfo.setOperType("0");
                 offerList.add(vasOfferInfo);
             }
-            Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
+            /*Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
           String message = ropService.execute(packet,history.getUserId(),history.getActId());
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message,Result.class);
@@ -238,19 +240,19 @@ public class MiguFlowServiceImpl implements MiguFlowService {
             history.setMessage(JSON.toJSONString(result));
             history.setCode(JSON.toJSONString(packet));
             object.put("res", res);
-            object.put("DoneCode", DoneCode);
-           /* if(true){
+            object.put("DoneCode", DoneCode);*/
+            if(true){
                 object.put("res", "0000");
                 object.put("DoneCode", "9999");
                 history.setStatus(Constant.STATUS_RECEIVED);
                 object.put(Constant.MSG, Constant.SUCCESS);
                 transact_result=true;
-            }*/
+            }
             object.put("update_history", JSON.toJSONString(history));
             miguFlowMapper.updateHistory(history);
             if (transact_result) {
                 //业务办理成功 接口上报
-                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
+                /*Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
                 String result_String="";
                 try {
                     result_String =ropService.executes(new_packet, history.getUserId(),history.getActId());
@@ -268,7 +270,7 @@ public class MiguFlowServiceImpl implements MiguFlowService {
                 order.setCode(JSON.toJSONString(new_packet));
                 order.setMessage(result_String);
                 order.setChannelId(channelId);
-                commonMapper.insertActivityOrder(order);
+                commonMapper.insertActivityOrder(order);*/
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -285,10 +287,10 @@ public class MiguFlowServiceImpl implements MiguFlowService {
         if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }
-        if(!commonService.checkUserIsChinaMobile(mobile,actId)){//非上海移动
+        /*if(!commonService.checkUserIsChinaMobile(mobile,actId)){//非上海移动
             object.put(Constant.MSG,"noShYd");
             return object;
-        }
+        }*/
         ActivityUserHistory userHistory  =miguFlowMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
         if(userHistory!=null){
             if(userHistory.getTypeId()==1){

@@ -35,8 +35,8 @@ import java.util.Date;
  * @date 2024/4/26 11:16
  */
 @Controller
-@Api(value = "MOON醒食分团聚食刻", tags = {"MOON醒食分团聚食刻"})
-@RequestMapping("/2024/09/reunite")
+@Api(value = "MOON醒食分团聚食刻&幸运大抽奖", tags = {"MOON醒食分团聚食刻&幸运大抽奖"})
+@RequestMapping("/2024/11/luckRotary")
 public class MiguFlowController {
     @Resource
     private CommonService commonService;

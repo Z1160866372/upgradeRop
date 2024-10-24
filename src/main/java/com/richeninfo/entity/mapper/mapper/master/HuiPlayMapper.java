@@ -21,28 +21,28 @@ import java.util.List;
 @Mapper
 public interface HuiPlayMapper {
 
-    @Select("select * from wt_treasure_user where userId = #{userId}")
+    @Select("select * from wt_enjoyTrip_user where userId = #{userId}")
     ActivityUser selectUserByCreateDate(@Param("userId") String userId);//查找用户记录
 
-    @Insert("insert into wt_treasure_user(userId,channelId,secToken,createDate,createTime,actId,ditch)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{ditch})")
+    @Insert("insert into wt_enjoyTrip_user(userId,channelId,secToken,createDate,createTime,actId,ditch)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{ditch})")
     int insertUser(ActivityUser user);//初始化用户
 
-    @Select("select * from wt_treasure_history where userId = #{userId} and unlocked =#{unlocked} and module=0")
+    @Select("select * from wt_enjoyTrip_history where userId = #{userId} and unlocked =#{unlocked} and module=0")
     ActivityUserHistory selectActivityUserHistoryByUnlocked(@Param("userId")String userId, @Param("unlocked")int unlocked);
 
-    @Select("select * from wt_treasure_history where userId = #{userId} and module=0")
+    @Select("select * from wt_enjoyTrip_history where userId = #{userId} and module=0")
     List<ActivityUserHistory> selectActivityUserHistoryList(@Param("userId")String userId,@Param("actId") String actId);
 
     @Select("select * FROM activity_configuration WHERE actId='term_title' and  startTime < NOW() and  endTime >NOW()")
     List<ActivityConfiguration> selectActivityConfigurationTitle();
 
-    @Insert("insert into wt_treasure_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark,winSrc,imgSrc,ipScanner)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId},#{itemId},#{module},#{remark},#{winSrc},#{imgSrc},#{ipScanner})")
+    @Insert("insert into wt_enjoyTrip_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark,winSrc,imgSrc,ipScanner)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId},#{itemId},#{module},#{remark},#{winSrc},#{imgSrc},#{ipScanner})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
-    @Update("update wt_treasure_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
+    @Update("update wt_enjoyTrip_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
     int updateHistory(ActivityUserHistory history);//更新接口状态
 
-    @Update("update wt_treasure_history set remark=#{remark} where id=#{id}")
+    @Update("update wt_enjoyTrip_history set remark=#{remark} where id=#{id}")
     int updateHistoryRemark(ActivityUserHistory history);//更新卡券信息
 
     @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and userType=#{userType}")
@@ -51,12 +51,12 @@ public interface HuiPlayMapper {
     @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and module=#{module}")
     ActivityConfiguration selectActivityConfigurationByModule(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("module") Integer module);
 
-    @Select("select * from wt_treasure_card where actId = #{actId} and unlocked =#{unlocked} and status = 0")
+    @Select("select * from wt_enjoyTrip_card where actId = #{actId} and unlocked =#{unlocked} and status = 0")
     List<ActivityCardList> selectActivityCardList(@Param("actId")String actId, @Param("unlocked")int unlocked, @Param("createDate")String createDate);
 
-    @Select("select * from wt_treasure_card where actId = #{actId} and unlocked =#{unlocked} and status = 0 limit 1")
+    @Select("select * from wt_enjoyTrip_card where actId = #{actId} and unlocked =#{unlocked} and status = 0 limit 1")
     ActivityCardList selectActivityCardListByUnlocked(@Param("actId")String actId,@Param("unlocked")int unlocked,@Param("createDate")String createDate);
 
-    @Update("update wt_treasure_card set userId= #{userId},status=1 where id = #{id} and status = 0")
+    @Update("update wt_enjoyTrip_card set userId= #{userId},status=1 where id = #{id} and status = 0")
     int updateActivityCardList(@Param("userId")String userId,@Param("id")int id);
 }
