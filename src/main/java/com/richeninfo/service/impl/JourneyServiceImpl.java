@@ -146,13 +146,6 @@ public class JourneyServiceImpl implements JourneyService {
                 object.put(Constant.MSG, "login");
                 return object;
             }
-            if(JourneyMapper.selectActivityUserHistoryByUnlocked(mobile, 0)==null){
-                ActivityConfiguration config = JourneyMapper.selectActivityConfigurationByModule(actId,0,10);
-                if(config!=null){
-                    saveHistory( actId,  channelId,  object,  mobile, config, ditch);
-                }
-            }
-
             ActivityUserHistory userHistory = JourneyMapper.selectActivityUserHistoryByUnlocked(mobile, unlocked);
             if (userHistory == null) {
                 ActivityConfiguration config = null;
