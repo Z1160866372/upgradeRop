@@ -35,7 +35,7 @@ public interface JourneyMapper {
     @Select("select * FROM activity_configuration WHERE actId='term_title' and  startTime < NOW() and  endTime >NOW()")
     List<ActivityConfiguration> selectActivityConfigurationTitle();
 
-    @Insert("insert into wt_term_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark,winSrc,imgSrc,ipScanner,ip)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId},#{itemId},#{module},#{remark},#{winSrc},#{imgSrc},#{ipScanner},#{ip})")
+    @Insert("insert into wt_discounts_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark,winSrc,imgSrc,ipScanner,ip)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId},#{itemId},#{module},#{remark},#{winSrc},#{imgSrc},#{ipScanner},#{ip})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
     @Update("update wt_discounts_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
