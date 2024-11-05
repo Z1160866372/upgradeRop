@@ -140,7 +140,7 @@ public class ProMemberServiceImpl implements ProMemberService {
                 userHistory= proMemberMapper.selectActivityUserHistoryByUserType(mobile,select_user.getUserType(),select_user.getPlayNum());
                 if (userHistory == null) {
                     ActivityConfiguration config = null;
-                    List<ActivityRoster> selectRoster = proMemberMapper.selectRoster(mobile, "turntable", "wt_turntable_+"+select_user.getUserType()+"_"+select_user.getPlayNum()+"_roster");
+                    List<ActivityRoster> selectRoster = proMemberMapper.selectRoster(mobile, "turntable", "wt_turntable_"+select_user.getUserType()+"_"+select_user.getPlayNum()+"_roster");
                     if (!CollectionUtils.isEmpty(selectRoster)) {
                         unlocked=selectRoster.get(0).getUserType();
                     }else{
