@@ -229,8 +229,8 @@ public class CommonController {
     @PostMapping(value = "/verityFlag")
     public @ResponseBody
     Object verityFlag(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId, @ApiParam(name = "isTestWhite", value = "是否加白名单验证", required = true) boolean isTestWhite) throws Exception {
-       String userId=commonService.getMobile(secToken, channelId);
-       log.info("异网用户校验userId="+userId);
+        String userId=commonService.getMobile(secToken, channelId);
+        log.info("异网用户校验userId="+userId);
         return this.commonService.checkUserIsChinaMobile(userId, actId);
     }
 
@@ -365,18 +365,18 @@ public class CommonController {
         activityUserHistory.setUserId(userId);
         activityUserHistory.setActivityId(activityId);
         activityUserHistory.setItemId(itemId);
-                if (activityUserHistory.getActivityId() != null && activityUserHistory.getUserId() != null) {
-                    PacketMq mq = new PacketMq();
-                    String out_order_id = commonUtil.getRandomCode(14, 0);
-                    Packet packet = packetHelper.getCommitPacket4147(userId, activityId, itemId, out_order_id);
-                    String response_message = ropServiceManager.execute(packet, userId,"data4147");
-                    Result request = JSON.parseObject(response_message, Result.class);
-                    String code = request.getResponse().getErrorInfo().getCode();
-                    String resCode = request.getResponse().getRetInfo().getString("resultCode");
-                    object.put("code", code);
-                }
-            object.put("objectList", activityUserHistory);
-            object.put(Constant.MSG, "yesData");
+        if (activityUserHistory.getActivityId() != null && activityUserHistory.getUserId() != null) {
+            PacketMq mq = new PacketMq();
+            String out_order_id = commonUtil.getRandomCode(14, 0);
+            Packet packet = packetHelper.getCommitPacket4147(userId, activityId, itemId, out_order_id);
+            String response_message = ropServiceManager.execute(packet, userId,"data4147");
+            Result request = JSON.parseObject(response_message, Result.class);
+            String code = request.getResponse().getErrorInfo().getCode();
+            String resCode = request.getResponse().getRetInfo().getString("resultCode");
+            object.put("code", code);
+        }
+        object.put("objectList", activityUserHistory);
+        object.put(Constant.MSG, "yesData");
         return object;
     }
     /**

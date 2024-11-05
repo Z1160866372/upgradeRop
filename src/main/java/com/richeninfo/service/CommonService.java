@@ -76,7 +76,7 @@ public interface CommonService {
      *
      * @param actId
      * @param isTestWhite
-      * @return
+     * @return
      */
     JSONObject verityActive(String secToken,String actId, boolean isTestWhite, String channelId);
 
@@ -96,6 +96,14 @@ public interface CommonService {
      * @return
      */
     String issueReward(ActivityUserHistory history);
+
+    /**
+     * 卡券奖励发放
+     *
+     * @param history
+     * @return
+     */
+    String issueCoupon(ActivityUserHistory history);
 
     /**
      * 根据渠道和secToken获取手机号
@@ -164,7 +172,14 @@ public interface CommonService {
      */
     JSONObject getMyReward(String secToken,String channelId,String actId, int unlocked);
 
-
+    /**
+     * 集团卡券发放
+     * @param batchID
+     * @param actId
+     * @param loginNo
+     * @return
+     * @throws Exception
+     */
     String jtGetCommitPacket1000(String batchID,String actId, String loginNo) throws Exception;
 
 }

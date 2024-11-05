@@ -71,6 +71,9 @@ public interface CommonMapper {
     @Select("select * from ${keyword} where userId = #{userId} and unlocked =#{unlocked} and actId =#{actId} and createDate=#{createDate}")
     ActivityUserHistory selectHistoryByUnlockedByCreateDate(@Param("userId") String userId, @Param("unlocked") int unlocked, @Param("actId") String actId, @Param("keyword") String keyword, @Param("createDate") String createDate);//查询用户当前奖励是否已领取
 
+    @Select("select * from ${keyword} where userId = #{userId} and unlocked =#{unlocked} and actId =#{actId} and userType =#{userType} and module=#{module}")
+    ActivityUserHistory selectActivityUserHistoryByUserType(@Param("userId") String userId, @Param("unlocked") int unlocked, @Param("actId") String actId, @Param("keyword") String keyword, @Param("userType")int userType, @Param("module")int module);
+
     @Update("update ${keyword} set status=#{status},code=#{code},message=#{message} where id=#{id}")
     int updateHistory(@Param("status") int status,@Param("code") String code,@Param("message") String message, @Param("id") int id, @Param("keyword") String keyword);//更新接口状态
 
@@ -109,6 +112,7 @@ public interface CommonMapper {
 
     @Select("select * from ${keyword} where unlocked =#{unlocked} and actId =#{actId} order by CAST(`value` As SIGNED)   desc ,createTime  limit 50")
     List<ActivityUserHistory> selectHistoryList(@Param("unlocked") int unlocked, @Param("actId") String actId, @Param("keyword") String keyword);//排行榜
+
     @Select("select * from activity_warning where type=1")
     ActivityRecord selectWarning();//查询预警详情
 

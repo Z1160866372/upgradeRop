@@ -351,6 +351,26 @@ public class CommonServiceImpl implements CommonService {
     }
 
     /**
+     * 4147礼包奖励发放
+     *
+     * @param history
+     * @return
+     */
+    @Override
+    public String issueCoupon(ActivityUserHistory history) {
+        String mqMsg = "";
+        PacketMq mq = new PacketMq();
+        long randomNumber = ThreadLocalRandom.current().nextLong(1000000000000000L, 9999999999999999L);
+        String obtainDate= DateUtil.convertDateTimeToStringYYMMDD(new Date()) ; //领取日期，领取对账的时候使用,例如：20171129,
+        String  serialNumber="12210"+obtainDate+randomNumber;  ////每笔调用唯一标识渠道编码+省份编码+YYYYMMDDHHmmssSSS +6位流水如：0010020170705184812000202038
+        Packet packet = packetHelper.getCommitPacket1000(history.getUserId(),0,"53" , history.getItemId(),history.getActivityId(), serialNumber,obtainDate);
+        mq.setHistory(history);
+        mq.setPacket(packet);
+        mqMsg = JSON.toJSONString(mq);
+        return mqMsg;
+    }
+
+    /**
      * 根据渠道和secToken获取手机号
      *
      * @param secToken
@@ -601,10 +621,10 @@ public class CommonServiceImpl implements CommonService {
         String mqMsg = "";
         PacketMq mq = new PacketMq();
         String channelId="53";
-       int loginType=0;
-       long randomNumber = ThreadLocalRandom.current().nextLong(1000000000000000L, 9999999999999999L);
-       String obtainDate= DateUtil.convertDateTimeToStringYYMMDD(new Date()) ; //领取日期，领取对账的时候使用,例如：20171129,
-        String  serialNumber="00100"+obtainDate+randomNumber;  ////每笔调用唯一标识渠道编码+省份编码+YYYYMMDDHHmmssSSS +6位流水如：0010020170705184812000202038
+        int loginType=0;
+        long randomNumber = ThreadLocalRandom.current().nextLong(1000000000000000L, 9999999999999999L);
+        String obtainDate= DateUtil.convertDateTimeToStringYYMMDD(new Date()) ; //领取日期，领取对账的时候使用,例如：20171129,
+        String  serialNumber="12210"+obtainDate+randomNumber;  ////每笔调用唯一标识渠道编码+省份编码+YYYYMMDDHHmmssSSS +6位流水如：0010020170705184812000202038
         Packet newPacket= packetHelper.getCommitPacket1000(loginNo, loginType, channelId, batchID, actId, serialNumber,  obtainDate);
         mq.setPacket(newPacket);
         String response_message = ropService.execute(newPacket, loginNo,"jtGetCommitPacket1000");

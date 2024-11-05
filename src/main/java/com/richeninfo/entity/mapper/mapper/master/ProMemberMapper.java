@@ -20,18 +20,43 @@ import java.util.Map;
 @Repository
 @Mapper
 public interface ProMemberMapper {
+    @Select("select * from wt_turntable_user where userId = #{userId}")
+    ActivityUser selectUserByCreateDate(@Param("userId") String userId);//查找用户记录
 
+    @Insert("insert into wt_turntable_user(userId,channelId,secToken,createDate,createTime,actId,ditch,userType,playNum)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{ditch},#{userType},#{playNum})")
+    int insertUser(ActivityUser user);//初始化用户
 
-    @Select("select * from wt_proMember_user where userId = #{userId} and actId =#{actId}")
-    ActivityUser selectUser(@Param("userId") String userId, @Param("actId") String actId);//查找用户记录
+    @Update("update wt_turntable_user set playNum=playNum-1,answerNum=answerNum+1 where id=#{id} and playNum>0")
+    int updateUser(ActivityUser user);//更新接口状态
 
-    @Insert("insert into wt_proMember_user_history(userId,belongFlag,userType,rewardName,unlocked,channelId,secToken,createDate,createTime,actId,activityId,itemId)values(#{userId},#{belongFlag},#{userType},#{rewardName},#{unlocked},#{channelId},#{secToken},curdate(),now(),#{actId},#{activityId},#{itemId})")
-    int insertUserHistory(ActivityUserHistory history);//保存用户记录
+    @Select("select * from wt_turntable_history where userId = #{userId} and unlocked =#{unlocked} and module=1")
+    ActivityUserHistory selectActivityUserHistoryByUnlocked(@Param("userId")String userId, @Param("unlocked")int unlocked);
 
-    @Select("select * from wt_proMember_user_history where userId = #{userId} and unlocked =#{unlocked} and actId =#{actId}")
-    ActivityUserHistory selectHistoryByUnlocked(@Param("userId") String userId, @Param("unlocked") int unlocked, @Param("actId") String actId);//查询用户当前奖励是否已领取
+    @Select("select * from wt_turntable_history where userId = #{userId} and userType =#{userType} and module=#{module}")
+    ActivityUserHistory selectActivityUserHistoryByUserType(@Param("userId")String userId, @Param("userType")int userType, @Param("module")int module);
 
-    @Update("update wt_proMember_user set userType = 1 where id = #{id}")
-    int updateUser_type(int id);//更新用户标识(PRO会员标识 1_yes;0_no)
+    @Select("select * from wt_turntable_history where userId = #{userId}")
+    List<ActivityUserHistory> selectActivityUserHistoryList(@Param("userId")String userId,@Param("actId") String actId);
+
+    @Select("select * from wt_turntable_history order by createTime desc limit 20")
+    List<ActivityUserHistory> selectActivityHistoryList();
+
+    @Select("select * FROM activity_configuration WHERE actId='term_title' and  startTime < NOW() and  endTime >NOW()")
+    List<ActivityConfiguration> selectActivityConfigurationTitle();
+
+    @Insert("insert into wt_turntable_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark,winSrc,imgSrc,ipScanner,ip)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId},#{itemId},#{module},#{remark},#{winSrc},#{imgSrc},#{ipScanner},#{ip})")
+    void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
+
+    @Update("update wt_turntable_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
+    int updateHistory(ActivityUserHistory history);//更新接口状态
+
+    @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and userType=#{userType}")
+    List<ActivityConfiguration> selectActivityConfigurationList(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("userType") Integer userType);
+
+    @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and module=#{module}")
+    ActivityConfiguration selectActivityConfigurationByModule(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("module") Integer module);
+
+    @Select("select * from ${keyword} where userId=#{userId} and actId=#{actId} order by userType desc")
+    List<ActivityRoster> selectRoster(@Param("userId") String userId, @Param("actId") String actId, @Param("keyword") String keyword);//查询用户名单列表
 
 }

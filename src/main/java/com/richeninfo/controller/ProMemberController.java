@@ -13,6 +13,7 @@ import com.richeninfo.entity.mapper.entity.ActivityUser;
 import com.richeninfo.pojo.Constant;
 import com.richeninfo.pojo.Post;
 import com.richeninfo.service.CommonService;
+import com.richeninfo.service.JourneyService;
 import com.richeninfo.service.ProMemberService;
 import com.richeninfo.util.RedisUtil;
 import io.swagger.annotations.*;
@@ -28,6 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.ws.soap.Addressing;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,33 +38,89 @@ import java.util.List;
  * @create 2022/11/14 17:03
  */
 @Controller
-@RequestMapping(value = "/proMember")
-@Api(value = "PRO会员日活动接口", tags = {"PRO会员日活动接口"})
+@RequestMapping(value = "2024/11/turntable")
+@Api(value = "上海移动客户回归网龄抽奖大转盘", tags = {"上海移动客户回归网龄抽奖大转盘"})
 public class
 ProMemberController {
+
+    @Resource
+    private CommonService commonService;
     @Resource
     private ProMemberService proMemberService;
-    @Resource
-    private HttpSession session;
     @Resource
     private HttpServletRequest request;
     @Resource
     private HttpServletResponse resp;
+    SimpleDateFormat month = new SimpleDateFormat("yyyy-MM");
+    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd");
+
+
+    @ApiOperation(value = "初始化用户", httpMethod = "POST")
+    @PostMapping(value = "/initialize")
+    public @ResponseBody
+    void initializeUser(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws IOException {
+        ActivityUser user = new ActivityUser();
+        JSONObject object = new JSONObject();
+        secToken = request.getParameter("secToken") == null ? "" : request.getParameter("secToken");
+        channelId = request.getParameter("channelId") == null ? "" : request.getParameter("channelId");
+        if (secToken.isEmpty()) {
+            object.put(Constant.MSG, "login");
+        } else {
+            String mobile = commonService.getMobile(secToken, channelId);
+            if (mobile==null||mobile.isEmpty()) {
+                object.put(Constant.MSG, "channelId_error");
+            }else{
+                user.setUserId(mobile);
+                user.setSecToken(secToken);
+                user.setChannelId(channelId);
+                user.setActId(actId);
+                user.setCreateDate(day.format(new Date()));
+                user.setDitch(ditch);
+                user = proMemberService.insertUser(user);
+                object.put(Constant.MSG, Constant.SUCCESS);
+                object.put("user", user);
+            }
+        }
+        resp.getWriter().write(object.toJSONString());
+    }
 
     @ApiOperation("获取奖励列表")
     @PostMapping("/getConf")
     public @ResponseBody
-    void getConf(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动编号", required = true) String actId,@ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws IOException {
-        CommonController.getActId(request, proMemberService.getConfiguration(secToken, actId,channelId), resp, secToken);
+    void getConf(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws Exception {
+        resp.getWriter().write(JSON.toJSONString(proMemberService.getConfiguration()));
     }
 
     @ApiOperation("用户点击领取")
     @PostMapping("/draw")
     public @ResponseBody
-    JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) {
+    JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
         CommonController.getParameter(request, actId, channelId,unlocked,ditch);
-        return this.proMemberService.submit(secToken, actId, unlocked, session, channelId);
+        return this.proMemberService.submit(secToken, actId, channelId,ditch);
     }
 
+    /**
+     * 我的奖励
+     * @param actId
+     * @param channelId
+     * @return
+     */
+    @ApiOperation("我的奖励")
+    @PostMapping(value = "/getMyReward")
+    public @ResponseBody
+    Object getMyReward(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken,@ApiParam(name = "actId", value = "活动标识", required = true) String actId, @ApiParam(name = "channelId", value = "渠道", required = true) String channelId){
+        return this.proMemberService.getMyReward(secToken,channelId,actId);
+    }
+
+
+    @ApiOperation("用户点击办理")
+    @PostMapping("/transaction")
+    public @ResponseBody
+    JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked
+            ,@ApiParam(name = "wtAcId", value = "wtAcId", required = true) String wtAcId, @ApiParam(name = "wtAc", value = "wtAc", required = true) String wtAc, @ApiParam(name = "randCode", value = "二次短信验证码", required = true) String randCode, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
+        CommonController.getParameter(request, actId, channelId,unlocked,ditch);
+        return this.proMemberService.transaction(secToken, actId, unlocked, channelId,wtAcId,wtAc,randCode,ditch);
+    }
 
 }

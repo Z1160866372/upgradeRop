@@ -23,13 +23,18 @@ import java.util.*;
 public interface ProMemberService {
 
     /**
-     * 获取奖励列表
+     * 初始化用户
      *
-     * @param secToken
-     * @param actId
+     * @param user
      * @return
      */
-    List<ActivityConfiguration> getConfiguration(String secToken, String actId,String channelId);
+    ActivityUser insertUser(@ModelAttribute ActivityUser user);
+
+    /**
+     * 获取滚动奖励列表
+     * @return
+     */
+    JSONObject getConfiguration() throws Exception;
 
     /**
      * 用户点击领取
@@ -37,10 +42,31 @@ public interface ProMemberService {
      * @param secToken
      * @param actId
      * @param unlocked
-     * @param session
      * @return
      * @throws Exception
      */
-    JSONObject submit(String secToken, String actId, int unlocked, HttpSession session, String channelId);
+    JSONObject submit(String secToken, String actId, String channelId,String ditch) throws Exception;
+
+    /**
+     * 我的奖励
+     * @param channelId
+     * @param actId
+     * @return
+     */
+    JSONObject getMyReward(String secToken,String channelId,String actId);
+
+
+    /**
+     * 业务办理
+     * @param secToken
+     * @param actId
+     * @param unlocked
+     * @param channelId
+     * @param ditch
+     * @return
+     * @throws Exception
+     */
+    JSONObject transaction(String secToken, String actId, int unlocked, String channelId,String wtAcId, String wtAc,String randCode,String ditch) throws Exception;
+
 
 }

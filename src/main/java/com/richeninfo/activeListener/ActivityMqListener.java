@@ -52,6 +52,8 @@ public class ActivityMqListener {
             keyword = "wt_"+mq.getHistory().getActId()+"_history";
             if(mq.getHistory().getActId().equals("finance")){
                 history = commonMapper.selectHistoryByUnlockedByCreateDate(mq.getHistory().getUserId(), mq.getHistory().getUnlocked(), mq.getHistory().getActId(),keyword, df.format(new Date()));
+            }else if(mq.getHistory().getActId().equals("turntable")){
+                history = commonMapper.selectActivityUserHistoryByUserType(mq.getHistory().getUserId(), mq.getHistory().getUnlocked(), mq.getHistory().getActId(),keyword,mq.getHistory().getUserType(),mq.getHistory().getModule());
             }else{
                 history = commonMapper.selectHistoryByUnlocked(mq.getHistory().getUserId(), mq.getHistory().getUnlocked(), mq.getHistory().getActId(),keyword);
             }

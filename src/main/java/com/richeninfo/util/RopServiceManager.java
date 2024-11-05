@@ -87,7 +87,7 @@ public class RopServiceManager {
             String message = JSON.toJSONString(reqPack.getPost());
             log.info("Request:\n" + message);
             response=openapiHttpCilent.HttpsURLConnection(reqPack.getApiCode(), reqPack.getPost().getPubInfo().getTransactionId(), message);
-           // response = openapiHttpCilent.call(reqPack.getApiCode(), reqPack.getPost().getPubInfo().getTransactionId(), message);
+            // response = openapiHttpCilent.call(reqPack.getApiCode(), reqPack.getPost().getPubInfo().getTransactionId(), message);
             log.info("Response(" + reqPack.getPost().getRequest().getBusiCode() + "|" + reqPack.getPost().getRequest().getBusiParams().getString("billId") + "):\n" + response);
             String status = JSON.parseObject(response).getString("status");
             saveOpenapiLog(reqPack, message, response, userId, actId);//保存用户调用记录
