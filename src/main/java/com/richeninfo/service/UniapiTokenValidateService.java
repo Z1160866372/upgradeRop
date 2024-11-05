@@ -112,7 +112,7 @@ public class UniapiTokenValidateService {
             if (resultJson.containsKey("header") && resultJson.getJSONObject("header").getString("resultcode").equals("103000")) {
                 try {
                     log.info("msisdn=========" + resultJson.getJSONObject("body").getString("msisdn"));
-                     mobile = AES.deCodeAES(resultJson.getJSONObject("body").getString("msisdn"), Constant.APP_KEY);
+                    mobile = AES.deCodeAES(resultJson.getJSONObject("body").getString("msisdn"), Constant.APP_KEY);
                     log.info(resultJson.getJSONObject("body").getString("msisdnmask"));
                     log.info("mobile=========" + mobile);
                     String key = commonMapper.selectTheDayKey().getSecretKey();
