@@ -31,6 +31,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -53,7 +55,12 @@ public class UniapiTokenValidateService {
         String createSign = UniapiTokenValidateService.createSign("5", Constant.APP_ID, "1", Constant.APP_KEY, new Date().getTime() + "", DateUtil.convertDateToString(new Date(), Constant.YYYYMMDDHH24MMSSSSS), token, "1.0", "");
         String response = null;
         try {
+            Instant start = Instant.now(); // 开始时间
             response = postMethod(createSign);
+            Instant end = Instant.now(); // 结束时间
+            long duration = Duration.between(start, end).toMillis(); // 计算耗时
+            System.out.println("接口耗时: " + duration + " 毫秒");
+            saveOpenapiLog("接口耗时: " + duration + " 毫秒",createSign, response,  token, "leadeonyp");//保存用户调用记录
             log.info("response==========>{}" + response);
             jsonObject.put(Constant.MSG, Constant.SUCCESS);
             jsonObject.put("success", false);
@@ -78,7 +85,15 @@ public class UniapiTokenValidateService {
             return jsonObject;
         }
     }
-
+    public void saveOpenapiLog( String appCode, String message, String response, String userId, String actId) {
+        OpenapiLog log = new OpenapiLog();
+        log.setAppCode(appCode);
+        log.setCode(message);
+        log.setMessage(response);
+        log.setUserId(userId);
+        log.setActId(actId);
+        commonMapper.insertOpenapiLog(log);
+    }
 
     public JSONObject UniapiTokenValidateMethod(String appid, String appKey, String idType, String token, String userInformation, HttpSession session) {
         JSONObject jsonObject = new JSONObject();

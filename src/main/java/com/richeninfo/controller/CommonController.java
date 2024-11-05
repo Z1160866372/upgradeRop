@@ -448,4 +448,13 @@ public class CommonController {
             , @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked){
         return this.commonService.getMyReward(secToken,channelId,actId,unlocked);
     }
+
+
+    @ApiOperation("集团卡券领取")
+    @PostMapping("/jtGetCommitPacket1000")
+    public @ResponseBody
+    String jtGetCommitPacket1000(@ApiParam(name = "batchID", value = "批次id，券批次的唯一标示", required = true) String batchID,  @ApiParam(name = "actId", value = "活动编号", required = true) String actId
+            , @ApiParam(name = "loginNo", value = "用户手机号", required = true) String loginNo) throws Exception {
+        return this.commonService.jtGetCommitPacket1000(batchID, actId, loginNo);
+    }
 }

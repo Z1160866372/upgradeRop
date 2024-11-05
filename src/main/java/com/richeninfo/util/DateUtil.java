@@ -22,6 +22,8 @@ import java.util.GregorianCalendar;
 public class DateUtil {
     private static String datePattern = "yyyy-MM-dd";
 
+    private static String datePatternString = "yyyyMMdd";
+
     private static String dateYearPattern = "yyyy";
 
     private static String dateTimePattern = "yyyy-MM-dd HH:mm:ss";
@@ -145,6 +147,10 @@ public class DateUtil {
 
     public static final String convertDateTimeToString(Date aDate) {
         return getDateTime(dateTimePattern, aDate);
+    }
+
+    public static final String convertDateTimeToStringYYMMDD(Date aDate) {
+        return getDateTime(datePatternString, aDate);
     }
 
     public static final String convertDateYearToString(Date aDate) {

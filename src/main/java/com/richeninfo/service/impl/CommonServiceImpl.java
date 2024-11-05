@@ -27,7 +27,10 @@ import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -384,7 +387,15 @@ public class CommonServiceImpl implements CommonService {
         }
         return mobile;
     }
-
+    public void saveOpenapiLog( String appCode, String message, String response, String userId, String actId) {
+        OpenapiLog log = new OpenapiLog();
+        log.setAppCode(appCode);
+        log.setCode(message);
+        log.setMessage(response);
+        log.setUserId(userId);
+        log.setActId(actId);
+        commonMapper.insertOpenapiLog(log);
+    }
 
     /**
      * 保存用户操作记录
@@ -583,5 +594,22 @@ public class CommonServiceImpl implements CommonService {
         object.put("mobile", mobile.substring(0, 3) + "****" + mobile.substring(7));
         object.put(Constant.ObjectList, historyList);
         return object;
+    }
+
+    @Override
+    public String  jtGetCommitPacket1000(String batchID, String actId, String loginNo) throws Exception {
+        String mqMsg = "";
+        PacketMq mq = new PacketMq();
+        String channelId="53";
+       int loginType=0;
+       long randomNumber = ThreadLocalRandom.current().nextLong(1000000000000000L, 9999999999999999L);
+       String obtainDate= DateUtil.convertDateTimeToStringYYMMDD(new Date()) ; //领取日期，领取对账的时候使用,例如：20171129,
+        String  serialNumber="00100"+obtainDate+randomNumber;  ////每笔调用唯一标识渠道编码+省份编码+YYYYMMDDHHmmssSSS +6位流水如：0010020170705184812000202038
+        Packet newPacket= packetHelper.getCommitPacket1000(loginNo, loginType, channelId, batchID, actId, serialNumber,  obtainDate);
+        mq.setPacket(newPacket);
+        String response_message = ropService.execute(newPacket, loginNo,"jtGetCommitPacket1000");
+        Result request = JSON.parseObject(response_message, Result.class);
+        mqMsg = JSON.toJSONString(mq);
+        return mqMsg;
     }
 }

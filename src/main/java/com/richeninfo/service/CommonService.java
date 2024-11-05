@@ -164,4 +164,7 @@ public interface CommonService {
      */
     JSONObject getMyReward(String secToken,String channelId,String actId, int unlocked);
 
+
+    String jtGetCommitPacket1000(String batchID,String actId, String loginNo) throws Exception;
+
 }
