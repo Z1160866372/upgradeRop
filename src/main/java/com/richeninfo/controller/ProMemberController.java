@@ -89,6 +89,7 @@ ProMemberController {
     @PostMapping("/getConf")
     public @ResponseBody
     void getConf(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId) throws Exception {
+        resp.setCharacterEncoding("UTF-8");
         resp.getWriter().write(JSON.toJSONString(proMemberService.getConfiguration()));
     }
 

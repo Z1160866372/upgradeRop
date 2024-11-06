@@ -50,8 +50,8 @@ public interface ProMemberMapper {
     @Update("update wt_turntable_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
     int updateHistory(ActivityUserHistory history);//更新接口状态
 
-    @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and userType=#{userType}")
-    List<ActivityConfiguration> selectActivityConfigurationList(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("userType") Integer userType);
+    @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and userType=#{userType} and module=#{module}")
+    List<ActivityConfiguration> selectActivityConfigurationList(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("userType") Integer userType,@Param("module") Integer module);
 
     @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and module=#{module}")
     ActivityConfiguration selectActivityConfigurationByModule(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("module") Integer module);

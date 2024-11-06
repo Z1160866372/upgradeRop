@@ -104,6 +104,11 @@ public class ProMemberServiceImpl implements ProMemberService {
     public JSONObject  getConfiguration() throws Exception {
         JSONObject object = new JSONObject();
         List<ActivityUserHistory> historyList = proMemberMapper.selectActivityHistoryList();
+        if(historyList.size()>0){
+            for (ActivityUserHistory activityUserHistory:historyList) {
+                activityUserHistory.setUserId(activityUserHistory.getUserId().substring(0, 3) + "****" + activityUserHistory.getUserId().substring(7));
+            }
+        }
         object.put(Constant.ObjectList,historyList);
         return object;
     }
@@ -135,12 +140,25 @@ public class ProMemberServiceImpl implements ProMemberService {
             ActivityUser select_user = proMemberMapper.selectUserByCreateDate(mobile);
             ActivityUserHistory userHistory =null;
             int unlocked=0;
+            int partNum=1;
             List<ActivityConfiguration>  activityConfigurationList=null;
             if(select_user.getPlayNum()>0){
-                userHistory= proMemberMapper.selectActivityUserHistoryByUserType(mobile,select_user.getUserType(),select_user.getPlayNum());
+                if(select_user.getUserType()==2){
+                    if(select_user.getPlayNum()==1){
+                        partNum=2;
+                    }
+                }else  if(select_user.getUserType()==3){
+                    if(select_user.getPlayNum()==1){
+                        partNum=3;
+                    }
+                    if(select_user.getPlayNum()==2){
+                        partNum=2;
+                    }
+                }
+                userHistory= proMemberMapper.selectActivityUserHistoryByUserType(mobile,select_user.getUserType(),partNum);
                 if (userHistory == null) {
                     ActivityConfiguration config = null;
-                    List<ActivityRoster> selectRoster = proMemberMapper.selectRoster(mobile, "turntable", "wt_turntable_"+select_user.getUserType()+"_"+select_user.getPlayNum()+"_roster");
+                    List<ActivityRoster> selectRoster = proMemberMapper.selectRoster(mobile, "turntable", "wt_turntable_"+select_user.getUserType()+"_"+partNum+"_roster");
                     if (!CollectionUtils.isEmpty(selectRoster)) {
                         unlocked=selectRoster.get(0).getUserType();
                     }else{
@@ -148,28 +166,31 @@ public class ProMemberServiceImpl implements ProMemberService {
                             unlocked=8;
                         }else  if(select_user.getUserType()==2){
                             if(select_user.getPlayNum()==1){
-                                unlocked=7;
+                                unlocked=5;
+                                partNum=2;
                             }
                             if(select_user.getPlayNum()==2){
-                                unlocked=5;
+                                unlocked=7;
                             }
                         }else  if(select_user.getUserType()==3){
                             if(select_user.getPlayNum()==1){
-                                unlocked=7;
+                                unlocked=5;
+                                partNum=3;
                             }
                             if(select_user.getPlayNum()==2){
                                 unlocked=3;
+                                partNum=2;
                             }
                             if(select_user.getPlayNum()==3){
-                                unlocked=5;
+                                unlocked=7;
                             }
                         }
                     }
-                    activityConfigurationList =proMemberMapper.selectActivityConfigurationList(actId, unlocked, select_user.getUserType());
+                    activityConfigurationList =proMemberMapper.selectActivityConfigurationList(actId, unlocked, select_user.getUserType(),partNum);
                     if(activityConfigurationList.size()>1){
                         config = CommonUtil.randomGift(activityConfigurationList);
                     }else{
-                        config=proMemberMapper.selectActivityConfigurationList(actId, unlocked, select_user.getUserType()).get(0);
+                        config=proMemberMapper.selectActivityConfigurationList(actId, unlocked, select_user.getUserType(),partNum).get(0);
                     }
                     saveHistory(actId, channelId, object, mobile, config, ditch);
                     proMemberMapper.updateUser(select_user);
