@@ -64,17 +64,17 @@ public class ActivityMqListener {
             Result request;
             String code ="";
             String resCode="";
-            if(mq.getHistory().getActId().equals("turntable")){
-                 request = JSON.parseObject(JSON.parseObject(response_message).get("result").toString(), Result.class);
-                 code = request.getResponse().getErrorInfo().getCode();
-                 resCode = JSON.parseObject(request.getResponse().getRetInfo().getString("data")).getString("retCode");
-                 if(resCode.equals("000000")){
-                     resCode="SUCCESS";
-                 }
+            if(mq.getPacket().getApiCode().equals("ZTXD1000")){
+                request = JSON.parseObject(JSON.parseObject(response_message).get("result").toString(), Result.class);
+                code = request.getResponse().getErrorInfo().getCode();
+                resCode = JSON.parseObject(request.getResponse().getRetInfo().getString("data")).getString("retCode");
+                if(resCode.equals("000000")){
+                    resCode="SUCCESS";
+                }
             }else{
-                 request = JSON.parseObject(response_message, Result.class);
-                 code = request.getResponse().getErrorInfo().getCode();
-                 resCode = request.getResponse().getRetInfo().getString("resultCode");
+                request = JSON.parseObject(response_message, Result.class);
+                code = request.getResponse().getErrorInfo().getCode();
+                resCode = request.getResponse().getRetInfo().getString("resultCode");
             }
             if (Constant.SUCCESS_CODE.equals(code)) {
                 if (resCode.equals("SUCCESS")) {
