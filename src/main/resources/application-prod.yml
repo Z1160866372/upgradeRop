@@ -38,7 +38,15 @@ nengKai:
   openapiUrl: http://40.40.42.22/open/service
     #securityUrl: http://40.40.40.115/open/security
     #openapiUrl: http://40.40.40.115/open/service
+  httpUrl: https://40.40.40.115:8443/open/service/accessHttps
 context: environment
+springfox:
+  documentation:
+    swagger:
+      v2:
+        enabled : false
+swagger:
+  enabled: false
 
 
 

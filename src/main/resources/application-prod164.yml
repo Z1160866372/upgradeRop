@@ -36,9 +36,17 @@ nengKai:
   apk: KbYv6fJRH4pUruNM+2HvTCm2L+nyUR+K
   securityUrl: http://40.40.42.21/open/security
   openapiUrl: http://40.40.42.22/open/service
+  httpUrl: https://40.40.40.115:8443/open/service/accessHttps
   #securityUrl: http://40.40.40.115/open/security
   #openapiUrl: http://40.40.40.115/open/service
 context: environment
+springfox:
+  documentation:
+    swagger:
+      v2:
+        enabled : false
+swagger:
+  enabled: false
 
 
 
