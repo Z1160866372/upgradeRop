@@ -64,16 +64,14 @@ public class ActivityMqListener {
             Result request;
             String code ="";
             String resCode="";
+            request = JSON.parseObject(response_message, Result.class);
+            code = request.getResponse().getErrorInfo().getCode();
             if(mq.getPacket().getApiCode().equals("ZTXD1000")){
-                request = JSON.parseObject(JSON.parseObject(response_message).get("result").toString(), Result.class);
-                code = request.getResponse().getErrorInfo().getCode();
                 resCode = JSON.parseObject(request.getResponse().getRetInfo().getString("data")).getString("retCode");
                 if(resCode.equals("000000")){
                     resCode="SUCCESS";
                 }
             }else{
-                request = JSON.parseObject(response_message, Result.class);
-                code = request.getResponse().getErrorInfo().getCode();
                 resCode = request.getResponse().getRetInfo().getString("resultCode");
             }
             if (Constant.SUCCESS_CODE.equals(code)) {
@@ -86,7 +84,7 @@ public class ActivityMqListener {
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
             }
             history.setMessage(response_message);
-            history.setStatus(Constant.STATUS_RECEIVED);
+            //history.setStatus(Constant.STATUS_RECEIVED);
             //history.setMessage("测试数据～");
             history.setCode(JSONObject.toJSONString(mq.getPacket()));
         } catch (Exception e) {
