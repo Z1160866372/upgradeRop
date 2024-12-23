@@ -9,6 +9,7 @@
 package com.richeninfo.entity.mapper.mapper.master;
 
 import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
+import com.richeninfo.entity.mapper.entity.ActivityRoster;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
 import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
 import org.apache.ibatis.annotations.*;
@@ -22,73 +23,44 @@ import java.util.List;
 @Mapper
 public interface PlentifulMapper {
 
-    /**
-     * 查询用户信息
-     * @param userId
-     * @return
-     */
-    @Select("select * from wt_plentiful_user where userId = #{userId} ")
-    ActivityUser findUserInfo(@Param("userId") String userId);
+    @Select("select * from wt_feedback_user where userId = #{userId}")
+    ActivityUser selectUserByCreateDate(@Param("userId") String userId);//查找用户记录
 
-    /**
-     * 初始化用户信息
-     * @param user
-     */
-    @Insert("INSERT INTO wt_plentiful_user (userId,level,award,playNum,channelId,grade,answerNum,mark,blowNum,weekTime,createTime,createDate,secToken,ditch) value (#{userId},#{level},#{award},#{playNum},#{channelId},#{grade},#{answerNum},#{mark},#{blowNum},now(),now(),curdate(),#{secToken},#{ditch})")
-    void saveUser(ActivityUser user);
+    @Insert("insert into wt_feedback_user(userId,channelId,secToken,createDate,createTime,actId,ditch,userType,playNum,mark)values(#{userId},#{channelId},#{secToken},#{createDate},now(),#{actId},#{ditch},#{userType},#{playNum},#{mark})")
+    int insertUser(ActivityUser user);//初始化用户
 
-    /**
-     * 查询是否有当月获取记录
-     * @param userId
-     * @return
-     */
-    @Select("select * from wt_plentiful_history where userId = #{userId}")
-    ActivityUserHistory findCurMonthHistory(@Param("userId") String userId);
+    @Update("update wt_feedback_user set playNum=playNum-1,answerNum=answerNum+1 where id=#{id} and playNum>0")
+    int updateUser(ActivityUser user);//更新接口状态
 
-    /**
-     * 查询奖品
-     * @param unlocked
-     * @param actId
-     * @return
-     */
-    @Select("select * from activity_configuration where unlocked=#{unlocked} and actId=#{actId} limit 1")
-    ActivityConfiguration findGiftByUnlocked(int unlocked, String actId);
+    @Select("select * from wt_feedback_history where userId = #{userId} and unlocked =#{unlocked} and module=1")
+    ActivityUserHistory selectActivityUserHistoryByUnlocked(@Param("userId")String userId, @Param("unlocked")int unlocked);
 
-    /**
-     * 查询奖品
-     * @param actId
-     * @return
-     */
-    @Select("select * from activity_configuration where   actId=#{actId}")
-    List<ActivityConfiguration> findGiftList(String actId);
+    @Select("select * from wt_feedback_history where userId = #{userId}  and module=#{module}")
+    ActivityUserHistory selectActivityUserHistoryByUserType(@Param("userId")String userId,  @Param("module")int module);
 
-    /**
-     * 更新用户secToken
-     * @param userId
-     * @param secToken
-     * @return
-     */
-    @Update("update  wt_plentiful_user set secToken=#{secToken}  where userId=#{userId} ")
-    int updateUserSecToken(@Param("userId") String userId, @Param("secToken") String secToken);
+    @Select("select * from wt_feedback_history where userId = #{userId}")
+    List<ActivityUserHistory> selectActivityUserHistoryList(@Param("userId")String userId,@Param("actId") String actId);
 
+    @Select("select * from wt_feedback_history order by createTime desc limit 20")
+    List<ActivityUserHistory> selectActivityHistoryList();
 
-    /**
-     * 新增用户获取奖品
-     * @param history
-     * @return
-     */
-    @Insert("INSERT INTO wt_plentiful_history (userId,rewardName,typeId,unlocked,belongFlag,status,code,message,secToken,channelId,createTime,createDate,actId,winSrc,remark,activityId,itemId,ditch) value (#{userId},#{rewardName},#{typeId},#{unlocked},#{belongFlag},#{status},#{code},#{message},#{secToken},#{channelId},now(),curdate(),#{actId},#{winSrc},#{remark},#{activityId},#{itemId},#{ditch})")
-    int saveHistory(ActivityUserHistory history);
+    @Select("select * FROM activity_configuration WHERE actId='term_title' and  startTime < NOW() and  endTime >NOW()")
+    List<ActivityConfiguration> selectActivityConfigurationTitle();
 
-    /**
-     * 更新用户award
-     * @param userId
-     * @return
-     */
-    @Update("update  wt_plentiful_user set award=award+1 where userId=#{userId} ")
-    int updateUserAward(@Param("userId") String userId);
+    @Insert("insert into wt_feedback_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark,winSrc,imgSrc,ipScanner,ip,userType)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId},#{itemId},#{module},#{remark},#{winSrc},#{imgSrc},#{ipScanner},#{ip},#{userType})")
+    void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
-    @Update("update  wt_plentiful_user set playNum=playNum-1 where userId=#{userId} ")
-    int LostUserPlayNum(@Param("userId") String userId);
+    @Update("update wt_feedback_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
+    int updateHistory(ActivityUserHistory history);//更新接口状态
+
+    @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and userType=#{userType} and module=#{module}")
+    List<ActivityConfiguration> selectActivityConfigurationList(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("userType") Integer userType,@Param("module") Integer module);
+
+    @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and module=#{module}")
+    ActivityConfiguration selectActivityConfigurationByModule(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("module") Integer module);
+
+    @Select("select * from ${keyword} where userId=#{userId} and actId=#{actId} order by userType ")
+    List<ActivityRoster> selectRoster(@Param("userId") String userId, @Param("actId") String actId, @Param("keyword") String keyword);//查询用户名单列表
+
 
 }

@@ -169,7 +169,6 @@ public class PlodServiceImpl implements PlodService {
             advise.setFileUrl(path);
             plodMapper.savePlodAdvise(advise);
             jsonObject.put("msg", "success");
-            if(pub.getDepartName().equals("领导班子")){
                 String message=pub.getUserName()+"领导，"+DateUtil.convertDateTimeToString(new Date()) +"提交了："+advise.getMsgText()+"建议";
                 List<PlodPubUser> listPub=  plodMapper.findPubUserByDepartName("短信发送");
                 log.info(listPub.toString());
@@ -178,7 +177,6 @@ public class PlodServiceImpl implements PlodService {
                     log.info(message);
                     sendNote(pubPhone.getUserId(),message);
                 }
-            }
         } catch (Exception e) {
             e.printStackTrace();
             jsonObject.put("msg", "error");

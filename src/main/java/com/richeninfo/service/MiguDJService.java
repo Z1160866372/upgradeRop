@@ -45,7 +45,7 @@ public interface MiguDJService {
      * @param actId
      * @return
      */
-    JSONObject getActGift( String secToken, String channelId, String actId,String randCode,String wtAcId, String wtAc,String ditch);
+    JSONObject draw( String secToken, String channelId, String actId,String answer,int mark,String ditch);
 
 
 

@@ -44,7 +44,7 @@ public interface ProMemberMapper {
     @Select("select * FROM activity_configuration WHERE actId='term_title' and  startTime < NOW() and  endTime >NOW()")
     List<ActivityConfiguration> selectActivityConfigurationTitle();
 
-    @Insert("insert into wt_turntable_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark,winSrc,imgSrc,ipScanner,ip)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId},#{itemId},#{module},#{remark},#{winSrc},#{imgSrc},#{ipScanner},#{ip})")
+    @Insert("insert into wt_turntable_history(userId,unlocked,typeId,rewardName,value,channelId,createDate,createTime,actId,ditch,activityId,itemId,module,remark,winSrc,imgSrc,ipScanner,ip,userType)values(#{userId},#{unlocked},#{typeId},#{rewardName},#{value},#{channelId},#{createDate},#{createTime},#{actId},#{ditch},#{activityId},#{itemId},#{module},#{remark},#{winSrc},#{imgSrc},#{ipScanner},#{ip},#{userType})")
     void insertActivityUserHistory(ActivityUserHistory activityUserHistory);
 
     @Update("update wt_turntable_history set status=#{status},code=#{code},message=#{message} where id=#{id}")

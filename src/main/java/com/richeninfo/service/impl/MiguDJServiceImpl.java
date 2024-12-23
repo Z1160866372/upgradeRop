@@ -25,6 +25,7 @@ import com.richeninfo.util.RopServiceManager;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -59,7 +60,14 @@ public class MiguDJServiceImpl implements MiguDJService {
             activityUser = new ActivityUser();
             activityUser.setUserId(userId);
             activityUser.setAward(0);
-            activityUser.setUserType(0);
+            ActivityRoster activityRoster = miguDJMapper.findActivityRoster(userId, 1);
+            if (activityRoster == null) {
+                activityUser.setUserType(0);
+                activityUser.setNickName("");
+            } else {
+                activityUser.setNickName(activityRoster.getActId());
+                activityUser.setUserType(1);
+            }
             activityUser.setDitch(ditch);
             activityUser.setChannelId(channelId);
             miguDJMapper.saveUser(activityUser);
@@ -75,22 +83,20 @@ public class MiguDJServiceImpl implements MiguDJService {
     public JSONObject selectVideoList(String secToken, String channelId, String actId) {
         List<ActivityConfiguration> list = miguDJMapper.findGiftByTypeId(actId);
         JSONObject jsonObject = new JSONObject();
-        Map<Integer, List<ActivityConfiguration>>groups = list.stream().collect(Collectors.groupingBy(ActivityConfiguration::getUserType));
+        Map<Integer, List<ActivityConfiguration>> groups = list.stream().collect(Collectors.groupingBy(ActivityConfiguration::getUserType));
         log.info(groups.toString());
-       // jsonObject.put("list",groups);
-        jsonObject.put("Newlist",list);
+        // jsonObject.put("list",groups);
+        jsonObject.put("Newlist", list);
         log.info(groups.size());
         return jsonObject;
     }
 
 
-
-
     @Override
-    public JSONObject getActGift( String secToken, String channelId, String actId, String randCode, String wtAcId, String wtAc, String ditch) {
+    public JSONObject draw(String secToken, String channelId, String actId, String answer, int mark, String ditch) {
         JSONObject jsonObject = new JSONObject();
-        String userId="";
-        if(commonService.verityTime(actId).equals("underway")) {
+        String userId = "";
+        if (commonService.verityTime(actId).equals("underway")) {
             if (!StringUtils.isEmpty(secToken)) {
                 try {
                     userId = commonService.getMobile(secToken, channelId);
@@ -107,54 +113,33 @@ public class MiguDJServiceImpl implements MiguDJService {
                 return jsonObject;
             }
             ActivityUser user = miguDJMapper.findCurMonthUserInfo(userId);
-            if (user != null  && user.getAward() < 1) {
-                //查询是否领取当前业务
-                ActivityUserHistory history = miguDJMapper.findCurYwHistory(userId);
-                ActivityConfiguration gift = miguDJMapper.findGiftByUnlocked(0, actId);
-                if (history == null) {
-                    //查询活动配置礼包
-                    history = new ActivityUserHistory();
-                    history.setUserId(userId);
-                    history.setRewardName(gift.getName());
-                    history.setUnlocked(gift.getUnlocked());
-                    history.setActId(actId);
-                    history.setKeyword(actId);
-                    history.setTypeId(gift.getTypeId());
-                    history.setChannelId(channelId);
-                    history.setDitch(ditch);
-                    history.setActivityId(gift.getActivityId());
-                    history.setItemId(gift.getItemId());
-                    int status = miguDJMapper.saveHistory(history);
-                    history = miguDJMapper.findCurYwHistory(userId);
-                    try {
-                        if (status > 0) {//业务发放
-                            jsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId,ditch);
-                            Boolean ywStatus = jsonObject.getBoolean("transact_result");
-                            jsonObject.put("msg", ywStatus);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+            if (user != null && user.getMark() < 11 && user.getUserType() > 0) {
+                if(mark!= user.getMark()){
+                    //更新题目和阶段
+                    String newAnswer;
+                    if(StringUtils.isEmpty(user.getAnswer())){
+                        newAnswer=answer;
+                    }else{
+                        newAnswer=user.getAnswer()+"#"+answer;
                     }
-                } else {
-                    if (history.getStatus() == 3) {
-                        jsonObject.put("msg", "ybl");
-                    } else {
-                        jsonObject = transact3066Business(history, gift, randCode, channelId, wtAcId, wtAc, actId,ditch);
-                        Boolean ywStatus = jsonObject.getBoolean("transact_result");
-                        jsonObject.put("msg", ywStatus);
-                    }
+                   int status= miguDJMapper.updateUserMarkAndAnswer(newAnswer,mark,userId);
+                   if(status>0){
+                       jsonObject.put("msg", "success");
+                   }else{
+                       jsonObject.put("msg", "error");
+                   }
                 }
             } else {
                 jsonObject.put("msg", "error");
             }
-
-        }else{
+        } else {
             jsonObject.put(Constant.MSG, "ActError");
             return jsonObject;
         }
         return jsonObject;
     }
-    public JSONObject transact3066Business(ActivityUserHistory history, ActivityConfiguration config, String randCode, String channelId, String wtAcId, String wtAc, String actId,String ditch) {
+
+    public JSONObject transact3066Business(ActivityUserHistory history, ActivityConfiguration config, String randCode, String channelId, String wtAcId, String wtAc, String actId, String ditch) {
         JSONObject object = new JSONObject();
         boolean transact_result = false;
         Result result = new Result();
@@ -181,9 +166,9 @@ public class MiguDJServiceImpl implements MiguDJService {
             result = JSON.parseObject(message, Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
             String DoneCode = result.getResponse().getRetInfo().getString("DoneCode");*/
-            String res="0000";
-            String DoneCode="9999";
-            String message="测试";
+            String res = "0000";
+            String DoneCode = "9999";
+            String message = "测试";
             if (Constant.SUCCESS_CODE.equals(res)) {
                 transact_result = true;
                 miguDJMapper.updateUserAward(history.getUserId());
@@ -194,12 +179,12 @@ public class MiguDJServiceImpl implements MiguDJService {
                 history.setStatus(Constant.STATUS_RECEIVED_ERROR);
                 object.put(Constant.MSG, Constant.FAILURE);
             }
-                history.setCode(JSONObject.toJSONString(packet));
-                object.put("res", res);
-                history.setMessage(message);
-                object.put("DoneCode", DoneCode);
-                object.put("update_history", JSON.toJSONString(history));
-                miguDJMapper.updateHistory(history);
+            history.setCode(JSONObject.toJSONString(packet));
+            object.put("res", res);
+            history.setMessage(message);
+            object.put("DoneCode", DoneCode);
+            object.put("update_history", JSON.toJSONString(history));
+            miguDJMapper.updateHistory(history);
             /*if (transact_result) {
                 Packet new_packet = packetHelper.orderReporting(config, packet, wtAcId, wtAc);
                 System.out.println(new_packet.toString());

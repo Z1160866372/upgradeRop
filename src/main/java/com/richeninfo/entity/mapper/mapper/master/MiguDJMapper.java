@@ -9,6 +9,7 @@
 package com.richeninfo.entity.mapper.mapper.master;
 
 import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
+import com.richeninfo.entity.mapper.entity.ActivityRoster;
 import com.richeninfo.entity.mapper.entity.ActivityUser;
 import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
 import org.apache.ibatis.annotations.*;
@@ -27,14 +28,14 @@ public interface MiguDJMapper {
     * @param userId
     * @return
     */
-   @Select("select * from wt_migudj_user where userId = #{userId} ")
+   @Select("select * from wt_research_user where userId = #{userId} ")
    ActivityUser findCurMonthUserInfo(@Param("userId") String userId);
 
    /**
     * 初始化用户信息
     * @param user
     */
-   @Insert("INSERT INTO wt_migudj_user (userId,level,award,playNum,channelId,grade,answerNum,mark,blowNum,weekTime,createTime,createDate,secToken,ditch,userType) value (#{userId},#{level},#{award},#{playNum},#{channelId},#{grade},#{answerNum},#{mark},#{blowNum},now(),now(),curdate(),#{secToken},#{ditch},#{userType})")
+   @Insert("INSERT INTO wt_research_user (userId,nickName,level,award,playNum,channelId,grade,answerNum,mark,blowNum,weekTime,createTime,createDate,secToken,ditch,userType) value (#{userId},#{nickName},#{level},#{award},#{playNum},#{channelId},#{grade},#{answerNum},#{mark},#{blowNum},now(),now(),curdate(),#{secToken},#{ditch},#{userType})")
    void saveUser(ActivityUser user);
 
    /**
@@ -42,8 +43,16 @@ public interface MiguDJMapper {
     * @param userId
     * @return
     */
-   @Select("select * from wt_migudj_history where userId = #{userId} and unlocked=0  ")
+   @Select("select * from wt_research_history where userId = #{userId} and unlocked=0  ")
    ActivityUserHistory findCurYwHistory(@Param("userId") String userId);
+
+   /**
+    * 查询是否在参与白名单
+    * @param userId
+    * @return
+    */
+   @Select("select * from wt_research_roster where userId = #{userId} and userType=#{userType}  ")
+   ActivityRoster findActivityRoster(@Param("userId") String userId,@Param("userType") int userType);
 
    /**
     * 查询奖品
@@ -60,7 +69,7 @@ public interface MiguDJMapper {
     * @param secToken
     * @return
     */
-   @Update("update  wt_migudj_user set secToken=#{secToken}  where userId=#{userId} ")
+   @Update("update  wt_research_user set secToken=#{secToken}  where userId=#{userId} ")
    int updateUserSecToken(@Param("userId") String userId, @Param("secToken") String secToken);
 
 
@@ -69,7 +78,7 @@ public interface MiguDJMapper {
     * @param history
     * @return
     */
-   @Insert("INSERT INTO wt_migudj_history (userId,rewardName,typeId,unlocked,belongFlag,status,code,message,secToken,channelId,createTime,createDate,actId,winSrc,remark,activityId,itemId,ditch) value (#{userId},#{rewardName},#{typeId},#{unlocked},#{belongFlag},#{status},#{code},#{message},#{secToken},#{channelId},now(),curdate(),#{actId},#{winSrc},#{remark},#{activityId},#{itemId},#{ditch})")
+   @Insert("INSERT INTO wt_research_history (userId,rewardName,typeId,unlocked,belongFlag,status,code,message,secToken,channelId,createTime,createDate,actId,winSrc,remark,activityId,itemId,ditch) value (#{userId},#{rewardName},#{typeId},#{unlocked},#{belongFlag},#{status},#{code},#{message},#{secToken},#{channelId},now(),curdate(),#{actId},#{winSrc},#{remark},#{activityId},#{itemId},#{ditch})")
    int saveHistory(ActivityUserHistory history);
 
    /**
@@ -77,8 +86,16 @@ public interface MiguDJMapper {
     * @param userId
     * @return
     */
-   @Update("update  wt_migudj_user set award=1 where userId=#{userId} ")
+   @Update("update  wt_research_user set award=1 where userId=#{userId} ")
    int updateUserAward(@Param("userId") String userId);
+
+   /**
+    * 更新用户答题状态
+    * @param userId
+    * @return
+    */
+   @Update("update  wt_research_user set answer=#{answer} ,mark=#{mark} where userId=#{userId}")
+   int updateUserMarkAndAnswer(@Param("answer") String answer,@Param("mark") int mark,@Param("userId") String userId );
 
    /**
     * 多媒体展示
@@ -88,7 +105,7 @@ public interface MiguDJMapper {
    @Select("select * from activity_configuration where typeId=5 and actId=#{actId}")
    List<ActivityConfiguration> findGiftByTypeId(String actId);
 
-   @Update("update wt_migudj_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
+   @Update("update wt_research_history set status=#{status},code=#{code},message=#{message} where id=#{id}")
    int updateHistory(ActivityUserHistory history);//更新接口状态
 
    @Select("SELECT `userId` FROM  `wt_flowmigu_black` WHERE userId=#{userId} ")

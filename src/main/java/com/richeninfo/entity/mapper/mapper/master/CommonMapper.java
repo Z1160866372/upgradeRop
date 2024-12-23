@@ -46,7 +46,7 @@ public interface CommonMapper {
     @Select("select * from ${keyword} where userId = #{userId} and actId =#{actId} and createDate= curdate()")
     ActivityUser selectUser(@Param("userId") String userId, @Param("actId") String actId, @Param("keyword") String keyword);//查找用户记录
 
-    @Select("select * FROM activity_openapilog WHERE message like '%verify request error%'  and  left(createTime,10)=curdate() ")
+    @Select("select * FROM activity_openapilog WHERE (message   like '%verify request error%'  or message   like '%非可销售业务%' )   and  left(createTime,10)=curdate() ")
     List<OpenapiLog> selectCurDateList();//查找用户记录
 
 
@@ -59,7 +59,7 @@ public interface CommonMapper {
     @Select("select * from activity_configuration where actId = #{actId} and unlocked = #{unlocked}")
     ActivityConfiguration selectActivitySomeConfiguration(@Param("actId") String actId, @Param("unlocked") Integer unlocked);//查询某个活动某个奖励配置
 
-    @Select("select * from ${keyword} where userId = #{userId} and unlocked =#{unlocked} and actId =#{actId} and status=0")
+    @Select("select * from ${keyword} where userId = #{userId} and unlocked =#{unlocked} and actId =#{actId} and (status=0 or status=4)")
     ActivityUserHistory selectHistoryByUnlocked(@Param("userId") String userId, @Param("unlocked") int unlocked, @Param("actId") String actId, @Param("keyword") String keyword);//查询用户当前奖励是否已领取
 
     @Select("select * from activity_configuration where actId = #{actId} and unlocked = #{unlocked} and typeId=1")
@@ -113,10 +113,10 @@ public interface CommonMapper {
     @Select("select * from ${keyword} where unlocked =#{unlocked} and actId =#{actId} order by CAST(`value` As SIGNED)   desc ,createTime  limit 50")
     List<ActivityUserHistory> selectHistoryList(@Param("unlocked") int unlocked, @Param("actId") String actId, @Param("keyword") String keyword);//排行榜
 
-    @Select("select * from activity_warning where type=1")
+    @Select("select * from activity_warning where typeId=1")
     ActivityRecord selectWarning();//查询预警详情
 
-    @Select("select * from activity_warning where type=2")
+    @Select("select * from activity_warning where typeId=2")
     List<ActivityRecord> selectWarningUser();//查询预警人
 
 

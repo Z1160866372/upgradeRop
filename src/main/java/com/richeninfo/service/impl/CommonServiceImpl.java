@@ -85,12 +85,12 @@ public class CommonServiceImpl implements CommonService {
         redisUtil.set(userId, configuration.getActivityId(), 60);
         try {
             if (configuration != null) {
-                OpenapiLog log = new OpenapiLog();
-                log.setAddress(request.getLocalAddr() + ":" + request.getLocalPort());
-                log.setUserId(userId);
-                log.setActId(actId);
-                log.setApiCode("CRM5956");
-                int smsLog = commonMapper.insertSMSLog(log);
+                OpenapiLog logs = new OpenapiLog();
+                logs.setAddress(request.getLocalAddr() + ":" + request.getLocalPort());
+                logs.setUserId(userId);
+                logs.setActId(actId);
+                logs.setApiCode("CRM5956");
+                int smsLog = commonMapper.insertSMSLog(logs);
                 if (smsLog > 0) {
                     Packet packet = packetHelper.getCommitPacket5956(userId, configuration.getActivityId());
                     Result result = JSON.parseObject(ropService.execute(packet, userId, actId), Result.class);
@@ -99,6 +99,26 @@ public class CommonServiceImpl implements CommonService {
                     if (Constant.SUCCESS_CODE.equals(code) && Constant.SUCCESS_CODE.equals(bizCode)) {
                         resultObj.put(Constant.MSG, Constant.SUCCESS);
                     } else {
+                        Object objectCount = redisUtil.get("CRM5956");
+                        int count = 0;
+                        log.info(objectCount.toString());
+                        log.info(String.valueOf((Integer) objectCount));
+                        if (!Objects.isNull(objectCount)) {
+                            count = (Integer) objectCount;
+                            count = count + 1;
+                            ActivityRecord activityRecord = commonMapper.selectWarning();
+                            if (count == activityRecord.getStatus()) {
+                                log.info("count====="+count);
+                                List<ActivityRecord> activityRecordList = commonMapper.selectWarningUser();
+                                for (ActivityRecord record : activityRecordList) {
+                                    sendNote(record.getUserId(), activityRecord.getActionName());
+                                }
+                            }
+                            long time = redisUtil.getExpire("CRM5956");
+                            redisUtil.set("CRM5956", count, time);
+                        } else {
+                            redisUtil.set("CRM5956", 1, 24 * 60 * 60);
+                        }
                         resultObj.put(Constant.MSG, Constant.ERROR);
                         resultObj.put(Constant.CODE, code);
                         return resultObj;
@@ -116,6 +136,17 @@ public class CommonServiceImpl implements CommonService {
             resultObj.put(Constant.MSG, Constant.FAILURE);
         }
         return resultObj;
+    }
+
+    public void sendNote(String userId, String message) {
+        log.info("短信内容：" + message);
+        try {
+            Packet packet = packetHelper.getCommitPacket1638(userId, message);
+            Result result = JSON.parseObject(ropService.execute(packet, userId, "gsmshare"), Result.class);
+            log.info("短信返回：" + result.getResponse().toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -361,9 +392,9 @@ public class CommonServiceImpl implements CommonService {
         String mqMsg = "";
         PacketMq mq = new PacketMq();
         long randomNumber = ThreadLocalRandom.current().nextLong(1000000000000000L, 9999999999999999L);
-        String obtainDate= DateUtil.convertDateTimeToStringYYMMDD(new Date()) ; //领取日期，领取对账的时候使用,例如：20171129,
-        String  serialNumber="12210"+obtainDate+randomNumber;  ////每笔调用唯一标识渠道编码+省份编码+YYYYMMDDHHmmssSSS +6位流水如：0010020170705184812000202038
-        Packet packet = packetHelper.getCommitPacket1000(history.getUserId(),0,"53" , history.getItemId(),history.getActivityId(), serialNumber,obtainDate);
+        String obtainDate = DateUtil.convertDateTimeToStringYYMMDD(new Date()); //领取日期，领取对账的时候使用,例如：20171129,
+        String serialNumber = "12210" + obtainDate + randomNumber;  ////每笔调用唯一标识渠道编码+省份编码+YYYYMMDDHHmmssSSS +6位流水如：0010020170705184812000202038
+        Packet packet = packetHelper.getCommitPacket1000(history.getUserId(), 0, "53", history.getItemId(), history.getActivityId(), serialNumber, obtainDate);
         mq.setHistory(history);
         mq.setPacket(packet);
         mqMsg = JSON.toJSONString(mq);
@@ -407,7 +438,8 @@ public class CommonServiceImpl implements CommonService {
         }
         return mobile;
     }
-    public void saveOpenapiLog( String appCode, String message, String response, String userId, String actId) {
+
+    public void saveOpenapiLog(String appCode, String message, String response, String userId, String actId) {
         OpenapiLog log = new OpenapiLog();
         log.setAppCode(appCode);
         log.setCode(message);
@@ -617,17 +649,17 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public String  jtGetCommitPacket1000(String batchID, String actId, String loginNo) throws Exception {
+    public String jtGetCommitPacket1000(String batchID, String actId, String loginNo) throws Exception {
         String mqMsg = "";
         PacketMq mq = new PacketMq();
-        String channelId="53";
-        int loginType=0;
+        String channelId = "53";
+        int loginType = 0;
         long randomNumber = ThreadLocalRandom.current().nextLong(1000000000000000L, 9999999999999999L);
-        String obtainDate= DateUtil.convertDateTimeToStringYYMMDD(new Date()) ; //领取日期，领取对账的时候使用,例如：20171129,
-        String  serialNumber="12210"+obtainDate+randomNumber;  ////每笔调用唯一标识渠道编码+省份编码+YYYYMMDDHHmmssSSS +6位流水如：0010020170705184812000202038
-        Packet newPacket= packetHelper.getCommitPacket1000(loginNo, loginType, channelId, batchID, actId, serialNumber,  obtainDate);
+        String obtainDate = DateUtil.convertDateTimeToStringYYMMDD(new Date()); //领取日期，领取对账的时候使用,例如：20171129,
+        String serialNumber = "12210" + obtainDate + randomNumber;  ////每笔调用唯一标识渠道编码+省份编码+YYYYMMDDHHmmssSSS +6位流水如：0010020170705184812000202038
+        Packet newPacket = packetHelper.getCommitPacket1000(loginNo, loginType, channelId, batchID, actId, serialNumber, obtainDate);
         mq.setPacket(newPacket);
-        String response_message = ropService.execute(newPacket, loginNo,"jtGetCommitPacket1000");
+        String response_message = ropService.execute(newPacket, loginNo, "jtGetCommitPacket1000");
         Result request = JSON.parseObject(response_message, Result.class);
         mqMsg = JSON.toJSONString(mq);
         return mqMsg;

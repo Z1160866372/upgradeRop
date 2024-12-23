@@ -31,8 +31,8 @@ import java.io.IOException;
 
 @Controller
 
-@RequestMapping("/appropriate")
-@Api(value = "适老产品调查问卷", tags = {"适老产品调查问卷活动"})
+@RequestMapping("/2024/12/purchase")
+@Api(value = "购机彩蛋礼", tags = {"适老产品调查问卷活动&&购机彩蛋礼"})
 public class FortuneController {
 
     @Resource
@@ -74,9 +74,9 @@ public class FortuneController {
      * @return JSONObject
      * @throws IOException ioe异常
      */
-    @PostMapping(value = "/getActGift")
+    @PostMapping(value = "/draw")
     public @ResponseBody
-    JSONObject getActGift(@RequestBody String body, @ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, String ditch, String content) throws IOException {
+    JSONObject getActGift(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, String ditch) throws IOException {
         JSONObject object = new JSONObject();
         if (StringUtils.isEmpty(secToken)) {
             object.put(Constant.MSG, "login");
@@ -85,7 +85,7 @@ public class FortuneController {
             if (mobile.isEmpty()) {
                 object.put(Constant.MSG, "channelId_error");
             } else {
-                object = FortuneService.getActGift(mobile, secToken, channelId, actId,ditch, body);
+                object = FortuneService.draw(mobile, secToken, channelId, actId,ditch);
             }
         }
         return object;
@@ -113,6 +113,32 @@ public class FortuneController {
             } else {
                 FortuneService.actRecord(caozuo, actId, userId);
                 object.put(Constant.MSG, "success");
+            }
+        }
+        return object;
+    }
+
+    /**
+     * 用户操作记录
+     *
+     * @param secToken
+     * @param channelId
+     * @param actId
+     * @return
+     * @throws IOException
+     */
+    @PostMapping(value = "/userReward")
+    @ResponseBody
+    public JSONObject userReward(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId) throws IOException {
+        JSONObject object = new JSONObject();
+        if (StringUtils.isEmpty(secToken)) {
+            object.put(Constant.MSG, "login");
+        } else {
+            String userId = commonService.getMobile(secToken, channelId);
+            if (userId.isEmpty()) {
+                object.put(Constant.MSG, "channelId_error");
+            } else {
+                object=FortuneService.userReward(userId,actId,channelId);
             }
         }
         return object;

@@ -50,7 +50,7 @@ public interface MiguFlowMapper {
    @Select("select * from activity_configuration where actId = #{actId} and unlocked=#{unlocked} and module=#{module}")
    ActivityConfiguration selectActivityConfigurationByModule(@Param("actId") String actId, @Param("unlocked") Integer unlocked,@Param("module") Integer module);
 
-   @Select("select * from ${keyword} where userId=#{userId} and actId=#{actId}")
+   @Select("select * from ${keyword} where userId=#{userId} and actId=#{actId} ORDER BY id asc")
    List<ActivityRoster> selectRoster(@Param("userId") String userId, @Param("actId") String actId, @Param("keyword") String keyword);//查询用户名单列表
 
 }

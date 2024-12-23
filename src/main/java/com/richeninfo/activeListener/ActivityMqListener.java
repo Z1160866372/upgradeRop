@@ -32,7 +32,7 @@ import java.util.List;
 @Log
 @Component
 public class ActivityMqListener {
-    @Resource
+   /* @Resource
     private CommonMapper commonMapper;
     @Resource
     private RopServiceManager ropServiceManager;
@@ -94,5 +94,5 @@ public class ActivityMqListener {
             history.setMessage(e.getMessage());
         }
         commonMapper.updateHistory(history.getStatus(),history.getCode(),history.getMessage(),history.getId(),keyword);//更新用户发放状态
-    }
+    }*/
 }

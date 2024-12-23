@@ -90,7 +90,9 @@ public class HuiPlayController {
     @PostMapping("/draw")
     public @ResponseBody
     JSONObject userDraw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId, @ApiParam(name = "unlocked", value = "奖励标识", required = true) Integer unlocked, @ApiParam(name = "ditch", value = "触点", required = true) String ditch) throws Exception {
+        log.info("draw============");
         CommonController.getParameter(request, actId, channelId,unlocked,ditch);
+        log.info("draw============"+this.HuiPlayService.submit(secToken, actId, unlocked, channelId,ditch));
         return this.HuiPlayService.submit(secToken, actId, unlocked, channelId,ditch);
     }
 

@@ -2,10 +2,7 @@ package com.richeninfo.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.richeninfo.entity.mapper.entity.ActivityConfiguration;
-import com.richeninfo.entity.mapper.entity.ActivityRoster;
-import com.richeninfo.entity.mapper.entity.ActivityUser;
-import com.richeninfo.entity.mapper.entity.ActivityUserHistory;
+import com.richeninfo.entity.mapper.entity.*;
 import com.richeninfo.entity.mapper.mapper.master.CommonMapper;
 import com.richeninfo.entity.mapper.mapper.master.JourneyMapper;
 import com.richeninfo.entity.mapper.mapper.master.ProMemberMapper;
@@ -15,10 +12,7 @@ import com.richeninfo.pojo.Result;
 import com.richeninfo.pojo.VasOfferInfo;
 import com.richeninfo.service.CommonService;
 import com.richeninfo.service.ProMemberService;
-import com.richeninfo.util.CommonUtil;
-import com.richeninfo.util.PacketHelper;
-import com.richeninfo.util.RSAUtils;
-import com.richeninfo.util.RopServiceManager;
+import com.richeninfo.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -125,10 +119,10 @@ public class ProMemberServiceImpl implements ProMemberService {
                         object.put(Constant.MSG, "login");
                         return object;
                     }
-                   /* if( !commonService.checkUserIsChinaMobile(mobile,actId)){
+                    if( !commonService.checkUserIsChinaMobile(mobile,actId)){
                         object.put(Constant.MSG,"noShYd");
                         return object;
-                    }*/
+                    }
                 } catch (Exception e) {
                     object.put(Constant.MSG, "loginError");
                     return object;
@@ -230,6 +224,7 @@ public class ProMemberServiceImpl implements ProMemberService {
         newHistory.setValue(activityConfiguration.getValue());
         newHistory.setActId(actId);
         newHistory.setDitch(ditch);
+        newHistory.setUserType(activityConfiguration.getUserType());
         newHistory.setIpScanner(activityConfiguration.getNoProContent());
         newHistory.setActivityId(activityConfiguration.getActivityId());
         newHistory.setItemId(activityConfiguration.getItemId());
@@ -243,12 +238,12 @@ public class ProMemberServiceImpl implements ProMemberService {
         if(activityConfiguration.getTypeId()==0){
             String mqMsg = commonService.issueReward(newHistory);
             log.info("4147请求信息：" + mqMsg);
-            /*jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);*/
+            jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
         }
         if(activityConfiguration.getTypeId()==4){
             String mqMsg = commonService.issueCoupon(newHistory);
             log.info("0I1000请求信息：" + mqMsg);
-            /*jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);*/
+            jmsMessagingTemplate.convertAndSend("commonQueue",mqMsg);
         }
         /*object.put("gift",activityConfiguration);
         object.put(Constant.MSG,Constant.SUCCESS);*/
@@ -276,7 +271,7 @@ public class ProMemberServiceImpl implements ProMemberService {
                 offerList.add(vasOfferInfo);
             }
             Packet packet = packetHelper.getCommitPacket306602(history.getUserId(),randCode, offerList, channelId,ditch);
-           /* String message = ropService.execute(packet,history.getUserId(),history.getActId());
+            String message = ropService.execute(packet,history.getUserId(),history.getActId());
             message = ReqWorker.replaceMessage(message);
             result = JSON.parseObject(message,Result.class);
             String res = result.getResponse().getErrorInfo().getCode();
@@ -293,19 +288,19 @@ public class ProMemberServiceImpl implements ProMemberService {
             history.setMessage(JSON.toJSONString(result));
             history.setCode(JSON.toJSONString(packet));
             object.put("res", res);
-            object.put("DoneCode", DoneCode);*/
-            if(true){
+            object.put("DoneCode", DoneCode);
+          /*  if(true){
                 object.put("res", "0000");
                 object.put("DoneCode", "9999");
                 history.setStatus(Constant.STATUS_RECEIVED);
                 object.put(Constant.MSG, Constant.SUCCESS);
                 transact_result=true;
-            }
+            }*/
             object.put("update_history", JSON.toJSONString(history));
             proMemberMapper.updateHistory(history);
             if (transact_result) {
                 //业务办理成功 接口上报
-               /* Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
+                Packet new_packet = packetHelper.orderReporting(config,packet,wtAcId,wtAc);
                 System.out.println(new_packet.toString());
                 String result_String="";
                 try {
@@ -324,7 +319,7 @@ public class ProMemberServiceImpl implements ProMemberService {
                 order.setCode(JSON.toJSONString(new_packet));
                 order.setMessage(result_String);
                 order.setChannelId(channelId);
-                commonMapper.insertActivityOrder(order);*/
+                commonMapper.insertActivityOrder(order);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -363,10 +358,10 @@ public class ProMemberServiceImpl implements ProMemberService {
         if (!StringUtils.isEmpty(secToken)) {
             mobile= commonService.getMobile(secToken,channelId);
         }
-       /* if(!commonService.checkUserIsChinaMobile(mobile,actId)){//非上海移动
+        if(!commonService.checkUserIsChinaMobile(mobile,actId)){//非上海移动
             object.put(Constant.MSG,"noShYd");
             return object;
-        }*/
+        }
         ActivityUserHistory userHistory  =proMemberMapper.selectActivityUserHistoryByUnlocked(mobile,unlocked);
         if(userHistory!=null){
             if(userHistory.getTypeId()==1){

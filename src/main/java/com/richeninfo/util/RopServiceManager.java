@@ -181,7 +181,20 @@ public class RopServiceManager {
             log.info("接口[sendPush]url===" + url);
             log.info("接口[sendPush]入参===" + xmlRequst);
             JaxWsDynamicClientFactory clientFactory = JaxWsDynamicClientFactory.newInstance();
+           /* clientFactory.getJaxbContextProperties().put("com.sun.xml.ws.request.timeout", 10000);
+            clientFactory.getJaxbContextProperties().put("com.sun.xml.ws.connect.timeout", 10000);
+            clientFactory.getJaxbContextProperties().put("com.sun.xml.internal.ws.connection.timeout", 10000);//建立连接的超时时间为10秒
+            clientFactory.getJaxbContextProperties().put("com.sun.xml.internal.ws.request.timeout", 10000);//指定请求的响应超时时间为10秒*/
+
             Client client = clientFactory.createClient(url);
+
+            HTTPConduit conduit = (HTTPConduit) client.getConduit();
+            HTTPClientPolicy policy = new HTTPClientPolicy();
+            policy.setConnectionTimeout(2000); //连接超时时间
+            policy.setReceiveTimeout(2000);//请求超时时间.
+            conduit.setClient(policy);
+
+            clientFactory.getJaxbContextProperties();
             client.getEndpoint().getEndpointInfo().setAddress("http://login.10086.cn:18080/services/AssertionQryUID");
             Object[] result = client.invoke("getAssertInfoByUID", xmlRequst);
             String outxml = (String) result[0];

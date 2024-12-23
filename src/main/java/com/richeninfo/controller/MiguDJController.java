@@ -34,8 +34,8 @@ import java.util.Map;
  * @date 2024/7/16 11:16
  */
 @Controller
-@RequestMapping("/2024/07/migudj")
-@Api(value = "咪咕视频短剧版", tags = {"咪咕视频短剧版"})
+@RequestMapping("/2024/12/research")
+@Api(value = "2024年度满意问卷", tags = {"咪咕视频短剧版&& 2024年度满意问卷"})
 public class MiguDJController {
 
     @Resource
@@ -80,10 +80,10 @@ public class MiguDJController {
      * @return JSONObject
      * @throws IOException ioe异常
      */
-    @PostMapping(value = "/getActGift")
+    @PostMapping(value = "/draw")
     public @ResponseBody
-    JSONObject getActGift(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String randCode,String wtAcId, String wtAc,String ditch) throws IOException {
-        return  miguDJService.getActGift(secToken, channelId, actId,randCode, wtAcId,wtAc,ditch);
+    JSONObject draw(@ApiParam(name = "secToken", value = "用户标识", required = true) String secToken, @ApiParam(name = "channelId", value = "参与渠道", required = true) String channelId, @ApiParam(name = "actId", value = "活动编号", required = true) String actId,String answer,int mark,String ditch) throws IOException {
+        return  miguDJService.draw(secToken, channelId, actId,answer, mark,ditch);
     }
 
     /**

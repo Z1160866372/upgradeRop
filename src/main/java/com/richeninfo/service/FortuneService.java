@@ -35,7 +35,10 @@ public interface FortuneService {
      * @param actId
      * @return
      */
-    JSONObject getActGift(String mobile, String secToken, String channelId, String actId,String ditch,String content);
+    JSONObject draw(String mobile, String secToken, String channelId, String actId,String ditch);
 
     void actRecord(String caozuo,String actId, String userId);
+
+    JSONObject userReward(String mobile,  String channelId, String actId);
+
 }
